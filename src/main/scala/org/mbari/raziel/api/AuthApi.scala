@@ -90,9 +90,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
     Try(runtime.unsafeRun(app)) match
       case Success(payload) =>
         payload match
-          case Some(p) =>
-            val now     = Instant.now()
-            val expires = now.plus(AppConfig.Jwt.Expiration)
+          case Some(p) => 
             val token   = jwtHelper.createJwt(p.asMap())
             Authorization("Bearer", token).asJson.noSpaces
           case None    =>
