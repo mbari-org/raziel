@@ -7,4 +7,4 @@
 
 package org.mbari.raziel.domain
 
-final case class ErrorMsg(message: String, responseCode: Int)
+final case class ErrorMsg(message: String, responseCode: Int, throwable: Option[Throwable] = None)
