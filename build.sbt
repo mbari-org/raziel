@@ -9,22 +9,13 @@ ThisBuild / organization     := "org.mbari"
 ThisBuild / organizationName := "MBARI"
 ThisBuild / startYear        := Some(2021)
 ThisBuild / versionScheme    := Some("semver-spec")
+ThisBuild / licenses         := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 
 lazy val root = project
   .in(file("."))
   .enablePlugins(AutomateHeaderPlugin, JavaAppPackaging, LaikaPlugin)
   .settings(
     name := "raziel",
-    // sbt-header
-    headerLicense := Some(
-      HeaderLicense.Custom(
-        """Copyright (c) Monterey Bay Aquarium Research Institute 2021
-        |
-        |raziel code is non-public software. Unauthorized copying of this file,
-        |via any medium is strictly prohibited. Proprietary and confidential. 
-        |""".stripMargin
-      )
-    ),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
     laikaExtensions := Seq(
       laika.markdown.github.GitHubFlavor, 
@@ -41,8 +32,11 @@ lazy val root = project
       circeParser,
       jasypt,
       jansi          % Runtime,
+      jettyClient,
+      jettyProxy,
       jettyServer,
       jettyServlets,
+      jettyUtil,
       jettyWebapp,
       logback        % Runtime,
       methanol,

@@ -1,8 +1,17 @@
 /*
- * Copyright (c) Monterey Bay Aquarium Research Institute 2021
+ * Copyright 2021 MBARI
  *
- * raziel code is non-public software. Unauthorized copying of this file,
- * via any medium is strictly prohibited. Proprietary and confidential. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.mbari.raziel
@@ -15,19 +24,19 @@ object AppConfig:
   private val config = ConfigFactory.load()
 
   private def asUrl(path: String): URL =
-    if (path.endsWith("/")) new URL(path)
-    else new URL(path + "/")
+    if (!path.endsWith("/")) new URL(path)
+    else new URL(path.substring(0, path.length - 1))
 
   object Annosaurus:
     val Url      = asUrl(config.getString("annosaurus.url"))
     val Timeout  = config.getDuration("annosaurus.timeout")
     val Secret   = config.getString("annosaurus.secret")
-    val Endpoint = EndpointConfig("annosaurus", Url, Timeout, Some(Secret))
+    val Endpoint = EndpointConfig("annosaurus", Url, Timeout, Some(Secret), "/anno")
 
   object Charybdis:
     val Url      = asUrl(config.getString("charybdis.url"))
     val Timeout  = config.getDuration("charybdis.timeout")
-    val Endpoint = EndpointConfig("charybdis", Url, Timeout, None)
+    val Endpoint = EndpointConfig("charybdis", Url, Timeout, None, "/references")
 
   object Http:
     val Context     = config.getString("raziel.http.context")
@@ -40,20 +49,26 @@ object AppConfig:
     val Issuer        = config.getString("raziel.jwt.issuer")
     val SigningSecret = config.getString("raziel.jwt.signing.secret")
 
+  object Panoptes:
+    val Url      = asUrl(config.getString("panoptes.squid.url"))
+    val Timeout  = config.getDuration("panoptes.timeout")
+    val Secret   = config.getString("panoptes.secret")
+    val Endpoint = EndpointConfig("panoptes", Url, Timeout, Some(Secret), "/panoptes")
+
   object VampireSquid:
     val Url      = asUrl(config.getString("vampire.squid.url"))
     val Timeout  = config.getDuration("vampire.squid.timeout")
     val Secret   = config.getString("vampire.squid.secret")
-    val Endpoint = EndpointConfig("vampire-squid", Url, Timeout, Some(Secret))
+    val Endpoint = EndpointConfig("vampire-squid", Url, Timeout, Some(Secret), "/vam")
 
   object Vars:
     object Kb:
       object Server:
         val Url      = asUrl(config.getString("vars.kb.server.url"))
         val Timeout  = config.getDuration("vars.kb.server.timeout")
-        val Endpoint = EndpointConfig("vars-kb-server", Url, Timeout, None)
+        val Endpoint = EndpointConfig("vars-kb-server", Url, Timeout, None, "/kb")
     object User:
       object Server:
         val Url      = asUrl(config.getString("vars.user.server.url"))
         val Timeout  = config.getDuration("vars.user.server.timeout")
-        val Endpoint = EndpointConfig("vars-user-server", Url, Timeout, None)
+        val Endpoint = EndpointConfig("vars-user-server", Url, Timeout, None, "/accounts")

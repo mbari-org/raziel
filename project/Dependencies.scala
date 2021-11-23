@@ -10,8 +10,11 @@ object Dependencies {
   lazy val circeParser     = "io.circe" %% "circe-parser"  % circeVersion
 
   private val jettyVersion = "9.4.44.v20210927"
+  lazy val jettyClient     = "org.eclipse.jetty" % "jetty-client"   % jettyVersion
+  lazy val jettyProxy     = "org.eclipse.jetty" % "jetty-proxy"   % jettyVersion
   lazy val jettyServer     = "org.eclipse.jetty" % "jetty-server"   % jettyVersion
   lazy val jettyServlets   = "org.eclipse.jetty" % "jetty-servlets" % jettyVersion
+  lazy val jettyUtil       = "org.eclipse.jetty" % "jetty-util"     % jettyVersion
   lazy val jettyWebapp     = "org.eclipse.jetty" % "jetty-webapp"   % jettyVersion
 
   lazy val jansi    = "org.fusesource.jansi"         % "jansi"           % "2.4.0"

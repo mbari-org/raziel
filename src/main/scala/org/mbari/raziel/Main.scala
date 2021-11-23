@@ -1,22 +1,35 @@
 /*
- * Copyright (c) Monterey Bay Aquarium Research Institute 2021
+ * Copyright 2021 MBARI
  *
- * raziel code is non-public software. Unauthorized copying of this file,
- * via any medium is strictly prohibited. Proprietary and confidential. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.mbari.raziel
 
 import java.util.concurrent.Callable
+import java.util.logging.Handler
+import org.eclipse.jetty.proxy.ProxyServlet
+import org.eclipse.jetty.server.handler.HandlerCollection
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.{DefaultServlet, ServletHolder}
+import org.eclipse.jetty.webapp.WebAppContext
+import org.mbari.raziel.domain.EndpointConfig
+import org.scalatra.servlet.ScalatraListener
+import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.{Command, Option => Opt, Parameters}
 import scala.util.Try
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.HttpConfiguration
-import org.eclipse.jetty.server.NetworkTrafficServerConnector
-import org.eclipse.jetty.webapp.WebAppContext
-import org.eclipse.jetty.server.HttpConnectionFactory
-import org.scalatra.servlet.ScalatraListener
+import org.eclipse.jetty.servlet.ServletHolder
 
 @Command(
   description = Array("Start the server"),
@@ -39,28 +52,30 @@ object Main:
     new CommandLine(new MainRunner()).execute(args: _*)
 
   def run(port: Int): Either[Throwable, Unit] = Try {
-    val server: Server = new Server
+    val server: Server = new Server(port)
     server.setStopAtShutdown(true)
 
-    val httpConfig = new HttpConfiguration()
-    httpConfig.setSendDateHeader(true)
-    httpConfig.setSendServerVersion(false)
+    val context = new WebAppContext
+    context.setContextPath(AppConfig.Http.Context)
+    context.setResourceBase(AppConfig.Http.Webapp)
+    context.addEventListener(ScalatraListener())
 
-    val connector = new NetworkTrafficServerConnector(
-      server,
-      new HttpConnectionFactory(httpConfig)
-    )
-    connector.setPort(port)
-    println(s"Starting Scalatra on port $port")
-    connector.setIdleTimeout(90000)
-    server.addConnector(connector)
+    // Setup proxies for all endpoints
+    val endpoints = EndpointConfig.defaults
+    for (e, i) <- endpoints.zipWithIndex do
+      var proxy = new ServletHolder(classOf[ProxyServlet.Transparent])
+      // proxy.setInitOrder(i + 1)
+      proxy.setInitParameter("proxyTo", e.url.toExternalForm)
+      proxy.setInitParameter("prefix", s"${e.proxyPath}")
+      context.addServlet(proxy, s"${e.proxyPath}/*")
 
-    val webApp = new WebAppContext
-    webApp.setContextPath(AppConfig.Http.Context)
-    webApp.setResourceBase(AppConfig.Http.Webapp)
-    webApp.setEventListeners(Array(new ScalatraListener))
-
-    server.setHandler(webApp)
-
+    server.setHandler(context)
     server.start()
+
+    LoggerFactory
+      .getLogger(getClass)
+      .atInfo
+      .log(() => s"Started Raziel on port $port")
+
+    server.join()
   }.toEither

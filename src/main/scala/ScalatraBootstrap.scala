@@ -1,8 +1,17 @@
 /*
- * Copyright (c) Monterey Bay Aquarium Research Institute 2021
+ * Copyright 2021 MBARI
  *
- * raziel code is non-public software. Unauthorized copying of this file,
- * via any medium is strictly prohibited. Proprietary and confidential. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import javax.servlet.ServletContext
@@ -23,10 +32,6 @@ class ScalatraBootstrap extends LifeCycle:
     context.setInitParameter("org.scalatra.cors.allowedOrigins", "*")
     // Disables cookies, but required because browsers will not allow passing credentials to wildcard domains
     context.setInitParameter("org.scalatra.cors.allowCredentials", "false")
-    context.setInitParameter(
-      "org.scalatra.cors.allowedMethods",
-      "GET, POST, ORIGIN"
-    )
 
     // Methonal needs a Java executor. Everything else a Scala ExeuctionContext
     given executionContext: ExecutionContextExecutor = ExecutionContext.global
