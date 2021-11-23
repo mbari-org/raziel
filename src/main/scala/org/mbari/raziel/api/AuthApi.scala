@@ -71,7 +71,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
 
     val auth = Option(request.getHeader("Authorization"))
       .flatMap(a => BasicAuthorization.decode(a))
-      .toRight(throw new IllegalArgumentException("Authorization header required"))
+      .toRight(new IllegalArgumentException("Authorization header required"))
 
     val app = for
       a       <- IO.fromEither(auth)
