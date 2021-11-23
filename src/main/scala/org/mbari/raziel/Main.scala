@@ -52,6 +52,14 @@ object Main:
     new CommandLine(new MainRunner()).execute(args: _*)
 
   def run(port: Int): Either[Throwable, Unit] = Try {
+    
+    val s = """
+      |  ______ _______ ______ _____ _______       
+      | |_____/ |_____|  ____/   |   |______ |     
+      | |    \_ |     | /_____ __|__ |______ |_____""".stripMargin
+
+    println(s)
+
     val server: Server = new Server(port)
     server.setStopAtShutdown(true)
 

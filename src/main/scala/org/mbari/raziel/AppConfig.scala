@@ -50,7 +50,7 @@ object AppConfig:
     val SigningSecret = config.getString("raziel.jwt.signing.secret")
 
   object Panoptes:
-    val Url      = asUrl(config.getString("panoptes.squid.url"))
+    val Url      = asUrl(config.getString("panoptes.url"))
     val Timeout  = config.getDuration("panoptes.timeout")
     val Secret   = config.getString("panoptes.secret")
     val Endpoint = EndpointConfig("panoptes", Url, Timeout, Some(Secret), "/panoptes")
