@@ -1,6 +1,6 @@
 # raziel
 
-Raziel is a configuration server, the keeper of secrets. It can be used to lookup the configuraiton of a M3/VARS installation
+Raziel is a configuration server, the keeper of secrets. It can be used to lookup the configuration of a M3/VARS installation.
 
 ## Usage
 
