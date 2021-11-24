@@ -22,7 +22,7 @@ import scala.util.Try
 import java.net.URL
 import org.mbari.raziel.util.HexUtil
 import java.net.URI
-import org.mbari.raziel.domain.{Authorization, EndpointConfig, ErrorMsg, User}
+import org.mbari.raziel.domain.{Authorization, EndpointConfig, ErrorMsg, HealthStatus, User}
 
 object CirceCodecs:
 
@@ -58,6 +58,9 @@ object CirceCodecs:
 
   given Decoder[EndpointConfig] = deriveDecoder
   given Encoder[EndpointConfig] = deriveEncoder
+
+  given Decoder[HealthStatus] = deriveDecoder
+  given Encoder[HealthStatus] = deriveEncoder
 
   private val printer = Printer.noSpaces.copy(dropNullValues = true)
 

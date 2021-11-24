@@ -21,13 +21,16 @@ import org.scalatra.LifeCycle
 import scala.concurrent.ExecutionContextExecutor
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.services.VarsUserServer
-import org.mbari.raziel.api.{AuthApi, EndpointsApi}
+import org.mbari.raziel.api.{AuthApi, EndpointsApi, HealthApi}
+import org.slf4j.LoggerFactory
+
 
 class ScalatraBootstrap extends LifeCycle:
 
+
   override def init(context: ServletContext): Unit =
 
-    println("STARTING UP NOW")
+    LoggerFactory.getLogger(getClass).info("Mounting Raziel Servlets")
     // Optional because * is the default
     context.setInitParameter("org.scalatra.cors.allowedOrigins", "*")
     // Disables cookies, but required because browsers will not allow passing credentials to wildcard domains
@@ -40,3 +43,4 @@ class ScalatraBootstrap extends LifeCycle:
 
     context.mount(AuthApi(varsUserServer), "/auth")
     context.mount(EndpointsApi(), "/endpoints")
+    context.mount(HealthApi(), "/health")
