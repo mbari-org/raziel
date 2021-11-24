@@ -19,7 +19,7 @@ package org.mbari.raziel.etc.circe
 import io.circe.*
 import io.circe.generic.semiauto.*
 import java.net.{URI, URL}
-import org.mbari.raziel.domain.{Authorization, EndpointConfig, ErrorMsg, HealthStatus, User}
+import org.mbari.raziel.domain.{BearerAuth, EndpointConfig, ErrorMsg, HealthStatus, User}
 import org.mbari.raziel.util.HexUtil
 import scala.util.Try
 
@@ -49,8 +49,8 @@ object CirceCodecs:
   given Decoder[User] = deriveDecoder
   given Encoder[User] = deriveEncoder
 
-  given Decoder[Authorization] = deriveDecoder
-  given Encoder[Authorization] = deriveEncoder
+  given Decoder[BearerAuth] = deriveDecoder
+  given Encoder[BearerAuth] = deriveEncoder
 
   given Decoder[ErrorMsg] = deriveDecoder
   given Encoder[ErrorMsg] = deriveEncoder

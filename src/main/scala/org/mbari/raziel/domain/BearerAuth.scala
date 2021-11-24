@@ -26,9 +26,10 @@ package org.mbari.raziel.domain
  *   Brian Schlining
  * @since 2020-01-28T11:00:00
  */
-case class Authorization(tokenType: String, accessToken: String)
+case class BearerAuth(accessToken: String) extends Auth:
+  override val tokenType: String = "Bearer"
 
-object Authorization:
+object BearerAuth:
 
   /**
    * Parse the value portion of an Authorization header into an Authorization object
@@ -37,11 +38,11 @@ object Authorization:
    * @return
    *   An Authorization object, None if it's not parseable
    */
-  def parse(authorization: String): Option[Authorization] =
+  def parse(authorization: String): Option[BearerAuth] =
     val parts = authorization.split("\\s+")
-    if (parts.length == 2)
-      Some(Authorization(parts(0), parts(1)))
+    if (parts.length == 2 && parts(0).toLowerCase == "bearer")
+      Some(BearerAuth(parts(1)))
     else
       None
 
-  val Invalid: Authorization = Authorization("", "")
+  val Invalid: BearerAuth = BearerAuth("")

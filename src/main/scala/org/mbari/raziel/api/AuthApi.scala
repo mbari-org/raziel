@@ -25,7 +25,7 @@ import java.time.Instant
 import java.util.concurrent.Executor
 import java.util.Date
 import org.mbari.raziel.AppConfig
-import org.mbari.raziel.domain.{Authorization, BasicAuthorization, ErrorMsg, JwtAuthPayload}
+import org.mbari.raziel.domain.{BearerAuth, BasicAuth, ErrorMsg, JwtAuthPayload}
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.VarsUserServer
@@ -138,7 +138,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
   post("/") {
 
     val auth = Option(request.getHeader("Authorization"))
-      .flatMap(a => BasicAuthorization.decode(a))
+      .flatMap(a => BasicAuth.parse(a))
       .toRight(new IllegalArgumentException("Authorization header required"))
 
     val app = for
@@ -160,7 +160,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
         payload match
           case Some(p) =>
             val token = jwtHelper.createJwt(p.asMap())
-            Authorization("Bearer", token).stringify
+            BearerAuth(token).stringify
           case None    =>
             halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
       case Failure(e)       =>
@@ -171,7 +171,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
   post("/verify") {
 
     val auth = Option(request.getHeader("Authorization"))
-      .flatMap(a => Authorization.parse(a))
+      .flatMap(a => BearerAuth.parse(a))
       .toRight(new IllegalArgumentException("Authorization header required"))
 
     val either = for

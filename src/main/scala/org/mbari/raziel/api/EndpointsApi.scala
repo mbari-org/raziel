@@ -21,7 +21,7 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import javax.servlet.http.HttpServletRequest
 import org.mbari.raziel.AppConfig
-import org.mbari.raziel.domain.{Authorization, EndpointConfig}
+import org.mbari.raziel.domain.{BearerAuth, EndpointConfig}
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.scalatra.ScalatraServlet
@@ -169,7 +169,7 @@ class EndpointsApi extends ScalatraServlet:
 
   private def authenticate(request: HttpServletRequest): Boolean =
     val auth = Option(request.getHeader("Authorization"))
-      .flatMap(a => Authorization.parse(a))
+      .flatMap(a => BearerAuth.parse(a))
       .toRight(new IllegalArgumentException("Authorization header required"))
 
     val either = for
