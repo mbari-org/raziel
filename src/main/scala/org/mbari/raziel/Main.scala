@@ -43,8 +43,9 @@ class MainRunner extends Callable[Int]:
   private var port: Int = AppConfig.Http.Port
 
   override def call(): Int =
-    Main.run(port)
-    0
+    Main.run(port) match
+      case Left(_) => -1
+      case Right(_) => 0
 
 object Main:
 

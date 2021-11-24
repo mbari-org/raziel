@@ -135,36 +135,6 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
     contentType = "application/json"
   }
 
-  /*
-    --- REQUEST:
-    POST /auth
-    Authorization: Basic base64(username:password)
-
-    --- RESPONSE 200:
-    HTTP/1.1 200 OK
-    Connection: close
-    Date: Mon, 22 Nov 2021 22:53:47 GMT
-    Content-Type: application/json;charset=utf-8
-    Content-Length: 338
-
-    {
-      "tokenType": "Bearer",
-      "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhZmZpbGlhdGlvbiI6Ik1CQVJJIiwiaXNzIjoiaHR0cDovL3d3dy5tYmFyaS5vcmciLCJleHAiOjE2NTMxNzM2MjcsImlhdCI6MTYzNzYyMTYyNywiZW1haWwiOiJicmlhbkBtYmFyaS5vcmciLCJ1c2VybmFtZSI6ImJyaWFuIn0.FuGr9NoQjbrHKPUPvRmscmGjKWYkTfsqNcgnAbrZDvnGpq0gv31kz5qFAY6Ve5KQUouAttlh0aU5ny-pqxOrCg"
-    }
-
-    --- RESPONSE 401:
-    HTTP/1.1 401 Unauthorized
-    Connection: close
-    Date: Mon, 22 Nov 2021 22:56:29 GMT
-    Content-Type: application/json;charset=utf-8
-    Content-Length: 52
-
-    {
-      "message": "Invalid credentials",
-      "responseCode": 401
-    }
-
-   */
   post("/") {
 
     val auth = Option(request.getHeader("Authorization"))
@@ -190,7 +160,7 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
         payload match
           case Some(p) =>
             val token = jwtHelper.createJwt(p.asMap())
-            Authorization("Bearer", token).asJson.noSpaces
+            Authorization("Bearer", token).stringify
           case None    =>
             halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
       case Failure(e)       =>
@@ -198,38 +168,6 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
 
   }
 
-  /*
-    --- REQUEST:
-    POST /auth/verify
-    Authorization: Bearer <JWT>
-
-    --- RESPONSE 200:
-    HTTP/1.1 200 OK
-    Connection: close
-    Date: Mon, 22 Nov 2021 22:55:27 GMT
-    Content-Type: application/json;charset=utf-8
-    Content-Length: 97
-
-    {
-      "username": "brian",
-      "iss": "http://www.mbari.org",
-      "email": "brian@mbari.org",
-      "affiliation": "MBARI"
-    }
-
-    --- RESPONSE 401:
-    HTTP/1.1 401 Unauthorized
-    Connection: close
-    Date: Mon, 22 Nov 2021 22:55:50 GMT
-    Content-Type: application/json;charset=utf-8
-    Content-Length: 52
-
-    {
-      "message": "Invalid credentials",
-      "responseCode": 401
-    }
-
-   */
   post("/verify") {
 
     val auth = Option(request.getHeader("Authorization"))

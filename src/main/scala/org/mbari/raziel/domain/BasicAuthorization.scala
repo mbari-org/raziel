@@ -17,6 +17,7 @@
 package org.mbari.raziel.domain
 
 import java.util.Base64
+import java.nio.charset.StandardCharsets
 
 /**
  * @param username
@@ -40,7 +41,7 @@ object BasicAuthorization:
    */
   def decode(authorization: String): Option[BasicAuthorization] =
     val bytes   = Base64.getDecoder.decode(authorization)
-    val decoded = new String(bytes)
+    val decoded = new String(bytes, StandardCharsets.UTF_8)
     val parts   = decoded.split(":")
     if (parts.length == 2)
       Some(BasicAuthorization(parts(0), parts(1)))
