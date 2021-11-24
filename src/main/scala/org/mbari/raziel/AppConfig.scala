@@ -20,6 +20,11 @@ import com.typesafe.config.ConfigFactory
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 
+/**
+ * A typesafe wrapper around the application.conf file.
+ * @author
+ *   Brian Schlining
+ */
 object AppConfig:
 
   val Name = "raziel"

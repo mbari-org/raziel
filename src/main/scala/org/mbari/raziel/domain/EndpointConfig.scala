@@ -20,6 +20,22 @@ import java.net.URL
 import java.time.Duration
 import org.mbari.raziel.AppConfig
 
+/**
+ * Parameters for a microservice endpoint
+ * @param name
+ *   Name of the microservice app (e.g. "annosaurus")
+ * @param url
+ *   URL of the endpoint (e.g. "http://localhost:8080/anno/v1")
+ * @param timeout
+ *   Timeout for the endpoint
+ * @param secret
+ *   THe secret for authentication for the endpoint
+ * @param proxyPath
+ *   The path to mount the remote url as in raziel (e.g. "/anno")
+ *
+ * @author
+ *   Brian Schlining
+ */
 case class EndpointConfig(
     name: String,
     url: URL,
@@ -30,6 +46,10 @@ case class EndpointConfig(
 
 object EndpointConfig:
 
+  /**
+   * @return
+   *   A list of M3 microservice [[EndpointConfig]]s as defined in application.conf
+   */
   def defaults: List[EndpointConfig] =
     AppConfig.Annosaurus.Endpoint ::
       AppConfig.Charybdis.Endpoint ::

@@ -29,6 +29,10 @@ final case class HealthStatus(
 
 object HealthStatus:
 
+  /**
+   * @return
+   *   a HealthStatus object with the current JVM stats
+   */
   def default: HealthStatus =
     val runtime = Runtime.getRuntime
     HealthStatus(

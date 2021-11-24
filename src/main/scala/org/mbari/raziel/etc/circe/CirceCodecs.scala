@@ -63,6 +63,16 @@ object CirceCodecs:
 
   private val printer = Printer.noSpaces.copy(dropNullValues = true)
 
+  /**
+   * Convert a circe Json object to a JSON string
+   * @param value
+   *   Any value with an implicit circe coder in scope
+   */
   extension (json: Json) def stringify: String = printer.print(json)
 
+  /**
+   * Convert an object to a JSON string
+   * @param value
+   *   Any value with an implicit circe coder in scope
+   */
   extension [T: Encoder](value: T) def stringify: String = Encoder[T].apply(value).stringify

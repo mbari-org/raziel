@@ -27,6 +27,17 @@ import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
 import zio.{IO, Task}
 
+/**
+ * Service for accessing the vars-user-server. Needed for validating user credentials.
+ * @param rootUrl
+ *   The root URL of the vars-user-server e.g. http://localhost:8080/accounts/v1
+ * @param timeout
+ *   The timeout for the HTTP request
+ * @param executor
+ *   The executor to use for the HTTP requests
+ * @author
+ *   Brian Schlining
+ */
 class VarsUserServer(
     rootUrl: String,
     timeout: Duration = Duration.ofSeconds(10),
@@ -36,6 +47,14 @@ class VarsUserServer(
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
   object Users:
+
+    /**
+     * Find a user in the vars-user-server by thier username
+     * @param userName
+     *   The username of the user to find
+     * @return
+     *   A user if found, otherwise None
+     */
     def findByName(userName: String): Task[Option[User]] =
       val request = HttpRequest
         .newBuilder()
@@ -48,6 +67,12 @@ class VarsUserServer(
         .map(u => Option(u))
 
 object VarsUserServer:
+
+  /**
+   * Builds a VarsUserServer from the application configuration and the provided executor
+   * @param executor
+   *   The executor to use for the HTTP requests
+   */
   def default(using executor: Executor) =
     new VarsUserServer(
       AppConfig.Vars.User.Server.Url.toExternalForm,

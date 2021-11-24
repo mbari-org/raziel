@@ -16,10 +16,23 @@
 
 package org.mbari.raziel.domain
 
+/**
+ * Case class containing the minimal payload for our JWTs.
+ * @author
+ *   Brian Schlining
+ */
 case class JwtAuthPayload(username: String, email: String, affiliation: String):
+
+  /**
+   * @return
+   *   The payload as a Map. Need to use with auth0's JWT library.
+   */
   def asMap(): Map[String, Any] = (productElementNames zip productIterator).toMap
 
 object JwtAuthPayload:
 
+  /**
+   * Create a JwtAuthPayload from a User's info.
+   */
   def fromUser(user: User): JwtAuthPayload =
     JwtAuthPayload(user.username, user.email.getOrElse(""), user.affiliation.getOrElse(""))

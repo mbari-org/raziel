@@ -18,9 +18,26 @@ package org.mbari.raziel.domain
 
 import java.util.Base64
 
+/**
+ * @param username
+ *   The username from a Basic Auth header
+ * @param password
+ *   The password from a Basic Auth header
+ * @author
+ *   Brian Schlining
+ */
 case class BasicAuthorization(username: String, password: String)
 
 object BasicAuthorization:
+
+  /**
+   * Parse a Basic Authorization header: "Basic <base64-encoded-username:password>"
+   *
+   * @param authorization
+   *   The value portion of the Authorization header
+   * @return
+   *   The parse BasicAuthorization. None if it's no parsable
+   */
   def decode(authorization: String): Option[BasicAuthorization] =
     val bytes   = Base64.getDecoder.decode(authorization)
     val decoded = new String(bytes)

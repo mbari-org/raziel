@@ -23,6 +23,42 @@ import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.scalatra.ScalatraServlet
 
+/**
+ * Health status API
+ *
+ * ## /health
+ *
+ * ### Request
+ *
+ * ```text
+ * GET /health
+ * ```
+ *
+ * ### Response 200
+ *
+ * ```text
+ * HTTP/1.1 200 OK
+ * Connection: close
+ * Date: Wed, 24 Nov 2021 06:48:17 GMT
+ * Content-Type: text/plain;charset=utf-8
+ * Content-Length: 145
+ * Server: Jetty(9.4.44.v20210927)
+ *
+ * {
+ * "jdkVersion": "17.0.1+12-39",
+ * "availableProcessors": 10,
+ * "freeMemory": 21093224,
+ * "maxMemory": 1073741824,
+ * "totalMemory": 46137344,
+ * "application": "raziel"
+ * }
+ *
+ * ```
+ *
+ * @author
+ *   Brian Schlining
+ * @since 2021-11-23T11:00:00
+ */
 class HealthApi extends ScalatraServlet:
 
   get("/") {

@@ -27,6 +27,11 @@ import org.mbari.raziel.AppConfig
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
 import zio.Task
 
+/**
+ * Helper for using javas' HttpClient.
+ * @author
+ *   Brian Schlining
+ */
 class HttpClientSupport(
     timeout: Duration = Duration.ofSeconds(10),
     executor: Executor = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
@@ -43,6 +48,15 @@ class HttpClientSupport(
     .userAgent(AppConfig.Name)
     .build()
 
+  /**
+   * Convert a [[HttpRequest]] to a [[Task]]. Used to compose IO.
+   * @param request
+   *   The request to convert to a zio Task
+   * @tparam T
+   *   The type of the response body. Requires an implicit circe [[Decoder]] is in scope.
+   * @return
+   *   A [[Task]] that will resolve to the response body
+   */
   def requestToTask[T](
       request: HttpRequest
   )(implicit decoder: Decoder[T]): Task[T] = zio.Task.effect {

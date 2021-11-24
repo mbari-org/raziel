@@ -16,4 +16,14 @@
 
 package org.mbari.raziel.domain
 
+/**
+ * Just a simple class used to return a JSON error response
+ * @param message
+ *   the error message
+ * @param responseCode
+ *   the HTTP response code
+ * @author
+ *   Brian Schlining
+ * @since 2021-11-23T11:00:00
+ */
 final case class ErrorMsg(message: String, responseCode: Int)

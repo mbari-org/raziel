@@ -24,6 +24,13 @@ import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
 import org.slf4j.LoggerFactory
 
+/**
+ * A [[Methanol.Interceptor]] that logs the request and response headers. (but not the body)
+ *
+ * @author
+ *   Brian Schlining
+ * @since 2020-01-30T11:00:00
+ */
 object LoggingInterceptor extends Methanol.Interceptor:
 
   private val log = LoggerFactory.getLogger(getClass)

@@ -22,6 +22,7 @@ import org.eclipse.jetty.proxy.ProxyServlet
 import org.eclipse.jetty.server.handler.HandlerCollection
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.{DefaultServlet, ServletHolder}
+import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.webapp.WebAppContext
 import org.mbari.raziel.domain.EndpointConfig
 import org.scalatra.servlet.ScalatraListener
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.{Command, Option => Opt, Parameters}
 import scala.util.Try
-import org.eclipse.jetty.servlet.ServletHolder
 
 @Command(
   description = Array("Start the server"),
@@ -78,7 +78,7 @@ object Main:
       context.addServlet(proxy, s"${e.proxyPath}/*")
       log
         .atInfo
-        .log(() => s"Proxying ${e.url.toExternalForm} as ${e.proxyPath}")
+        .log(() => s"Proxying ${e.name} @ ${e.url.toExternalForm} as ${e.proxyPath}")
 
     server.setHandler(context)
     server.start()

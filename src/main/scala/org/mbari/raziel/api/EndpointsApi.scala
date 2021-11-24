@@ -27,6 +27,133 @@ import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.scalatra.ScalatraServlet
 import org.slf4j.LoggerFactory
 
+/**
+ * Returns infomation about the proxied endpoints
+ *
+ * ## /endpoints (with missing or invalid Authorization header)
+ *
+ * ### Request
+ *
+ * ```text
+ * GET /endpoints
+ * ```
+ * ### Response 200
+ *
+ * ```text
+ * HTTP/1.1 200 OK
+ * Connection: close
+ * Date: Wed, 24 Nov 2021 06:40:53 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 653
+ * Server: Jetty(9.4.44.v20210927)
+ *
+ * [
+ * {
+ * "name": "annosaurus",
+ * "url": "http://m3.shore.mbari.org/anno/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/anno"
+ * },
+ * {
+ * "name": "charybdis",
+ * "url": "http://m3.shore.mbari.org/references",
+ * "timeout": "PT30S",
+ * "proxyPath": "/references"
+ * },
+ * {
+ * "name": "panoptes",
+ * "url": "http://singularity.shore.mbari.org:8080/panoptes",
+ * "timeout": "PT10S",
+ * "proxyPath": "/panoptes"
+ * },
+ * {
+ * "name": "vampire-squid",
+ * "url": "http://m3.shore.mbari.org/vam/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/vam"
+ * },
+ * {
+ * "name": "vars-kb-server",
+ * "url": "http://m3.shore.mbari.org/kb/v1",
+ * "timeout": "PT20S",
+ * "proxyPath": "/kb"
+ * },
+ * {
+ * "name": "vars-user-server",
+ * "url": "http://m3.shore.mbari.org/accounts/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/accounts"
+ * }
+ * ]
+ * ```
+ *
+ * ## /endpoints (with valid Authorization header)
+ *
+ * ### Request
+ *
+ * ```text
+ * GET /endpoints
+ * Authorization: Bearer <JWT>
+ * ```
+ *
+ * ### Response 200
+ *
+ * ```text
+ * HTTP/1.1 200 OK
+ * Connection: close
+ * Date: Wed, 24 Nov 2021 06:42:04 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 653
+ * Server: Jetty(9.4.44.v20210927)
+ *
+ * [
+ * {
+ * "name": "annosaurus",
+ * "url": "http://m3.shore.mbari.org/anno/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/anno",
+ * "secret": "secret"
+ * },
+ * {
+ * "name": "charybdis",
+ * "url": "http://m3.shore.mbari.org/references",
+ * "timeout": "PT30S",
+ * "proxyPath": "/references"
+ * },
+ * {
+ * "name": "panoptes",
+ * "url": "http://singularity.shore.mbari.org:8080/panoptes",
+ * "timeout": "PT10S",
+ * "proxyPath": "/panoptes",
+ * "secret": "secret"
+ * },
+ * {
+ * "name": "vampire-squid",
+ * "url": "http://m3.shore.mbari.org/vam/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/vam",
+ * "secret": "secret"
+ * },
+ * {
+ * "name": "vars-kb-server",
+ * "url": "http://m3.shore.mbari.org/kb/v1",
+ * "timeout": "PT20S",
+ * "proxyPath": "/kb"
+ * },
+ * {
+ * "name": "vars-user-server",
+ * "url": "http://m3.shore.mbari.org/accounts/v1",
+ * "timeout": "PT10S",
+ * "proxyPath": "/accounts"
+ * }
+ * ]
+ *
+ * ```
+ *
+ * @author
+ *   Brian Schlining
+ * @since 2021-12-23T11:00:00
+ */
 class EndpointsApi extends ScalatraServlet:
 
   private val jwtHelper = JwtHelper.default

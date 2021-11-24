@@ -21,21 +21,110 @@ import com.auth0.jwt.JWT
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
+import java.time.Instant
 import java.util.concurrent.Executor
+import java.util.Date
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.{Authorization, BasicAuthorization, ErrorMsg, JwtAuthPayload}
+import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.VarsUserServer
 import org.scalatra.{FutureSupport, InternalServerError, ScalatraServlet, Unauthorized}
 import org.slf4j.LoggerFactory
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters.given
 import scala.util.{Failure, Success, Try}
 import zio.*
-import scala.jdk.CollectionConverters.given
-import java.util.Date
-import java.time.Instant
-import org.mbari.raziel.etc.auth0.JwtHelper
 
+/**
+ * Provides endpoints for authentication and authorization.
+ *
+ * ## /auth
+ *
+ * ### Request
+ *
+ * ```text
+ * POST /auth
+ * Authorization: Basic base64(username:password)
+ * ```
+ *
+ * ### Response 200
+ *
+ * ```text
+ * HTTP/1.1 200 OK
+ * Connection: close
+ * Date: Mon, 22 Nov 2021 22:53:47 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 338
+ *
+ * {
+ * "tokenType": "Bearer",
+ * "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhZmZpbGlhdGlvbiI6Ik1CQVJJIiwiaXNzIjoiaHR0cDovL3d3dy5tYmFyaS5vcmciLCJleHAiOjE2NTMxNzM2MjcsImlhdCI6MTYzNzYyMTYyNywiZW1haWwiOiJicmlhbkBtYmFyaS5vcmciLCJ1c2VybmFtZSI6ImJyaWFuIn0.FuGr9NoQjbrHKPUPvRmscmGjKWYkTfsqNcgnAbrZDvnGpq0gv31kz5qFAY6Ve5KQUouAttlh0aU5ny-pqxOrCg"
+ * }
+ * ```
+ *
+ * ### RESPONSE 401
+ *
+ * ```text
+ * HTTP/1.1 401 Unauthorized
+ * Connection: close
+ * Date: Mon, 22 Nov 2021 22:56:29 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 52
+ *
+ * {
+ * "message": "Invalid credentials",
+ * "responseCode": 401
+ * }
+ * ```
+ *
+ * ## /auth/verify
+ *
+ * ### Request
+ *
+ * ```text
+ * POST /auth/verify
+ * Authorization: Bearer <JWT>
+ * ```
+ *
+ * ### RESPONSE 200
+ *
+ * ```text
+ * HTTP/1.1 200 OK
+ * Connection: close
+ * Date: Mon, 22 Nov 2021 22:55:27 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 97
+ *
+ * {
+ * "username": "brian",
+ * "iss": "http://www.mbari.org",
+ * "email": "brian@mbari.org",
+ * "affiliation": "MBARI"
+ * }
+ * ```
+ *
+ * ### RESPONSE 401
+ *
+ * ```text
+ * HTTP/1.1 401 Unauthorized
+ * Connection: close
+ * Date: Mon, 22 Nov 2021 22:55:50 GMT
+ * Content-Type: application/json;charset=utf-8
+ * Content-Length: 52
+ *
+ * {
+ * "message": "Invalid credentials",
+ * "responseCode": 401
+ * }
+ * ```
+ *
+ * @param varsUserServer
+ *   Needed for authorization
+ * @author
+ *   Brian Schlining
+ * @since 2021-11-23T11:00:00
+ */
 class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
 
   private val jwtHelper = JwtHelper.default
