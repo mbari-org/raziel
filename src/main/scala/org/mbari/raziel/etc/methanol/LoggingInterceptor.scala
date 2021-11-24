@@ -18,12 +18,11 @@ package org.mbari.raziel.ext.methanol
 
 import com.github.mizosoft.methanol.Methanol
 import com.github.mizosoft.methanol.Methanol.Interceptor.Chain
-import org.slf4j.LoggerFactory
-
 import java.net.http.{HttpHeaders, HttpRequest, HttpResponse}
 import java.time.{Duration, Instant}
 import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
+import org.slf4j.LoggerFactory
 
 object LoggingInterceptor extends Methanol.Interceptor:
 

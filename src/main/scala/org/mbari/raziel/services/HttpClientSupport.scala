@@ -16,16 +16,16 @@
 
 package org.mbari.raziel.services
 
-import java.time.Duration
-import java.util.concurrent.Executors
-import java.util.concurrent.Executor
 import com.github.mizosoft.methanol.Methanol
-import org.mbari.raziel.ext.methanol.LoggingInterceptor
-import java.net.http.HttpRequest
 import io.circe.Decoder
-import zio.Task
-import java.net.http.HttpResponse.BodyHandlers
 import io.circe.parser.decode
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse.BodyHandlers
+import java.time.Duration
+import java.util.concurrent.{Executor, Executors}
+import org.mbari.raziel.AppConfig
+import org.mbari.raziel.ext.methanol.LoggingInterceptor
+import zio.Task
 
 class HttpClientSupport(
     timeout: Duration = Duration.ofSeconds(10),
@@ -40,7 +40,7 @@ class HttpClientSupport(
     .interceptor(LoggingInterceptor)
     .readTimeout(timeout)
     .requestTimeout(timeout)
-    .userAgent("Raziel")
+    .userAgent(AppConfig.Name)
     .build()
 
   def requestToTask[T](

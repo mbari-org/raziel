@@ -16,21 +16,25 @@
 
 package org.mbari.raziel.domain
 
+import org.mbari.raziel.AppConfig
+
 final case class HealthStatus(
-  jdkVersion: String, 
-  availableProcessors: Int,
-  freeMemory: Long, 
-  maxMemory: Long,
-  totalMemory: Long,
-  application: String = "raziel")
+    jdkVersion: String,
+    availableProcessors: Int,
+    freeMemory: Long,
+    maxMemory: Long,
+    totalMemory: Long,
+    application: String = AppConfig.Name
+)
 
 object HealthStatus:
 
-  def default: HealthStatus = 
+  def default: HealthStatus =
     val runtime = Runtime.getRuntime
     HealthStatus(
       jdkVersion = Runtime.version.toString,
       availableProcessors = runtime.availableProcessors,
       freeMemory = runtime.freeMemory,
       maxMemory = runtime.maxMemory,
-      totalMemory = runtime.totalMemory)
+      totalMemory = runtime.totalMemory
+    )

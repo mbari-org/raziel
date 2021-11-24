@@ -16,19 +16,16 @@
 
 package org.mbari.raziel.services
 
-import java.time.Duration
-import java.util.concurrent.Executors
-import java.util.concurrent.Executor
 import com.github.mizosoft.methanol.Methanol
-import org.mbari.raziel.ext.methanol.LoggingInterceptor
-import org.mbari.raziel.domain.User
 import java.net.http.HttpRequest
 import java.net.URI
-
-import org.mbari.raziel.etc.circe.CirceCodecs.given
-import zio.IO
+import java.time.Duration
+import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
-import zio.Task
+import org.mbari.raziel.domain.User
+import org.mbari.raziel.etc.circe.CirceCodecs.given
+import org.mbari.raziel.ext.methanol.LoggingInterceptor
+import zio.{IO, Task}
 
 class VarsUserServer(
     rootUrl: String,

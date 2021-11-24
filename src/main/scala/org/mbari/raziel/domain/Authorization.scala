@@ -26,4 +26,4 @@ object Authorization:
     else
       None
 
-  def Invalid: Authorization = Authorization("", "")
+  val Invalid: Authorization = Authorization("", "")

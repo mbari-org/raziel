@@ -16,16 +16,16 @@
 
 package org.mbari.raziel.api
 
-import org.scalatra.ScalatraServlet
-import org.slf4j.LoggerFactory
-import javax.servlet.http.HttpServletRequest
-import org.mbari.raziel.domain.{Authorization, EndpointConfig}
-import org.mbari.raziel.etc.auth0.JwtHelper
-import org.mbari.raziel.AppConfig
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
+import javax.servlet.http.HttpServletRequest
+import org.mbari.raziel.AppConfig
+import org.mbari.raziel.domain.{Authorization, EndpointConfig}
+import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
+import org.scalatra.ScalatraServlet
+import org.slf4j.LoggerFactory
 
 class EndpointsApi extends ScalatraServlet:
 
@@ -55,6 +55,5 @@ class EndpointsApi extends ScalatraServlet:
   get("/") {
     val ok = authenticate(request)
     val ep = if (ok) securedEndpoints else unsecuredEndpoints
-    ep.asJson.print
-
+    ep.stringify
   }

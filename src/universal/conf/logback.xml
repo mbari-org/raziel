@@ -14,7 +14,7 @@
     </encoder>
   </appender>
 
-  <logger name="java.util.Date" level="WARN" />
+  <logger name="org.eclipse.jetty" level="WARN" />
 
   <root level="${LOGBACK_LEVEL}">
     <appender-ref ref="CONSOLE" />

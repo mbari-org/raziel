@@ -18,25 +18,24 @@ package org.mbari.raziel.etc.circe
 
 import io.circe.*
 import io.circe.generic.semiauto.*
-import scala.util.Try
-import java.net.URL
-import org.mbari.raziel.util.HexUtil
-import java.net.URI
+import java.net.{URI, URL}
 import org.mbari.raziel.domain.{Authorization, EndpointConfig, ErrorMsg, HealthStatus, User}
+import org.mbari.raziel.util.HexUtil
+import scala.util.Try
 
 object CirceCodecs:
 
-  given byteArrayEncoder: Encoder[Array[Byte]] = new Encoder[Array[Byte]]:
+  given Encoder[Array[Byte]] = new Encoder[Array[Byte]]:
     final def apply(xs: Array[Byte]): Json =
       Json.fromString(HexUtil.toHex(xs))
-  given byteArrayDecoder: Decoder[Array[Byte]] = Decoder
+  given Decoder[Array[Byte]] = Decoder
     .decodeString
     .emapTry(str => Try(HexUtil.fromHex(str)))
 
-  given urlDecoder: Decoder[URL] = Decoder
+  given Decoder[URL] = Decoder
     .decodeString
     .emapTry(str => Try(new URL(str)))
-  given urlEncoder: Encoder[URL] = Encoder
+  given Encoder[URL] = Encoder
     .encodeString
     .contramap(_.toString)
 
@@ -64,4 +63,6 @@ object CirceCodecs:
 
   private val printer = Printer.noSpaces.copy(dropNullValues = true)
 
-  extension (json: Json) def print: String = printer.print(json)
+  extension (json: Json) def stringify: String = printer.print(json)
+
+  extension [T: Encoder](value: T) def stringify: String = Encoder[T].apply(value).stringify

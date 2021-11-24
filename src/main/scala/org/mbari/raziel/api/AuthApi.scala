@@ -103,9 +103,9 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
             val token = jwtHelper.createJwt(p.asMap())
             Authorization("Bearer", token).asJson.noSpaces
           case None    =>
-            halt(Unauthorized(ErrorMsg("Invalid credentials", 401).asJson.print))
+            halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
       case Failure(e)       =>
-        halt(InternalServerError(ErrorMsg(e.getMessage, 401).asJson.print))
+        halt(InternalServerError(ErrorMsg(e.getMessage, 401).stringify))
 
   }
 
@@ -160,10 +160,9 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
           .toMap
           .filter((key, claim) => claim.asString != null && claim.asString.nonEmpty)
           .map((key, claim) => (key, claim.asString()))
-          .asJson
-          .print
+          .stringify
 
       case Left(e) =>
-        halt(Unauthorized(ErrorMsg(s"Invalid credentials: ${e.getClass}", 401).asJson.print))
+        halt(Unauthorized(ErrorMsg(s"Invalid credentials: ${e.getClass}", 401).stringify))
 
   }

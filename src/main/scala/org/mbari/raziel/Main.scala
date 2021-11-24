@@ -52,7 +52,7 @@ object Main:
     new CommandLine(new MainRunner()).execute(args: _*)
 
   def run(port: Int): Either[Throwable, Unit] = Try {
-    
+
     val s = """
       |  ______ _______ ______ _____ _______       
       | |_____/ |_____|  ____/   |   |______ |     
@@ -68,20 +68,22 @@ object Main:
     context.setResourceBase(AppConfig.Http.Webapp)
     context.addEventListener(ScalatraListener())
 
+    val log       = LoggerFactory.getLogger(getClass)
     // Setup proxies for all endpoints
     val endpoints = EndpointConfig.defaults
     for (e, i) <- endpoints.zipWithIndex do
       var proxy = new ServletHolder(classOf[ProxyServlet.Transparent])
-      // proxy.setInitOrder(i + 1)
       proxy.setInitParameter("proxyTo", e.url.toExternalForm)
       proxy.setInitParameter("prefix", s"${e.proxyPath}")
       context.addServlet(proxy, s"${e.proxyPath}/*")
+      log
+        .atInfo
+        .log(() => s"Proxying ${e.url.toExternalForm} as ${e.proxyPath}")
 
     server.setHandler(context)
     server.start()
 
-    LoggerFactory
-      .getLogger(getClass)
+    log
       .atInfo
       .log(() => s"Started Raziel on port $port")
 

@@ -16,9 +16,9 @@
 
 package org.mbari.raziel.domain
 
-import org.mbari.raziel.AppConfig
 import java.net.URL
 import java.time.Duration
+import org.mbari.raziel.AppConfig
 
 case class EndpointConfig(
     name: String,

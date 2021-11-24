@@ -16,14 +16,13 @@
 
 package org.mbari.raziel.etc.auth0
 
-import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import java.time.Duration
-import scala.jdk.CollectionConverters.given
-import java.time.Instant
+import com.auth0.jwt.interfaces.DecodedJWT
+import com.auth0.jwt.JWT
+import java.time.{Duration, Instant}
 import java.util.Date
 import org.mbari.raziel.AppConfig
-import com.auth0.jwt.interfaces.DecodedJWT
+import scala.jdk.CollectionConverters.given
 import scala.util.Try
 
 class JwtHelper(issuer: String, signingSecret: String, expiration: Duration):

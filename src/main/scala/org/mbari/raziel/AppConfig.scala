@@ -21,6 +21,9 @@ import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 
 object AppConfig:
+
+  val Name = "raziel"
+
   private val config = ConfigFactory.load()
 
   private def asUrl(path: String): URL =

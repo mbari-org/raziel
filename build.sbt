@@ -1,7 +1,7 @@
 import Dependencies._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-Laika / sourceDirectories := Seq(baseDirectory.value / "docs")
+Laika / sourceDirectories     := Seq(baseDirectory.value / "docs")
 
 ThisBuild / scalaVersion     := "3.1.0"
 ThisBuild / version          := "0.0.1"
@@ -15,10 +15,10 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(AutomateHeaderPlugin, JavaAppPackaging, LaikaPlugin)
   .settings(
-    name := "raziel",
+    name            := "raziel",
     javacOptions ++= Seq("-target", "17", "-source", "17"),
     laikaExtensions := Seq(
-      laika.markdown.github.GitHubFlavor, 
+      laika.markdown.github.GitHubFlavor,
       laika.parse.code.SyntaxHighlighting
     ),
     laikaIncludeAPI := true,
@@ -31,16 +31,16 @@ lazy val root = project
       circeGeneric,
       circeParser,
       jasypt,
-      jansi          % Runtime,
+      jansi   % Runtime,
       jettyClient,
       jettyProxy,
       jettyServer,
       jettyServlets,
       jettyUtil,
       jettyWebapp,
-      logback        % Runtime,
+      logback % Runtime,
       methanol,
-      munit          % Test,
+      munit   % Test,
       picocli,
       scalatra,
       slf4jApi,
@@ -71,4 +71,3 @@ batScriptExtraDefines ++= Seq(
   """call :add_java "-Dconfig.file=%APP_HOME%\conf\application.conf"""",
   """call :add_java "-Dlogback.configurationFile=%APP_HOME%\conf\logback.xml""""
 )
-

@@ -19,12 +19,12 @@ package org.mbari.raziel.api
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
-import org.scalatra.ScalatraServlet
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
+import org.scalatra.ScalatraServlet
 
 class HealthApi extends ScalatraServlet:
 
   get("/") {
-    HealthStatus.default.asJson.print
+    HealthStatus.default.stringify
   }
