@@ -24,6 +24,7 @@ import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.User
 import org.mbari.raziel.etc.circe.CirceCodecs.given
+import org.mbari.raziel.etc.methanol.HttpClientSupport
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
 import zio.{IO, Task}
 import org.mbari.raziel.domain.HealthStatus
@@ -47,7 +48,9 @@ class VarsUserServer(
 
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-  def health(): Task[Option[HealthStatus]] =
+  val name = "vars-user-server"
+
+  def health(): Task[HealthStatus] =
     val request = HttpRequest
       .newBuilder()
       .uri(URI.create(s"$rootUrl/health"))
@@ -55,8 +58,7 @@ class VarsUserServer(
       .GET()
       .build()
     httpClientSupport
-      .requestToTask[HealthStatus](request)
-      .map(u => Option(u))
+      .requestObjectsZ[HealthStatus](request)
 
   object Users:
 
@@ -75,7 +77,7 @@ class VarsUserServer(
         .GET()
         .build()
       httpClientSupport
-        .requestToTask[User](request)
+        .requestObjectsZ[User](request)
         .map(u => Option(u))
 
 object VarsUserServer:

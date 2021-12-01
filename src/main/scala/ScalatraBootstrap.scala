@@ -30,7 +30,7 @@ import org.scalatra.LifeCycle
 import org.slf4j.LoggerFactory
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContextExecutor
-import org.mbari.raziel.services.HttpClientSupport
+import org.mbari.raziel.etc.methanol.HttpClientSupport
 
 class ScalatraBootstrap extends LifeCycle:
 
@@ -51,7 +51,8 @@ class ScalatraBootstrap extends LifeCycle:
     val vampireSquid   = VampireSquid.default
     val varsKbServer   = VarsKbServer.default
     val varsUserServer = VarsUserServer.default
-    val healthServices = Seq(annosaurus, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
+    val healthServices =
+      Seq(annosaurus, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
 
     context.mount(AuthApi(varsUserServer), "/auth")
     context.mount(EndpointsApi(), "/endpoints")

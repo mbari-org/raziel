@@ -23,6 +23,7 @@ import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.given
+import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
 class Annosaurus(
@@ -33,7 +34,9 @@ class Annosaurus(
 
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-  def health(): Task[Option[HealthStatus]] =
+  val name = "annosaurus"
+
+  def health(): Task[HealthStatus] =
     val request = HttpRequest
       .newBuilder()
       .uri(URI.create(s"$rootUrl/health"))
@@ -41,8 +44,7 @@ class Annosaurus(
       .GET()
       .build()
     httpClientSupport
-      .requestToTask[HealthStatus](request)
-      .map(u => Option(u))
+      .requestObjectsZ[HealthStatus](request)
 
 object Annosaurus:
 

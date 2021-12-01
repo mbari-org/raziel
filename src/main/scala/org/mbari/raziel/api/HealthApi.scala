@@ -19,7 +19,7 @@ package org.mbari.raziel.api
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
-import org.mbari.raziel.domain.HealthStatus
+import org.mbari.raziel.domain.{HealthStatus, ServiceStatus}
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.HasHealth
 import org.scalatra.ScalatraServlet
@@ -67,7 +67,7 @@ import org.mbari.raziel.domain.ErrorMsg
  */
 class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
 
-  private val runtime   = zio.Runtime.default
+  private val runtime = zio.Runtime.default
 
   after() {
     contentType = "application/json"
@@ -77,17 +77,37 @@ class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
     HealthStatus.default.stringify
   }
 
-  get("/services") {
-    val app = for 
-      healthStati <- Task.collectAll(services.map(_.health()))
-    yield
-      healthStati
+  get("/expected") {
+    services.map(s => ServiceStatus(s.name)).stringify
+  }
+
+  get("/available") {
+    val app =
+      for healthStati <- Task.collectAll(services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name)))))
+      yield 
+        healthStati
+          .filter(_.freeMemory > 0)
+          .map(hs => ServiceStatus(hs.application, Some(hs)))
 
     Try(runtime.unsafeRun(app)) match
-      case Success(healthStati) =>
-        healthStati.stringify
+      case Success(s) => s.stringify
       case Failure(e) =>
-        halt(InternalServerError(ErrorMsg(e.getMessage, 401).stringify))
-
-
+        InternalServerError(ErrorMsg(e.getMessage, 401).stringify)
   }
+
+  get("/status") {
+    val app =
+      for healthStati <- Task.collectAll(services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name)))))
+      yield 
+        healthStati
+          .map(hs => {
+            val ss = if (hs.freeMemory <= 0) None else Some(hs)
+            ServiceStatus(hs.application, ss)
+          })
+
+    Try(runtime.unsafeRun(app)) match
+      case Success(s) => s.stringify
+      case Failure(e) =>
+        InternalServerError(ErrorMsg(e.getMessage, 401).stringify)
+  }
+

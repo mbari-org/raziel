@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mbari.raziel.services
+package org.mbari.raziel.etc.methanol
 
 import com.github.mizosoft.methanol.Methanol
 import io.circe.Decoder
@@ -26,6 +26,8 @@ import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
 import zio.Task
+import io.circe.Json
+import scala.util.Try
 
 /**
  * Helper for using javas' HttpClient.
@@ -37,7 +39,7 @@ class HttpClientSupport(
     executor: Executor = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 ):
 
-  private val client = Methanol
+  val client = Methanol
     .newBuilder()
     .autoAcceptEncoding(true)
     .connectTimeout(timeout)
@@ -57,29 +59,25 @@ class HttpClientSupport(
    * @return
    *   A [[Task]] that will resolve to the response body
    */
-  def requestToTask[T](
+  def requestObjectsZ[T](
       request: HttpRequest
-  )(implicit decoder: Decoder[T]): Task[T] = zio.Task.effect {
-    val response = client.send(request, BodyHandlers.ofString())
-    if (response.statusCode() == 200)
-      val json = response.body()
-      decode[T](json) match
-        case Right(i) => i
-        case Left(_)  =>
-          val msg = s"Unexpected response from ${request.uri}: $json"
-          throw new RuntimeException(msg)
-    else throw new RuntimeException(s"Response was ${response.body()}: ${response.statusCode()}")
-  }
+  )(implicit decoder: Decoder[T]): Task[T] = zio.Task.fromEither(requestObjects(request))
 
-  def requestToJson(request: HttpRequest): Task[String] = zio.Task.effect {
-    val response = client.send(request, BodyHandlers.ofString())
-    if (response.statusCode() == 200)
-      val json = response.body()
-      parse(json) match
-        case Right(i) => 
-          json
-        case Left(_)  =>
-          val msg = s"Unexpected response from ${request.uri}: $json"
-          throw new RuntimeException(msg)
-    else throw new RuntimeException(s"Response was ${response.body()}: ${response.statusCode()}")
-  }
+  def requestStringZ(request: HttpRequest): Task[String] =
+    zio.Task.fromEither(requestString(request))
+
+  def requestObjects[T: Decoder](request: HttpRequest): Either[Throwable, T] =
+    for
+      body <- requestString(request)
+      obj  <- decode[T](body)
+    yield obj
+
+  def requestString(request: HttpRequest): Either[Throwable, String] =
+    for
+      response <- Try(client.send(request, BodyHandlers.ofString())).toEither
+      body     <- if (response.statusCode() == 200) Right(response.body)
+                  else
+                    Left(
+                      new RuntimeException(s"Unexpected response from ${request.uri}: ${response.body}")
+                    )
+    yield body

@@ -42,3 +42,14 @@ object HealthStatus:
       maxMemory = runtime.maxMemory,
       totalMemory = runtime.totalMemory
     )
+
+  def empty(application: String): HealthStatus =
+    HealthStatus(
+      jdkVersion = "",
+      availableProcessors = 0,
+      freeMemory = 0,
+      maxMemory = 0,
+      totalMemory = 0,
+      application = application
+    )
+  

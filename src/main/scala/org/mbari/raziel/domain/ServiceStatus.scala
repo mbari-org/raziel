@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package org.mbari.raziel.services
+package org.mbari.raziel.domain
 
-import org.mbari.raziel.domain.HealthStatus
-import zio.Task
+case class ServiceStatus(name: String, healthStatus: Option[HealthStatus] = None):
+  val status: String = if (healthStatus.isDefined) "UP" else "DOWN"
 
-trait HasHealth:
 
-  def name: String
-
-  def health(): Task[HealthStatus]
