@@ -26,6 +26,7 @@ import org.mbari.raziel.domain.User
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
 import zio.{IO, Task}
+import org.mbari.raziel.domain.HealthStatus
 
 /**
  * Service for accessing the vars-user-server. Needed for validating user credentials.
@@ -40,11 +41,22 @@ import zio.{IO, Task}
  */
 class VarsUserServer(
     rootUrl: String,
-    timeout: Duration = Duration.ofSeconds(10),
-    executor: Executor = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
-):
+    timeout: Duration,
+    executor: Executor = Executors.newSingleThreadExecutor()
+) extends HasHealth:
 
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
+
+  def health(): Task[Option[HealthStatus]] =
+    val request = HttpRequest
+      .newBuilder()
+      .uri(URI.create(s"$rootUrl/health"))
+      .header("Accept", "application/json")
+      .GET()
+      .build()
+    httpClientSupport
+      .requestToTask[HealthStatus](request)
+      .map(u => Option(u))
 
   object Users:
 

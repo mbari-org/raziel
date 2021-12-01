@@ -44,7 +44,7 @@ class MainRunner extends Callable[Int]:
 
   override def call(): Int =
     Main.run(port) match
-      case Left(_) => -1
+      case Left(_)  => -1
       case Right(_) => 0
 
 object Main:

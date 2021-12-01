@@ -18,7 +18,7 @@ package org.mbari.raziel.services
 
 import com.github.mizosoft.methanol.Methanol
 import io.circe.Decoder
-import io.circe.parser.decode
+import io.circe.parser.{decode, parse}
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.time.Duration
@@ -65,6 +65,19 @@ class HttpClientSupport(
       val json = response.body()
       decode[T](json) match
         case Right(i) => i
+        case Left(_)  =>
+          val msg = s"Unexpected response from ${request.uri}: $json"
+          throw new RuntimeException(msg)
+    else throw new RuntimeException(s"Response was ${response.body()}: ${response.statusCode()}")
+  }
+
+  def requestToJson(request: HttpRequest): Task[String] = zio.Task.effect {
+    val response = client.send(request, BodyHandlers.ofString())
+    if (response.statusCode() == 200)
+      val json = response.body()
+      parse(json) match
+        case Right(i) => 
+          json
         case Left(_)  =>
           val msg = s"Unexpected response from ${request.uri}: $json"
           throw new RuntimeException(msg)

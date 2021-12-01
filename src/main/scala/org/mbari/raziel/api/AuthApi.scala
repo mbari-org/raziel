@@ -25,7 +25,7 @@ import java.time.Instant
 import java.util.concurrent.Executor
 import java.util.Date
 import org.mbari.raziel.AppConfig
-import org.mbari.raziel.domain.{BearerAuth, BasicAuth, ErrorMsg, JwtAuthPayload}
+import org.mbari.raziel.domain.{BasicAuth, BearerAuth, ErrorMsg, JwtAuthPayload}
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.VarsUserServer

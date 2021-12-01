@@ -42,7 +42,7 @@ object BasicAuth:
    */
   def parse(authorization: String): Option[BasicAuth] =
     val parts = authorization.split("\\s+")
-    if (parts.length == 2 && parts(0).toLowerCase == "basic") 
+    if (parts.length == 2 && parts(0).toLowerCase == "basic")
       val bytes   = Base64.getDecoder.decode(authorization)
       val decoded = new String(bytes, StandardCharsets.UTF_8)
       val parts   = decoded.split(":")
@@ -50,5 +50,4 @@ object BasicAuth:
         Some(BasicAuth(parts(0), parts(1)))
       else
         None
-    else
-      None
+    else None

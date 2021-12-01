@@ -18,4 +18,3 @@ package org.mbari.raziel.domain
 
 trait Auth:
   def tokenType: String
- 

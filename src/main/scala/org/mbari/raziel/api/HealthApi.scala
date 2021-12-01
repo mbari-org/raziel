@@ -21,7 +21,13 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
+import org.mbari.raziel.services.HasHealth
 import org.scalatra.ScalatraServlet
+import zio.ZIO
+import zio.Task
+import scala.util.{Failure, Success, Try}
+import org.scalatra.InternalServerError
+import org.mbari.raziel.domain.ErrorMsg
 
 /**
  * Health status API
@@ -59,8 +65,29 @@ import org.scalatra.ScalatraServlet
  *   Brian Schlining
  * @since 2021-11-23T11:00:00
  */
-class HealthApi extends ScalatraServlet:
+class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
+
+  private val runtime   = zio.Runtime.default
+
+  after() {
+    contentType = "application/json"
+  }
 
   get("/") {
     HealthStatus.default.stringify
+  }
+
+  get("/services") {
+    val app = for 
+      healthStati <- Task.collectAll(services.map(_.health()))
+    yield
+      healthStati
+
+    Try(runtime.unsafeRun(app)) match
+      case Success(healthStati) =>
+        healthStati.stringify
+      case Failure(e) =>
+        halt(InternalServerError(ErrorMsg(e.getMessage, 401).stringify))
+
+
   }
