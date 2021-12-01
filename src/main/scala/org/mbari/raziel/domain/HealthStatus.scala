@@ -52,4 +52,3 @@ object HealthStatus:
       totalMemory = 0,
       application = application
     )
-  

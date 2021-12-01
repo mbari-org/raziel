@@ -83,11 +83,14 @@ class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
 
   get("/available") {
     val app =
-      for healthStati <- Task.collectAll(services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name)))))
-      yield 
-        healthStati
-          .filter(_.freeMemory > 0)
-          .map(hs => ServiceStatus(hs.application, Some(hs)))
+      for
+        healthStati <-
+          Task.collectAll(
+            services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
+          )
+      yield healthStati
+        .filter(_.freeMemory > 0)
+        .map(hs => ServiceStatus(hs.application, Some(hs)))
 
     Try(runtime.unsafeRun(app)) match
       case Success(s) => s.stringify
@@ -97,17 +100,19 @@ class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
 
   get("/status") {
     val app =
-      for healthStati <- Task.collectAll(services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name)))))
-      yield 
-        healthStati
-          .map(hs => {
-            val ss = if (hs.freeMemory <= 0) None else Some(hs)
-            ServiceStatus(hs.application, ss)
-          })
+      for
+        healthStati <-
+          Task.collectAll(
+            services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
+          )
+      yield healthStati
+        .map(hs =>
+          val ss = if (hs.freeMemory <= 0) None else Some(hs)
+          ServiceStatus(hs.application, ss)
+        )
 
     Try(runtime.unsafeRun(app)) match
       case Success(s) => s.stringify
       case Failure(e) =>
         InternalServerError(ErrorMsg(e.getMessage, 401).stringify)
   }
-

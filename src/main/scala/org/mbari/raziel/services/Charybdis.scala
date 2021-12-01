@@ -47,13 +47,14 @@ class Charybdis(
       .build()
 
     for
-      body <- httpClientSupport.requestStringZ(request)
-      healthStatus <- ZIO.fromEither(HealthStatusHelidon.parseString(body)
-        .map(Right(_))
-        .getOrElse(Left(new Exception(s"Could not parse $body"))))
-    yield
-      healthStatus.copy(application = name)
-
+      body         <- httpClientSupport.requestStringZ(request)
+      healthStatus <- ZIO.fromEither(
+                        HealthStatusHelidon
+                          .parseString(body)
+                          .map(Right(_))
+                          .getOrElse(Left(new Exception(s"Could not parse $body")))
+                      )
+    yield healthStatus.copy(application = name)
 
 object Charybdis:
 
