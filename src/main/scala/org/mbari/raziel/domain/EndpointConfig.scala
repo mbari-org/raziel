@@ -55,6 +55,6 @@ object EndpointConfig:
       AppConfig.Charybdis.Endpoint ::
       AppConfig.Panoptes.Endpoint ::
       AppConfig.VampireSquid.Endpoint ::
-      AppConfig.Vars.Kb.Server.Endpoint ::
-      AppConfig.Vars.User.Server.Endpoint ::
+      AppConfig.VarsKbServer.Endpoint ::
+      AppConfig.VarsUserServer.Endpoint ::
       Nil

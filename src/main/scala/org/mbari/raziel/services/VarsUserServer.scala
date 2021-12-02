@@ -89,7 +89,7 @@ object VarsUserServer:
    */
   def default(using executor: Executor) =
     new VarsUserServer(
-      AppConfig.Vars.User.Server.Url.toExternalForm,
-      AppConfig.Vars.User.Server.Timeout,
+      AppConfig.VarsUserServer.Url.toExternalForm,
+      AppConfig.VarsUserServer.Timeout,
       executor
     )

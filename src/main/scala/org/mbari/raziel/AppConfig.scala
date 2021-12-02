@@ -69,14 +69,12 @@ object AppConfig:
     val Secret   = config.getString("vampire.squid.secret")
     val Endpoint = EndpointConfig("vampire-squid", Url, Timeout, Some(Secret), "/vam")
 
-  object Vars:
-    object Kb:
-      object Server:
-        val Url      = asUrl(config.getString("vars.kb.server.url"))
-        val Timeout  = config.getDuration("vars.kb.server.timeout")
-        val Endpoint = EndpointConfig("vars-kb-server", Url, Timeout, None, "/kb")
-    object User:
-      object Server:
-        val Url      = asUrl(config.getString("vars.user.server.url"))
-        val Timeout  = config.getDuration("vars.user.server.timeout")
-        val Endpoint = EndpointConfig("vars-user-server", Url, Timeout, None, "/accounts")
+  object VarsKbServer:
+    val Url      = asUrl(config.getString("vars.kb.server.url"))
+    val Timeout  = config.getDuration("vars.kb.server.timeout")
+    val Endpoint = EndpointConfig("vars-kb-server", Url, Timeout, None, "/kb")
+  
+  object VarsUserServer:
+    val Url      = asUrl(config.getString("vars.user.server.url"))
+    val Timeout  = config.getDuration("vars.user.server.timeout")
+    val Endpoint = EndpointConfig("vars-user-server", Url, Timeout, None, "/accounts")

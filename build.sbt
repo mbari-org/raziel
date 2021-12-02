@@ -1,27 +1,30 @@
 import Dependencies._
 
+Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
+Docker / packageName          := "mbari/raziel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Laika / sourceDirectories     := Seq(baseDirectory.value / "docs")
-
-ThisBuild / scalaVersion     := "3.1.0"
-ThisBuild / version          := "0.0.1"
-ThisBuild / organization     := "org.mbari"
-ThisBuild / organizationName := "MBARI"
-ThisBuild / startYear        := Some(2021)
-ThisBuild / versionScheme    := Some("semver-spec")
-ThisBuild / licenses         := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
+ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
+ThisBuild / organization      := "org.mbari"
+ThisBuild / organizationName  := "MBARI"
+ThisBuild / scalaVersion      := "3.1.0"
+ThisBuild / startYear         := Some(2021)
+ThisBuild / version           := "0.0.1"
+ThisBuild / versionScheme     := Some("semver-spec")
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(AutomateHeaderPlugin, JavaAppPackaging, LaikaPlugin)
+  .enablePlugins(AutomateHeaderPlugin, DockerPlugin, JavaAppPackaging, LaikaPlugin)
   .settings(
-    name            := "raziel",
+    name               := "raziel",
+    dockerBaseImage    := "openjdk:17",
+    dockerExposedPorts := Seq(8080),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
-    laikaExtensions := Seq(
+    laikaExtensions    := Seq(
       laika.markdown.github.GitHubFlavor,
       laika.parse.code.SyntaxHighlighting
     ),
-    laikaIncludeAPI := true,
+    laikaIncludeAPI    := true,
     resolvers ++= Seq(
       Resolver.githubPackages("mbari-org", "maven")
     ),
@@ -47,6 +50,7 @@ lazy val root = project
       typesafeConfig,
       zio
     ),
+    maintainer         := "brian@mbari.org",
     scalacOptions ++= Seq(
       "-deprecation", // Emit warning and location for usages of deprecated APIs.
       "-encoding",
