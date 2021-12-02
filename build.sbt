@@ -22,10 +22,10 @@ lazy val root = project
     dockerBaseImage    := "openjdk:17",
     dockerExposedPorts := Seq(8080),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
-    git.gitTagToVersionNumber := { tag: String =>
-      if(tag matches "[0-9]+\\..*") Some(tag)
-      else None
-    },
+    // git.gitTagToVersionNumber := { tag: String =>
+    //   if(tag matches "[0-9]+\\..*") Some(tag)
+    //   else None
+    // },
     git.useGitDescribe := true,
     laikaExtensions    := Seq(
       laika.markdown.github.GitHubFlavor,
