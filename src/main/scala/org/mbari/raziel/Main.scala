@@ -39,7 +39,7 @@ import scala.util.Try
 )
 class MainRunner extends Callable[Int]:
 
-  @Parameters(index = "0", description = Array("The port of the server. default: $DEFAULT_VALUE"))
+  @Opt(names = Array("-p", "--port"), description = Array("The port of the server. default: ${DEFAULT-VALUE}"))
   private var port: Int = AppConfig.Http.Port
 
   override def call(): Int =
@@ -84,9 +84,10 @@ object Main:
     server.setHandler(context)
     server.start()
 
+
     log
       .atInfo
-      .log(() => s"Started Raziel on port $port")
+      .log(() => s"Started Raziel v${AppConfig.Version} on port $port")
 
     server.join()
   }.toEither

@@ -19,6 +19,7 @@ package org.mbari.raziel
 import com.typesafe.config.ConfigFactory
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
+import scala.util.Try
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -34,6 +35,8 @@ object AppConfig:
   private def asUrl(path: String): URL =
     if (!path.endsWith("/")) new URL(path)
     else new URL(path.substring(0, path.length - 1))
+
+  val Version = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
 
   object Annosaurus:
     val Url      = asUrl(config.getString("annosaurus.url"))

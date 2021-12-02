@@ -2,24 +2,30 @@ import Dependencies._
 
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
+Global / cancelable           := true
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Laika / sourceDirectories     := Seq(baseDirectory.value / "docs")
+Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"
 ThisBuild / organizationName  := "MBARI"
 ThisBuild / scalaVersion      := "3.1.0"
 ThisBuild / startYear         := Some(2021)
-ThisBuild / version           := "0.0.1"
+// ThisBuild / version           := "0.0.1"
 ThisBuild / versionScheme     := Some("semver-spec")
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(AutomateHeaderPlugin, DockerPlugin, JavaAppPackaging, LaikaPlugin)
+  .enablePlugins(AutomateHeaderPlugin, DockerPlugin, GitBranchPrompt, GitVersioning, JavaAppPackaging, LaikaPlugin)
   .settings(
     name               := "raziel",
     dockerBaseImage    := "openjdk:17",
     dockerExposedPorts := Seq(8080),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
+    git.gitTagToVersionNumber := { tag: String =>
+      if(tag matches "[0-9]+\\..*") Some(tag)
+      else None
+    },
     laikaExtensions    := Seq(
       laika.markdown.github.GitHubFlavor,
       laika.parse.code.SyntaxHighlighting

@@ -24,7 +24,8 @@ final case class HealthStatus(
     freeMemory: Long,
     maxMemory: Long,
     totalMemory: Long,
-    application: String = AppConfig.Name
+    application: String = AppConfig.Name,
+    version: String = AppConfig.Version
 )
 
 object HealthStatus:
@@ -50,5 +51,6 @@ object HealthStatus:
       freeMemory = 0,
       maxMemory = 0,
       totalMemory = 0,
-      application = application
+      application = application,
+      version = "0.0.0"
     )
