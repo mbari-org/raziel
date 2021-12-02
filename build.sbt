@@ -26,6 +26,7 @@ lazy val root = project
       if(tag matches "[0-9]+\\..*") Some(tag)
       else None
     },
+    git.useGitDescribe := true,
     laikaExtensions    := Seq(
       laika.markdown.github.GitHubFlavor,
       laika.parse.code.SyntaxHighlighting
