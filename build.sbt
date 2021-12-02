@@ -22,6 +22,8 @@ lazy val root = project
     dockerBaseImage    := "openjdk:17",
     dockerExposedPorts := Seq(8080),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
+    // Set version based on git tag. I use "0.0.0" format (no leading "v")
+    // Use `show gitCurrentTags` in sbt to see the tags
     git.gitTagToVersionNumber := { tag: String =>
       if(tag matches "[0-9]+\\..*") Some(tag)
       else None
