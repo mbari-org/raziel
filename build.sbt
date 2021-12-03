@@ -26,6 +26,7 @@ lazy val root = project
     name               := "raziel",
     dockerBaseImage    := "openjdk:17",
     dockerExposedPorts := Seq(8080),
+    dockerUpdateLatest := true,
     javacOptions ++= Seq("-target", "17", "-source", "17"),
     // Set version based on git tag. I use "0.0.0" format (no leading "v", which is the default)
     // Use `show gitCurrentTags` in sbt to update/see the tags
