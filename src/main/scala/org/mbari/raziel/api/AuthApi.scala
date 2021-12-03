@@ -29,12 +29,14 @@ import org.mbari.raziel.domain.{BasicAuth, BearerAuth, ErrorMsg, JwtAuthPayload}
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.VarsUserServer
-import org.scalatra.{FutureSupport, InternalServerError, ScalatraServlet, Unauthorized}
+import org.scalatra.{FutureSupport, InternalServerError, Ok, ScalatraServlet, Unauthorized}
 import org.slf4j.LoggerFactory
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.given
 import scala.util.{Failure, Success, Try}
 import zio.*
+import org.mbari.raziel.domain.Auth
+import org.scalatra.ActionResult
 
 /**
  * Provides endpoints for authentication and authorization.
@@ -135,38 +137,49 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
     contentType = "application/json"
   }
 
+
   post("/") {
+    Option(request.getHeader("X-Api-Key")) match 
+      case Some(key) =>
+        if (key == AppConfig.MasterKey)
+          val token = jwtHelper.createJwt(Map("username" -> "master"))
+          BearerAuth(token).stringify
+        else
+          halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
+      case None =>
+          
+        val auth = Option(request.getHeader("Authorization"))
+          .flatMap(a => BasicAuth.parse(a))
+          .toRight(new IllegalArgumentException("Authorization header required"))
 
-    val auth = Option(request.getHeader("Authorization"))
-      .flatMap(a => BasicAuth.parse(a))
-      .toRight(new IllegalArgumentException("Authorization header required"))
+        val app = for
+          a       <- IO.fromEither(auth)
+          // _  <- Task.succeed(log.info(s"auth: $a"))
+          u       <- varsUserServer.Users.findByName(a.username)
+          // _  <- Task.succeed(log.info(s"user: $u"))
+          ok      <- Task.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
+          payload <- Task.succeed(
+                      if (ok)
+                        Some(JwtAuthPayload.fromUser(u.get))
+                      else
+                        None
+                    )
+        yield payload
 
-    val app = for
-      a       <- IO.fromEither(auth)
-      // _  <- Task.succeed(log.info(s"auth: $a"))
-      u       <- varsUserServer.Users.findByName(a.username)
-      // _  <- Task.succeed(log.info(s"user: $u"))
-      ok      <- Task.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
-      payload <- Task.succeed(
-                   if (ok)
-                     Some(JwtAuthPayload.fromUser(u.get))
-                   else
-                     None
-                 )
-    yield payload
-
-    Try(runtime.unsafeRun(app)) match
-      case Success(payload) =>
-        payload match
-          case Some(p) =>
-            val token = jwtHelper.createJwt(p.asMap())
-            BearerAuth(token).stringify
-          case None    =>
-            halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
-      case Failure(e)       =>
-        halt(InternalServerError(ErrorMsg(e.getMessage, 401).stringify))
+        Try(runtime.unsafeRun(app)) match
+          case Success(payload) =>
+            payload match
+              case Some(p) =>
+                val token = jwtHelper.createJwt(p.asMap())
+                BearerAuth(token).stringify
+              case None    =>
+                halt(Unauthorized(ErrorMsg("Invalid credentials", 401).stringify))
+          case Failure(e)       =>
+            halt(InternalServerError(ErrorMsg(e.getMessage, 401).stringify))
 
   }
+
+
 
   post("/verify") {
 

@@ -28,9 +28,11 @@ import java.nio.charset.StandardCharsets
  *   Brian Schlining
  */
 case class BasicAuth(username: String, password: String) extends Auth:
-  override val tokenType: String = "Basic"
+  override val tokenType: String = BasicAuth.TokenType
 
 object BasicAuth:
+
+  val TokenType = "Basic"
 
   /**
    * Parse a Basic Authorization header: "Basic <base64-encoded-username:password>"
@@ -38,11 +40,11 @@ object BasicAuth:
    * @param authorization
    *   The value portion of the Authorization header.
    * @return
-   *   The parse BasicAuthorization. None if it's no parsable
+   *   The parse BasicAuth. None if it's no parsable
    */
   def parse(authorization: String): Option[BasicAuth] =
     val parts = authorization.split("\\s+")
-    if (parts.length == 2 && parts(0).toLowerCase == "basic")
+    if (parts.length == 2 && parts(0).toLowerCase == TokenType.toLowerCase)
       val bytes   = Base64.getDecoder.decode(authorization)
       val decoded = new String(bytes, StandardCharsets.UTF_8)
       val parts   = decoded.split(":")

@@ -31,7 +31,7 @@ object Dependencies {
   private val scalatraVersion = "2.8.2"
   lazy val scalatra           =
     ("org.scalatra" %% "scalatra" % scalatraVersion).cross(CrossVersion.for3Use2_13)
-
+    
   lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.1"
   lazy val zio            = "dev.zio"     %% "zio"    % "1.0.12"
 }

@@ -20,6 +20,7 @@ import com.typesafe.config.ConfigFactory
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 import scala.util.Try
+import org.slf4j.LoggerFactory
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -28,7 +29,10 @@ import scala.util.Try
  */
 object AppConfig:
 
+  private val Default = "DEFAULT"
+
   private val config = ConfigFactory.load()
+
 
   private def asUrl(path: String): URL =
     if (!path.endsWith("/")) new URL(path)
@@ -37,6 +41,13 @@ object AppConfig:
   val Name = "raziel"
 
   val Version = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
+
+  lazy val MasterKey = 
+    val key = config.getString("raziel.master.key")
+    if (key.trim.isEmpty || key.toUpperCase == Default)
+      LoggerFactory.getLogger(getClass)
+        .warn(s"Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
+    key
 
   val Annosaurus: EndpointConfig = 
     val url      = asUrl(config.getString("annosaurus.url"))
@@ -58,7 +69,13 @@ object AppConfig:
   object Jwt:
     val Expiration    = config.getDuration("raziel.jwt.expiration")
     val Issuer        = config.getString("raziel.jwt.issuer")
-    val SigningSecret = config.getString("raziel.jwt.signing.secret")
+    lazy val SigningSecret = 
+      val secret = config.getString("raziel.jwt.signing.secret")
+      if (secret.trim.isEmpty || secret.toUpperCase == Default)
+        LoggerFactory.getLogger(getClass)
+          .warn(s"Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret.")
+      secret
+      
 
   val Panoptes: EndpointConfig = 
     val url      = asUrl(config.getString("panoptes.url"))
@@ -80,4 +97,5 @@ object AppConfig:
   val VarsUserServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.user.server.url"))
     val timeout  = config.getDuration("vars.user.server.timeout")
-    EndpointConfig("vars-user-server", url, timeout, None, "/accounts")
+    val secret   = config.getString("vars.user.server.secret")
+    EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts")
