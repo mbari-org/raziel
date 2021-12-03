@@ -50,7 +50,7 @@ object Panoptes:
 
   def default(using executor: Executor) =
     new Panoptes(
-      AppConfig.Panoptes.Url.toExternalForm,
-      AppConfig.Panoptes.Timeout,
+      AppConfig.Panoptes.url.toExternalForm,
+      AppConfig.Panoptes.timeout,
       executor
     )

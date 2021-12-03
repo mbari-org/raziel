@@ -28,26 +28,26 @@ import scala.util.Try
  */
 object AppConfig:
 
-  val Name = "raziel"
-
   private val config = ConfigFactory.load()
 
   private def asUrl(path: String): URL =
     if (!path.endsWith("/")) new URL(path)
     else new URL(path.substring(0, path.length - 1))
 
+  val Name = "raziel"
+
   val Version = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
 
-  object Annosaurus:
-    val Url      = asUrl(config.getString("annosaurus.url"))
-    val Timeout  = config.getDuration("annosaurus.timeout")
-    val Secret   = config.getString("annosaurus.secret")
-    val Endpoint = EndpointConfig("annosaurus", Url, Timeout, Some(Secret), "/anno")
+  val Annosaurus: EndpointConfig = 
+    val url      = asUrl(config.getString("annosaurus.url"))
+    val timeout  = config.getDuration("annosaurus.timeout")
+    val secret   = config.getString("annosaurus.secret")
+    EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno")
 
-  object Charybdis:
-    val Url      = asUrl(config.getString("charybdis.url"))
-    val Timeout  = config.getDuration("charybdis.timeout")
-    val Endpoint = EndpointConfig("charybdis", Url, Timeout, None, "/references")
+  val Charybdis: EndpointConfig =
+    val url      = asUrl(config.getString("charybdis.url"))
+    val timeout  = config.getDuration("charybdis.timeout")
+    EndpointConfig("charybdis", url, timeout, None, "/references")
 
   object Http:
     val Context     = config.getString("raziel.http.context")
@@ -60,24 +60,24 @@ object AppConfig:
     val Issuer        = config.getString("raziel.jwt.issuer")
     val SigningSecret = config.getString("raziel.jwt.signing.secret")
 
-  object Panoptes:
-    val Url      = asUrl(config.getString("panoptes.url"))
-    val Timeout  = config.getDuration("panoptes.timeout")
-    val Secret   = config.getString("panoptes.secret")
-    val Endpoint = EndpointConfig("panoptes", Url, Timeout, Some(Secret), "/panoptes")
+  val Panoptes: EndpointConfig = 
+    val url      = asUrl(config.getString("panoptes.url"))
+    val timeout  = config.getDuration("panoptes.timeout")
+    val secret   = config.getString("panoptes.secret")
+    EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes")
 
-  object VampireSquid:
-    val Url      = asUrl(config.getString("vampire.squid.url"))
-    val Timeout  = config.getDuration("vampire.squid.timeout")
-    val Secret   = config.getString("vampire.squid.secret")
-    val Endpoint = EndpointConfig("vampire-squid", Url, Timeout, Some(Secret), "/vam")
+  val VampireSquid: EndpointConfig =
+    val url      = asUrl(config.getString("vampire.squid.url"))
+    val timeout  = config.getDuration("vampire.squid.timeout")
+    val secret   = config.getString("vampire.squid.secret")
+    EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam")
 
-  object VarsKbServer:
-    val Url      = asUrl(config.getString("vars.kb.server.url"))
-    val Timeout  = config.getDuration("vars.kb.server.timeout")
-    val Endpoint = EndpointConfig("vars-kb-server", Url, Timeout, None, "/kb")
+  val VarsKbServer: EndpointConfig =
+    val url      = asUrl(config.getString("vars.kb.server.url"))
+    val timeout  = config.getDuration("vars.kb.server.timeout")
+    EndpointConfig("vars-kb-server", url, timeout, None, "/kb")
   
-  object VarsUserServer:
-    val Url      = asUrl(config.getString("vars.user.server.url"))
-    val Timeout  = config.getDuration("vars.user.server.timeout")
-    val Endpoint = EndpointConfig("vars-user-server", Url, Timeout, None, "/accounts")
+  val VarsUserServer: EndpointConfig =
+    val url      = asUrl(config.getString("vars.user.server.url"))
+    val timeout  = config.getDuration("vars.user.server.timeout")
+    EndpointConfig("vars-user-server", url, timeout, None, "/accounts")

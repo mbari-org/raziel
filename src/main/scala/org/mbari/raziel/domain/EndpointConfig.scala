@@ -51,10 +51,10 @@ object EndpointConfig:
    *   A list of M3 microservice [[EndpointConfig]]s as defined in application.conf
    */
   def defaults: List[EndpointConfig] =
-    AppConfig.Annosaurus.Endpoint ::
-      AppConfig.Charybdis.Endpoint ::
-      AppConfig.Panoptes.Endpoint ::
-      AppConfig.VampireSquid.Endpoint ::
-      AppConfig.VarsKbServer.Endpoint ::
-      AppConfig.VarsUserServer.Endpoint ::
+    AppConfig.Annosaurus ::
+      AppConfig.Charybdis ::
+      AppConfig.Panoptes ::
+      AppConfig.VampireSquid ::
+      AppConfig.VarsKbServer ::
+      AppConfig.VarsUserServer ::
       Nil

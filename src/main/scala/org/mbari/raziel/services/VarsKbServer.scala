@@ -50,7 +50,7 @@ object VarsKbServer:
 
   def default(using executor: Executor) =
     new VarsKbServer(
-      AppConfig.VarsKbServer.Url.toExternalForm,
-      AppConfig.VarsKbServer.Timeout,
+      AppConfig.VarsKbServer.url.toExternalForm,
+      AppConfig.VarsKbServer.timeout,
       executor
     )

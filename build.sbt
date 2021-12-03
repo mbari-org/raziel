@@ -2,7 +2,6 @@ import Dependencies._
 
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
-Global / cancelable           := true
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Laika / sourceDirectories     := Seq(baseDirectory.value / "docs")
 Test / fork                   := true
@@ -16,14 +15,20 @@ ThisBuild / versionScheme     := Some("semver-spec")
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(AutomateHeaderPlugin, DockerPlugin, GitBranchPrompt, GitVersioning, JavaAppPackaging, LaikaPlugin)
+  .enablePlugins(
+    AutomateHeaderPlugin, 
+    DockerPlugin, 
+    GitBranchPrompt, 
+    GitVersioning, 
+    JavaAppPackaging, 
+    LaikaPlugin)
   .settings(
     name               := "raziel",
     dockerBaseImage    := "openjdk:17",
     dockerExposedPorts := Seq(8080),
     javacOptions ++= Seq("-target", "17", "-source", "17"),
-    // Set version based on git tag. I use "0.0.0" format (no leading "v")
-    // Use `show gitCurrentTags` in sbt to see the tags
+    // Set version based on git tag. I use "0.0.0" format (no leading "v", which is the default)
+    // Use `show gitCurrentTags` in sbt to update/see the tags
     git.gitTagToVersionNumber := { tag: String =>
       if(tag matches "[0-9]+\\..*") Some(tag)
       else None

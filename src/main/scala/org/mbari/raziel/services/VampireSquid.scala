@@ -50,7 +50,7 @@ object VampireSquid:
 
   def default(using executor: Executor) =
     new VampireSquid(
-      AppConfig.VampireSquid.Url.toExternalForm,
-      AppConfig.VampireSquid.Timeout,
+      AppConfig.VampireSquid.url.toExternalForm,
+      AppConfig.VampireSquid.timeout,
       executor
     )
