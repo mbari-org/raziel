@@ -27,8 +27,7 @@ import java.nio.charset.StandardCharsets
  * @author
  *   Brian Schlining
  */
-case class BasicAuth(username: String, password: String) extends Auth:
-  override val tokenType: String = BasicAuth.TokenType
+case class BasicAuth(username: String, password: String) extends Auth(BasicAuth.TokenType)
 
 object BasicAuth:
 

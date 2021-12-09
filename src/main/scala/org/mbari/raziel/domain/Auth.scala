@@ -18,5 +18,4 @@ package org.mbari.raziel.domain
 
 import java.beans.Beans
 
-trait Auth:
-  def tokenType: String
+abstract class Auth(tokenType: String)

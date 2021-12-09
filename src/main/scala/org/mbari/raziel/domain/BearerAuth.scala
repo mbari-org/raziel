@@ -26,8 +26,7 @@ package org.mbari.raziel.domain
  *   Brian Schlining
  * @since 2020-01-28T11:00:00
  */
-case class BearerAuth(accessToken: String) extends Auth:
-  override val tokenType: String = BearerAuth.TokenType
+case class BearerAuth(accessToken: String) extends Auth(BearerAuth.TokenType)
 
 object BearerAuth:
 
