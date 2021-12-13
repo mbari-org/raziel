@@ -42,7 +42,40 @@ case class EndpointConfig(
     timeout: Duration,
     secret: Option[String],
     proxyPath: String
-)
+):
+
+  /**
+   * @return Endpoint info suitable for JSON serializtion
+   */
+  lazy val external: SerializedEndpointConfig = SerializedEndpointConfig(
+        name,
+        url,
+        timeout.toMillis,
+        secret,
+        proxyPath) 
+
+/**
+ * Serialized version of EndpointConfig. Maps Duration to milliseconds, which 
+ * is better for serialization.
+ * @param name
+ */
+case class SerializedEndpointConfig(
+    name: String,
+    url: URL,
+    timeoutMillis: Long,
+    secret: Option[String],
+    proxyPath: String
+):
+  lazy val internal: EndpointConfig = EndpointConfig(
+        name,
+        url,
+        Duration.ofMillis(timeoutMillis),
+        secret,
+        proxyPath)
+
+
+
+
 
 object EndpointConfig:
 

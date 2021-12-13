@@ -29,6 +29,8 @@ import org.mbari.raziel.domain.{
 }
 import org.mbari.raziel.util.HexUtil
 import scala.util.Try
+import java.time.Duration
+import org.mbari.raziel.domain.SerializedEndpointConfig
 
 object CirceCodecs:
 
@@ -53,6 +55,13 @@ object CirceCodecs:
     .encodeString
     .contramap[URI](_.toString)
 
+  given Decoder[Duration] = Decoder
+    .decodeLong
+    .emapTry(lng => Try(Duration.ofMillis(lng)))
+  given Encoder[Duration] = Encoder
+    .encodeLong
+    .contramap(_.toMillis)
+
   given Decoder[User] = deriveDecoder
   given Encoder[User] = deriveEncoder
 
@@ -62,8 +71,8 @@ object CirceCodecs:
   given Decoder[ErrorMsg] = deriveDecoder
   given Encoder[ErrorMsg] = deriveEncoder
 
-  given Decoder[EndpointConfig] = deriveDecoder
-  given Encoder[EndpointConfig] = deriveEncoder
+  given Decoder[SerializedEndpointConfig] = deriveDecoder
+  given Encoder[SerializedEndpointConfig] = deriveEncoder
 
   given Decoder[HealthStatus] = deriveDecoder
   given Encoder[HealthStatus] = deriveEncoder

@@ -182,5 +182,6 @@ class EndpointsApi extends ScalatraServlet:
   get("/") {
     val ok = authenticate(request)
     val ep = if (ok) securedEndpoints else unsecuredEndpoints
-    ep.stringify
+    // convert to a cleaner serialized form via _.external
+    ep.map(_.external).stringify 
   }
