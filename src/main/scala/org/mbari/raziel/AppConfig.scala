@@ -33,7 +33,6 @@ object AppConfig:
 
   private val config = ConfigFactory.load()
 
-
   private def asUrl(path: String): URL =
     if (!path.endsWith("/")) new URL(path)
     else new URL(path.substring(0, path.length - 1))
@@ -42,11 +41,13 @@ object AppConfig:
 
   val Version = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
 
+  val Description = "Configuration/Key Store"
+
   lazy val MasterKey = 
     val key = config.getString("raziel.master.key")
     if (key.trim.isEmpty || key.toUpperCase == Default)
-      LoggerFactory.getLogger(getClass)
-        .warn(s"Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
+      System.getLogger(getClass.getName)
+        .log(System.Logger.Level.WARNING, "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
     key
 
   val Annosaurus: EndpointConfig = 
@@ -72,10 +73,9 @@ object AppConfig:
     lazy val SigningSecret = 
       val secret = config.getString("raziel.jwt.signing.secret")
       if (secret.trim.isEmpty || secret.toUpperCase == Default)
-        LoggerFactory.getLogger(getClass)
-          .warn(s"Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret.")
+        System.getLogger(getClass.getName)
+          .log(System.Logger.Level.WARNING, "Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret.")
       secret
-      
 
   val Panoptes: EndpointConfig = 
     val url      = asUrl(config.getString("panoptes.url"))

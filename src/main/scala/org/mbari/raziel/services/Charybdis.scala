@@ -54,7 +54,7 @@ class Charybdis(
                           .map(Right(_))
                           .getOrElse(Left(new Exception(s"Could not parse $body")))
                       )
-    yield healthStatus.copy(application = name)
+    yield healthStatus.copy(application = name, description = "Publication Dataset Server")
 
 object Charybdis:
 

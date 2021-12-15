@@ -22,7 +22,6 @@ import java.net.http.{HttpHeaders, HttpRequest, HttpResponse}
 import java.time.{Duration, Instant}
 import java.util.concurrent.CompletableFuture
 import java.util.stream.Collectors
-import org.slf4j.LoggerFactory
 
 /**
  * A [[Methanol.Interceptor]] that logs the request and response headers. (but not the body)
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory
  */
 object LoggingInterceptor extends Methanol.Interceptor:
 
-  private val log = LoggerFactory.getLogger(getClass)
+  private val log = System.getLogger(getClass.getName)
 
   override def intercept[T](request: HttpRequest, chain: Chain[T]): HttpResponse[T] =
     logRequest(request)
@@ -47,9 +46,7 @@ object LoggingInterceptor extends Methanol.Interceptor:
     toLoggingChain(request, chain).forwardAsync(request)
 
   private def logRequest(request: HttpRequest): Unit =
-    log
-      .atDebug()
-      .log(() => s""" Sent >>>
+    log.log(System.Logger.Level.DEBUG, () => s""" Sent >>>
         |${request.method()} ${request.uri()}
         |${headersToString(request.headers())}""".stripMargin.trim())
 
@@ -58,9 +55,7 @@ object LoggingInterceptor extends Methanol.Interceptor:
     val sentAt = Instant.now()
     // format: off
     chain.withBodyHandler(responseInfo =>
-      log
-        .atDebug()
-        .log(() =>
+      log.log(System.Logger.Level.DEBUG, () =>
           s""" Received <<< ${request.method()} ${request.uri()} in ${Duration.between(sentAt, Instant.now()).toMillis()}ms
           |${responseInfo.statusCode()}
           |${headersToString(responseInfo.headers())}""".stripMargin.trim()

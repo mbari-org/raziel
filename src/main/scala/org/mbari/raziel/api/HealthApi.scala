@@ -21,7 +21,7 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import org.mbari.raziel.domain.{HealthStatus, ServiceStatus}
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
-import org.mbari.raziel.services.HasHealth
+import org.mbari.raziel.services.{HealthService, HasHealth}
 import org.scalatra.ScalatraServlet
 import zio.ZIO
 import zio.Task
@@ -68,6 +68,7 @@ import org.mbari.raziel.domain.ErrorMsg
 class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
 
   private val runtime = zio.Runtime.default
+  private val healthService = HealthService(services)
 
   after() {
     contentType = "application/json"
@@ -83,29 +84,25 @@ class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
 
   get("/available") {
     val app =
-      for
-        healthStati <-
-          Task.collectAll(
-            services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
-          )
-      yield healthStati
-        .filter(_.freeMemory > 0)
-        .map(hs => ServiceStatus(hs.application, Some(hs)))
+      for 
+        healthStatuses <- healthService.fetchHealth()
+      yield 
+        healthStatuses
+          .filter(_.freeMemory > 0)
+          .map(hs => ServiceStatus(hs.application, Some(hs)))
 
     Try(runtime.unsafeRun(app)) match
       case Success(s) => s.stringify
       case Failure(e) =>
-        InternalServerError(ErrorMsg(e.getMessage, 401).stringify)
+        InternalServerError(ErrorMsg(e.getMessage, 500).stringify)
   }
 
   get("/status") {
     val app =
-      for
-        healthStati <-
-          Task.collectAll(
-            services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
-          )
-      yield healthStati
+      for 
+        healthStatuses <- healthService.fetchHealth()
+      yield 
+        healthStatuses
         .map(hs =>
           val ss = if (hs.freeMemory <= 0) None else Some(hs)
           ServiceStatus(hs.application, ss)
@@ -114,5 +111,6 @@ class HealthApi(services: Seq[HasHealth]) extends ScalatraServlet:
     Try(runtime.unsafeRun(app)) match
       case Success(s) => s.stringify
       case Failure(e) =>
-        InternalServerError(ErrorMsg(e.getMessage, 401).stringify)
+        InternalServerError(ErrorMsg(e.getMessage, 500).stringify)
   }
+
