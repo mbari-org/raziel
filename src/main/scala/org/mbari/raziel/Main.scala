@@ -16,6 +16,7 @@
 
 package org.mbari.raziel
 
+import java.lang.System.Logger.Level
 import java.util.concurrent.Callable
 import java.util.logging.Handler
 import org.eclipse.jetty.proxy.ProxyServlet
@@ -26,7 +27,6 @@ import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.webapp.WebAppContext
 import org.mbari.raziel.domain.EndpointConfig
 import org.scalatra.servlet.ScalatraListener
-import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.{Command, Option => Opt, Parameters}
 import scala.util.Try
@@ -69,7 +69,7 @@ object Main:
     context.setResourceBase(AppConfig.Http.Webapp)
     context.addEventListener(ScalatraListener())
 
-    val log       = LoggerFactory.getLogger(getClass)
+    val log = System.getLogger(getClass.getName)
     // Setup proxies for all endpoints
     val endpoints = EndpointConfig.defaults
     for (e, i) <- endpoints.zipWithIndex do
@@ -77,17 +77,14 @@ object Main:
       proxy.setInitParameter("proxyTo", e.url.toExternalForm)
       proxy.setInitParameter("prefix", s"${e.proxyPath}")
       context.addServlet(proxy, s"${e.proxyPath}/*")
-      log
-        .atInfo
-        .log(() => s"Proxying ${e.name} @ ${e.url.toExternalForm} as ${e.proxyPath}")
+      log.log(Level.INFO, () => s"Proxying ${e.name} @ ${e.url.toExternalForm} as ${e.proxyPath}")
+
 
     server.setHandler(context)
     server.start()
 
+    log.log(Level.INFO, () => s"Started Raziel v${AppConfig.Version} on port $port")
 
-    log
-      .atInfo
-      .log(() => s"Started Raziel v${AppConfig.Version} on port $port")
 
     server.join()
   }.toEither

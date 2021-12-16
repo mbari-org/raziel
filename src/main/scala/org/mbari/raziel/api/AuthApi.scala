@@ -26,17 +26,16 @@ import java.util.concurrent.Executor
 import java.util.Date
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.{BasicAuth, BearerAuth, ErrorMsg, JwtAuthPayload}
+import org.mbari.raziel.domain.Auth
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.VarsUserServer
 import org.scalatra.{FutureSupport, InternalServerError, Ok, ScalatraServlet, Unauthorized}
-import org.slf4j.LoggerFactory
+import org.scalatra.ActionResult
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.given
 import scala.util.{Failure, Success, Try}
 import zio.*
-import org.mbari.raziel.domain.Auth
-import org.scalatra.ActionResult
 
 /**
  * Provides endpoints for authentication and authorization.
@@ -131,7 +130,6 @@ class AuthApi(varsUserServer: VarsUserServer) extends ScalatraServlet:
 
   private val jwtHelper = JwtHelper.default
   private val runtime   = zio.Runtime.default
-  private val log       = LoggerFactory.getLogger(getClass)
 
   after() {
     contentType = "application/json"

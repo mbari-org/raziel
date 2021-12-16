@@ -20,7 +20,6 @@ import com.typesafe.config.ConfigFactory
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 import scala.util.Try
-import org.slf4j.LoggerFactory
 
 /**
  * A typesafe wrapper around the application.conf file.

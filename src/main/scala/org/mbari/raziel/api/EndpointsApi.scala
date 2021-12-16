@@ -25,7 +25,6 @@ import org.mbari.raziel.domain.{BearerAuth, EndpointConfig}
 import org.mbari.raziel.etc.auth0.JwtHelper
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.scalatra.ScalatraServlet
-import org.slf4j.LoggerFactory
 
 /**
  * Returns infomation about the proxied endpoints
@@ -157,7 +156,6 @@ import org.slf4j.LoggerFactory
 class EndpointsApi extends ScalatraServlet:
 
   private val jwtHelper = JwtHelper.default
-  private val log       = LoggerFactory.getLogger(getClass)
 
   private val securedEndpoints: List[EndpointConfig]   = EndpointConfig.defaults
   private val unsecuredEndpoints: List[EndpointConfig] =

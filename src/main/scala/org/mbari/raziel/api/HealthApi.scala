@@ -20,14 +20,14 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import org.mbari.raziel.domain.{HealthStatus, ServiceStatus}
+import org.mbari.raziel.domain.ErrorMsg
 import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
 import org.mbari.raziel.services.{HealthService, HasHealth}
-import org.scalatra.ScalatraServlet
-import zio.ZIO
-import zio.Task
-import scala.util.{Failure, Success, Try}
 import org.scalatra.InternalServerError
-import org.mbari.raziel.domain.ErrorMsg
+import org.scalatra.ScalatraServlet
+import scala.util.{Failure, Success, Try}
+import zio.Task
+import zio.ZIO
 
 /**
  * Health status API

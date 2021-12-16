@@ -18,6 +18,7 @@ package org.mbari.raziel.etc.methanol
 
 import com.github.mizosoft.methanol.Methanol
 import io.circe.Decoder
+import io.circe.Json
 import io.circe.parser.{decode, parse}
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
@@ -25,9 +26,8 @@ import java.time.Duration
 import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
-import zio.Task
-import io.circe.Json
 import scala.util.Try
+import zio.Task
 
 /**
  * Helper for using javas' HttpClient.
