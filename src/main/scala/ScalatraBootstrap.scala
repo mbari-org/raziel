@@ -31,12 +31,15 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContextExecutor
 import org.mbari.raziel.etc.methanol.HttpClientSupport
+import java.lang.System.Logger.Level
 
 class ScalatraBootstrap extends LifeCycle:
 
   override def init(context: ServletContext): Unit =
 
-    LoggerFactory.getLogger(getClass).info(s"Mounting ${AppConfig.Name} Servlets")
+    System.getLogger(getClass.getName)
+      .log(Level.INFO, s"Mounting ${AppConfig.Name} Servlets")
+
     // Optional because * is the default
     context.setInitParameter("org.scalatra.cors.allowedOrigins", "*")
     // Disables cookies, but required because browsers will not allow passing credentials to wildcard domains
