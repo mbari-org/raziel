@@ -48,7 +48,7 @@ class Slf4jLogger(@BeanProperty val name: String) extends System.Logger:
 
   override def log(level: Level, bundle: ResourceBundle, format: String, params: Any*): Unit =
     if (isLoggable(level))
-      var msg = MessageFormat.format(format, params: _*)
+      var msg = if params != null then MessageFormat.format(format, params: _*) else format
       level match 
         case Level.OFF => // Do nothing
         case Level.TRACE => logger.trace(msg)
