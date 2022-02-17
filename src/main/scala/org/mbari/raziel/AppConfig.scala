@@ -20,6 +20,7 @@ import com.typesafe.config.ConfigFactory
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 import scala.util.Try
+import org.mbari.raziel.etc.jdk.Logging.{given, *}
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -27,6 +28,8 @@ import scala.util.Try
  *   Brian Schlining
  */
 object AppConfig:
+
+  private val log = System.getLogger(getClass.getName)
 
   private val Default = "DEFAULT"
 
@@ -45,19 +48,20 @@ object AppConfig:
   lazy val MasterKey = 
     val key = config.getString("raziel.master.key")
     if (key.trim.isEmpty || key.toUpperCase == Default)
-      System.getLogger(getClass.getName)
-        .log(System.Logger.Level.WARNING, "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
+      log.atWarn.log( "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
     key
 
   val Annosaurus: EndpointConfig = 
     val url      = asUrl(config.getString("annosaurus.url"))
     val timeout  = config.getDuration("annosaurus.timeout")
     val secret   = config.getString("annosaurus.secret")
+    log.atDebug.log(s"Annosaurus URL: $url")
     EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno")
 
   val Charybdis: EndpointConfig =
     val url      = asUrl(config.getString("charybdis.url"))
     val timeout  = config.getDuration("charybdis.timeout")
+    log.atDebug.log(s"Charybdis URL: $url")
     EndpointConfig("charybdis", url, timeout, None, "/references")
 
   object Http:
@@ -80,21 +84,25 @@ object AppConfig:
     val url      = asUrl(config.getString("panoptes.url"))
     val timeout  = config.getDuration("panoptes.timeout")
     val secret   = config.getString("panoptes.secret")
+    log.atDebug.log(s"Panoptes URL: $url")
     EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes")
 
   val VampireSquid: EndpointConfig =
     val url      = asUrl(config.getString("vampire.squid.url"))
     val timeout  = config.getDuration("vampire.squid.timeout")
     val secret   = config.getString("vampire.squid.secret")
+    log.atDebug.log(s"Vampire-squid URL: $url")
     EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam")
 
   val VarsKbServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.kb.server.url"))
     val timeout  = config.getDuration("vars.kb.server.timeout")
+    log.atDebug.log(s"VARS KB Server URL: $url")
     EndpointConfig("vars-kb-server", url, timeout, None, "/kb")
   
   val VarsUserServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.user.server.url"))
     val timeout  = config.getDuration("vars.user.server.timeout")
     val secret   = config.getString("vars.user.server.secret")
+    log.atDebug.log(s"VARS User Server URL: $url")
     EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts")
