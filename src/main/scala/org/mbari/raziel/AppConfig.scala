@@ -51,14 +51,14 @@ object AppConfig:
       log.atWarn.log( "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
     key
 
-  val Annosaurus: EndpointConfig = 
+  lazy val Annosaurus: EndpointConfig = 
     val url      = asUrl(config.getString("annosaurus.url"))
     val timeout  = config.getDuration("annosaurus.timeout")
     val secret   = config.getString("annosaurus.secret")
     log.atDebug.log(s"Annosaurus URL: $url")
     EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno")
 
-  val Charybdis: EndpointConfig =
+  lazy val Charybdis: EndpointConfig =
     val url      = asUrl(config.getString("charybdis.url"))
     val timeout  = config.getDuration("charybdis.timeout")
     log.atDebug.log(s"Charybdis URL: $url")
@@ -80,27 +80,27 @@ object AppConfig:
           .log(System.Logger.Level.WARNING, "Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret.")
       secret
 
-  val Panoptes: EndpointConfig = 
+  lazy val Panoptes: EndpointConfig = 
     val url      = asUrl(config.getString("panoptes.url"))
     val timeout  = config.getDuration("panoptes.timeout")
     val secret   = config.getString("panoptes.secret")
     log.atDebug.log(s"Panoptes URL: $url")
     EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes")
 
-  val VampireSquid: EndpointConfig =
+  lazy val VampireSquid: EndpointConfig =
     val url      = asUrl(config.getString("vampire.squid.url"))
     val timeout  = config.getDuration("vampire.squid.timeout")
     val secret   = config.getString("vampire.squid.secret")
     log.atDebug.log(s"Vampire-squid URL: $url")
     EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam")
 
-  val VarsKbServer: EndpointConfig =
+  lazy val VarsKbServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.kb.server.url"))
     val timeout  = config.getDuration("vars.kb.server.timeout")
     log.atDebug.log(s"VARS KB Server URL: $url")
     EndpointConfig("vars-kb-server", url, timeout, None, "/kb")
   
-  val VarsUserServer: EndpointConfig =
+  lazy val VarsUserServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.user.server.url"))
     val timeout  = config.getDuration("vars.user.server.timeout")
     val secret   = config.getString("vars.user.server.secret")
