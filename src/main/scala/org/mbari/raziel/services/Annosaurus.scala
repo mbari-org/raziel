@@ -50,7 +50,7 @@ object Annosaurus:
 
   def default(using executor: Executor) =
     new Annosaurus(
-      AppConfig.Annosaurus.url.toExternalForm,
+      AppConfig.Annosaurus.internalUrl.toExternalForm,
       AppConfig.Annosaurus.timeout,
       executor
     )

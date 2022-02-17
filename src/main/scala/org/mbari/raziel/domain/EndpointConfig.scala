@@ -38,10 +38,11 @@ import org.mbari.raziel.AppConfig
  */
 case class EndpointConfig(
     name: String,
-    url: URL,
+    url: URL, // URL for docker use, config sets this to same value as URL by default
     timeout: Duration,
     secret: Option[String],
-    proxyPath: String
+    proxyPath: String,
+    internalUrl: URL,
 ):
 
   /**
@@ -71,7 +72,8 @@ case class SerializedEndpointConfig(
         url,
         Duration.ofMillis(timeoutMillis),
         secret,
-        proxyPath)
+        proxyPath, 
+        url)
 
 
 

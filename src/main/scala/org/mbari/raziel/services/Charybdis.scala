@@ -60,7 +60,7 @@ object Charybdis:
 
   def default(using executor: Executor) =
     new Charybdis(
-      AppConfig.Charybdis.url.toExternalForm,
+      AppConfig.Charybdis.internalUrl.toExternalForm,
       AppConfig.Charybdis.timeout,
       executor
     )

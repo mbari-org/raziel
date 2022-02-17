@@ -55,14 +55,16 @@ object AppConfig:
     val url      = asUrl(config.getString("annosaurus.url"))
     val timeout  = config.getDuration("annosaurus.timeout")
     val secret   = config.getString("annosaurus.secret")
+    val internalUrl = asUrl(config.getString("annosaurus.internal.url"))
     log.atDebug.log(s"Annosaurus URL: $url")
-    EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno")
+    EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno", internalUrl)
 
   lazy val Charybdis: EndpointConfig =
     val url      = asUrl(config.getString("charybdis.url"))
     val timeout  = config.getDuration("charybdis.timeout")
+    val internalUrl = asUrl(config.getString("charybdis.internal.url"))
     log.atDebug.log(s"Charybdis URL: $url")
-    EndpointConfig("charybdis", url, timeout, None, "/references")
+    EndpointConfig("charybdis", url, timeout, None, "/references", internalUrl)
 
   object Http:
     val Context     = config.getString("raziel.http.context")
@@ -84,25 +86,29 @@ object AppConfig:
     val url      = asUrl(config.getString("panoptes.url"))
     val timeout  = config.getDuration("panoptes.timeout")
     val secret   = config.getString("panoptes.secret")
+    val internalUrl = asUrl(config.getString("panoptes.internal.url"))
     log.atDebug.log(s"Panoptes URL: $url")
-    EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes")
+    EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes", internalUrl)
 
   lazy val VampireSquid: EndpointConfig =
     val url      = asUrl(config.getString("vampire.squid.url"))
     val timeout  = config.getDuration("vampire.squid.timeout")
     val secret   = config.getString("vampire.squid.secret")
+    val internalUrl = asUrl(config.getString("vampire.squid.internal.url"))
     log.atDebug.log(s"Vampire-squid URL: $url")
-    EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam")
+    EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam", internalUrl)
 
   lazy val VarsKbServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.kb.server.url"))
     val timeout  = config.getDuration("vars.kb.server.timeout")
+    val internalUrl = asUrl(config.getString("vars.kb.server.internal.url"))
     log.atDebug.log(s"VARS KB Server URL: $url")
-    EndpointConfig("vars-kb-server", url, timeout, None, "/kb")
+    EndpointConfig("vars-kb-server", url, timeout, None, "/kb", internalUrl)
   
   lazy val VarsUserServer: EndpointConfig =
     val url      = asUrl(config.getString("vars.user.server.url"))
     val timeout  = config.getDuration("vars.user.server.timeout")
     val secret   = config.getString("vars.user.server.secret")
+    val internalUrl = asUrl(config.getString("vars.user.server.internal.url"))
     log.atDebug.log(s"VARS User Server URL: $url")
-    EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts")
+    EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts", internalUrl)
