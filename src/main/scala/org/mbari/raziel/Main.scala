@@ -74,10 +74,10 @@ object Main:
     val endpoints = EndpointConfig.defaults
     for (e, i) <- endpoints.zipWithIndex do
       var proxy = new ServletHolder(classOf[ProxyServlet.Transparent])
-      proxy.setInitParameter("proxyTo", e.url.toExternalForm)
+      proxy.setInitParameter("proxyTo", e.internalUrl.toExternalForm)
       proxy.setInitParameter("prefix", s"${e.proxyPath}")
       context.addServlet(proxy, s"${e.proxyPath}/*")
-      log.log(Level.INFO, () => s"Proxying ${e.name} @ ${e.url.toExternalForm} as ${e.proxyPath}")
+      log.log(Level.INFO, () => s"Proxying ${e.name} @ ${e.internalUrl.toExternalForm} as ${e.proxyPath}")
 
 
     server.setHandler(context)
