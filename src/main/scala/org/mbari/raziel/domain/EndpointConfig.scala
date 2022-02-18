@@ -73,7 +73,7 @@ case class SerializedEndpointConfig(
         Duration.ofMillis(timeoutMillis),
         secret,
         proxyPath, 
-        url)
+        url) // HACK, verify that this is OKs
 
 
 
