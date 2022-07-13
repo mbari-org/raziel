@@ -20,19 +20,19 @@ import java.lang.System.Logger
 import java.lang.System.Logger.Level
 import java.util.function.Supplier
 
-
 /**
-  * Add fluent logging to System.Logger. Usage:
-  * {{{
-  * import org.fathomnet.support.etc.jdk.Logging.{given, *}
-  * given log: Logger = Sytem.getLogger("my.logger")
-  * 
-  * log.atInfo.log("Hello World")
-  * log.atInfo.withCause(new RuntimeException("Oops")).log("Hello World")
-  * 
-  * 3.tapLog.atInfo.log(i => s"Hello World $i")
-  * }}}  * @author Brian Schlining
-  */
+ * Add fluent logging to System.Logger. Usage:
+ * {{{
+ * import org.fathomnet.support.etc.jdk.Logging.{given, *}
+ * given log: Logger = Sytem.getLogger("my.logger")
+ *
+ * log.atInfo.log("Hello World")
+ * log.atInfo.withCause(new RuntimeException("Oops")).log("Hello World")
+ *
+ * 3.tapLog.atInfo.log(i => s"Hello World $i")
+ * }}}
+ * * @author Brian Schlining
+ */
 object Logging:
 
   trait Builder:
@@ -77,10 +77,10 @@ object Logging:
   ) extends Builder:
 
     def atTrace: TapLogBuilder[T] = copy(level = Level.TRACE)
-    def atDebug: TapLogBuilder[T]  = copy(level = Level.DEBUG)
-    def atInfo: TapLogBuilder[T]   = copy(level = Level.INFO)
-    def atWarn: TapLogBuilder[T]   = copy(level = Level.WARNING)
-    def atError: TapLogBuilder[T]  = copy(level = Level.ERROR)
+    def atDebug: TapLogBuilder[T] = copy(level = Level.DEBUG)
+    def atInfo: TapLogBuilder[T]  = copy(level = Level.INFO)
+    def atWarn: TapLogBuilder[T]  = copy(level = Level.WARNING)
+    def atError: TapLogBuilder[T] = copy(level = Level.ERROR)
 
     def withCause(cause: Throwable): TapLogBuilder[T] = copy(throwable = Some(cause))
 
@@ -91,5 +91,5 @@ object Logging:
           case None    => logger.log(level, fn(obj))
       obj
 
-  extension[T] (obj:T)(using logger: Logger)
+  extension [T](obj: T)(using logger: Logger)
     def tapLog: TapLogBuilder[T] = TapLogBuilder(obj, logger)

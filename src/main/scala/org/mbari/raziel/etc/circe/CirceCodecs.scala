@@ -31,6 +31,8 @@ import org.mbari.raziel.util.HexUtil
 import scala.util.Try
 import java.time.Duration
 import org.mbari.raziel.domain.SerializedEndpointConfig
+import org.mbari.raziel.domain.{ErrorMsg, NotFound, ServerError, Unauthorized}
+import org.mbari.raziel.domain.StatusMsg
 
 object CirceCodecs:
 
@@ -79,6 +81,18 @@ object CirceCodecs:
 
   given Decoder[ServiceStatus] = deriveDecoder
   given Encoder[ServiceStatus] = deriveEncoder
+
+  given Decoder[StatusMsg] = deriveDecoder
+  given Encoder[StatusMsg] = deriveEncoder
+
+  given Decoder[NotFound] = deriveDecoder
+  given Encoder[NotFound] = deriveEncoder
+
+  given Decoder[ServerError] = deriveDecoder
+  given Encoder[ServerError] = deriveEncoder
+
+  given Decoder[Unauthorized] = deriveDecoder
+  given Encoder[Unauthorized] = deriveEncoder
 
   private val printer = Printer.noSpaces.copy(dropNullValues = true)
 

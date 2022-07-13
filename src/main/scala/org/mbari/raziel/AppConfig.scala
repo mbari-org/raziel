@@ -45,23 +45,27 @@ object AppConfig:
 
   val Description = "Configuration/Key Store"
 
-  lazy val MasterKey = 
+  lazy val MasterKey =
     val key = config.getString("raziel.master.key")
     if (key.trim.isEmpty || key.toUpperCase == Default)
-      log.atWarn.log( "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key.")
+      log
+        .atWarn
+        .log(
+          "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key."
+        )
     key
 
-  lazy val Annosaurus: EndpointConfig = 
-    val url      = asUrl(config.getString("annosaurus.url"))
-    val timeout  = config.getDuration("annosaurus.timeout")
-    val secret   = config.getString("annosaurus.secret")
+  lazy val Annosaurus: EndpointConfig =
+    val url         = asUrl(config.getString("annosaurus.url"))
+    val timeout     = config.getDuration("annosaurus.timeout")
+    val secret      = config.getString("annosaurus.secret")
     val internalUrl = asUrl(config.getString("annosaurus.internal.url"))
     log.atDebug.log(s"Annosaurus URL: $url")
     EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno", internalUrl)
 
   lazy val Charybdis: EndpointConfig =
-    val url      = asUrl(config.getString("charybdis.url"))
-    val timeout  = config.getDuration("charybdis.timeout")
+    val url         = asUrl(config.getString("charybdis.url"))
+    val timeout     = config.getDuration("charybdis.timeout")
     val internalUrl = asUrl(config.getString("charybdis.internal.url"))
     log.atDebug.log(s"Charybdis URL: $url")
     EndpointConfig("charybdis", url, timeout, None, "/references", internalUrl)
@@ -73,42 +77,46 @@ object AppConfig:
     val Webapp      = config.getString("raziel.http.webapp")
 
   object Jwt:
-    val Expiration    = config.getDuration("raziel.jwt.expiration")
-    val Issuer        = config.getString("raziel.jwt.issuer")
-    lazy val SigningSecret = 
+    val Expiration         = config.getDuration("raziel.jwt.expiration")
+    val Issuer             = config.getString("raziel.jwt.issuer")
+    lazy val SigningSecret =
       val secret = config.getString("raziel.jwt.signing.secret")
       if (secret.trim.isEmpty || secret.toUpperCase == Default)
-        System.getLogger(getClass.getName)
-          .log(System.Logger.Level.WARNING, "Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret.")
+        System
+          .getLogger(getClass.getName)
+          .log(
+            System.Logger.Level.WARNING,
+            "Using default signing secret. This is not recommended for production. Set the RAZIEL_JWT_SIGNING_SECRET environment variable to set a signing secret."
+          )
       secret
 
-  lazy val Panoptes: EndpointConfig = 
-    val url      = asUrl(config.getString("panoptes.url"))
-    val timeout  = config.getDuration("panoptes.timeout")
-    val secret   = config.getString("panoptes.secret")
+  lazy val Panoptes: EndpointConfig =
+    val url         = asUrl(config.getString("panoptes.url"))
+    val timeout     = config.getDuration("panoptes.timeout")
+    val secret      = config.getString("panoptes.secret")
     val internalUrl = asUrl(config.getString("panoptes.internal.url"))
     log.atDebug.log(s"Panoptes URL: $url")
     EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes", internalUrl)
 
   lazy val VampireSquid: EndpointConfig =
-    val url      = asUrl(config.getString("vampire.squid.url"))
-    val timeout  = config.getDuration("vampire.squid.timeout")
-    val secret   = config.getString("vampire.squid.secret")
+    val url         = asUrl(config.getString("vampire.squid.url"))
+    val timeout     = config.getDuration("vampire.squid.timeout")
+    val secret      = config.getString("vampire.squid.secret")
     val internalUrl = asUrl(config.getString("vampire.squid.internal.url"))
     log.atDebug.log(s"Vampire-squid URL: $url")
     EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam", internalUrl)
 
   lazy val VarsKbServer: EndpointConfig =
-    val url      = asUrl(config.getString("vars.kb.server.url"))
-    val timeout  = config.getDuration("vars.kb.server.timeout")
+    val url         = asUrl(config.getString("vars.kb.server.url"))
+    val timeout     = config.getDuration("vars.kb.server.timeout")
     val internalUrl = asUrl(config.getString("vars.kb.server.internal.url"))
     log.atDebug.log(s"VARS KB Server URL: $url")
     EndpointConfig("vars-kb-server", url, timeout, None, "/kb", internalUrl)
-  
+
   lazy val VarsUserServer: EndpointConfig =
-    val url      = asUrl(config.getString("vars.user.server.url"))
-    val timeout  = config.getDuration("vars.user.server.timeout")
-    val secret   = config.getString("vars.user.server.secret")
+    val url         = asUrl(config.getString("vars.user.server.url"))
+    val timeout     = config.getDuration("vars.user.server.timeout")
+    val secret      = config.getString("vars.user.server.secret")
     val internalUrl = asUrl(config.getString("vars.user.server.internal.url"))
     log.atDebug.log(s"VARS User Server URL: $url")
     EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts", internalUrl)

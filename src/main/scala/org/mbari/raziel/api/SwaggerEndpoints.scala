@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package org.mbari.raziel.services
+package org.mbari.raziel.api
 
-import org.mbari.raziel.domain.ServiceStatus
-import zio.Task
-import org.mbari.raziel.domain.HealthStatus
-import zio.ZIO
+import sttp.tapir.server.ServerEndpoint
+import sttp.tapir.swagger.bundle.SwaggerInterpreter
+import scala.concurrent.Future
+import org.mbari.raziel.AppConfig
 
-class HealthService(services: Seq[HasHealth]):
+case class SwaggerEndpoints(
+    authEndpoints: AuthEndpoints,
+    endpointsEndpoints: EndpointsEndpoints,
+    healthEndpoints: HealthEndpoints
+):
 
-  def fetchHealth(): Task[Seq[HealthStatus]] =
-    for
-      healthStati <-
-        Task.collectAll(
-          services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
-        )
-    yield (healthStati :+ HealthStatus.default)
-      .sortBy(_.application)
+  val allImpl: List[ServerEndpoint[Any, Future]] =
+    SwaggerInterpreter()
+      .fromEndpoints[Future](
+        authEndpoints.all ++ endpointsEndpoints.all ++ healthEndpoints.all,
+        AppConfig.Name,
+        AppConfig.Version
+      )

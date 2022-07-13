@@ -46,9 +46,12 @@ object LoggingInterceptor extends Methanol.Interceptor:
     toLoggingChain(request, chain).forwardAsync(request)
 
   private def logRequest(request: HttpRequest): Unit =
-    log.log(System.Logger.Level.DEBUG, () => s""" Sent >>>
+    log.log(
+      System.Logger.Level.DEBUG,
+      () => s""" Sent >>>
         |${request.method()} ${request.uri()}
-        |${headersToString(request.headers())}""".stripMargin.trim())
+        |${headersToString(request.headers())}""".stripMargin.trim()
+    )
 
   private def toLoggingChain[T](request: HttpRequest, chain: Chain[T]): Chain[T] =
 

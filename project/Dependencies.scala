@@ -31,6 +31,15 @@ object Dependencies {
   private val scalatraVersion = "2.8.2"
   lazy val scalatra           =
     ("org.scalatra" %% "scalatra" % scalatraVersion).cross(CrossVersion.for3Use2_13)
+
+  
+  private val tapirVersion  = "1.0.1"
+  lazy val tapirStubServer  = "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server" % tapirVersion
+  lazy val tapirSwagger     = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
+  lazy val tapirCirce       = "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion
+  lazy val tapirCirceClient = "com.softwaremill.sttp.client3" %% "circe" % "3.6.2"
+  lazy val tapirVertx       = "com.softwaremill.sttp.tapir" %% "tapir-vertx-server" % tapirVersion
+ 
     
   lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.2"
   lazy val zio            = "dev.zio"     %% "zio"    % "1.0.14"

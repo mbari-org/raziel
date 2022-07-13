@@ -16,15 +16,17 @@
 
 package org.mbari.raziel.api
 
-import io.circe.*
-import io.circe.parser.*
-import io.circe.syntax.*
-import javax.servlet.http.HttpServletRequest
-import org.mbari.raziel.AppConfig
-import org.mbari.raziel.domain.{BearerAuth, EndpointConfig}
-import org.mbari.raziel.etc.auth0.JwtHelper
-import org.mbari.raziel.etc.circe.CirceCodecs.{given, _}
-import org.scalatra.ScalatraServlet
+import io.circe.generic.auto._
+import org.mbari.raziel.domain.{BearerAuth, ErrorMsg}
+import org.mbari.raziel.domain.EndpointConfig
+import org.mbari.raziel.etc.circe.CirceCodecs.given
+import scala.concurrent.{ExecutionContext, Future}
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.circe.*
+import sttp.tapir.server.ServerEndpoint
+import java.net.URL
+import scala.util.Try
 
 /**
  * Returns infomation about the proxied endpoints
@@ -153,33 +155,21 @@ import org.scalatra.ScalatraServlet
  *   Brian Schlining
  * @since 2021-12-23T11:00:00
  */
-class EndpointsApi extends ScalatraServlet:
+class EndpointsEndpoints(using ec: ExecutionContext) extends org.mbari.raziel.api.Endpoints:
 
-  private val jwtHelper = JwtHelper.default
+  given Schema[URL] = Schema.string
 
-  private val securedEndpoints: List[EndpointConfig]   = EndpointConfig.defaults
-  private val unsecuredEndpoints: List[EndpointConfig] =
-    EndpointConfig.defaults.map(_.copy(secret = None))
+  val endpoints: PublicEndpoint[Option[String], ErrorMsg, List[EndpointConfig], Any] =
+    baseEndpoint
+      .get
+      .in("endpoints")
+      .in(header[Option[String]]("Authorization"))
+      .out(jsonBody[List[EndpointConfig]])
+      .description(
+        "List available endpoints. Authorization header is optional. If defined it returns connection information for the endpoint."
+      )
+  val endpointsImpl: ServerEndpoint[Any, Future]                                     =
+    endpoints.serverLogic(authOpt => Future(Right(EndpointsController.getEndpoints(authOpt))))
 
-  after() {
-    contentType = "application/json"
-  }
-
-  private def authenticate(request: HttpServletRequest): Boolean =
-    val auth = Option(request.getHeader("Authorization"))
-      .flatMap(a => BearerAuth.parse(a))
-      .toRight(new IllegalArgumentException("Authorization header required"))
-
-    val either = for
-      a          <- auth
-      decodedJwt <- jwtHelper.verifyJwt(a.accessToken)
-    yield decodedJwt
-
-    either.isRight
-
-  get("/") {
-    val ok = authenticate(request)
-    val ep = if (ok) securedEndpoints else unsecuredEndpoints
-    // convert to a cleaner serialized form via _.external
-    ep.map(_.external).stringify 
-  }
+  override val all: List[PublicEndpoint[?, ?, ?, ?]]      = List(endpoints)
+  override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)

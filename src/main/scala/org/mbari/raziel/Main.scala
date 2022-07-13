@@ -16,20 +16,23 @@
 
 package org.mbari.raziel
 
+import io.vertx.core.Vertx
+import io.vertx.ext.web.Router
 import java.lang.System.Logger.Level
 import java.util.concurrent.Callable
 import java.util.logging.Handler
-import org.eclipse.jetty.proxy.ProxyServlet
-import org.eclipse.jetty.server.handler.HandlerCollection
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.servlet.{DefaultServlet, ServletHolder}
-import org.eclipse.jetty.servlet.ServletHolder
-import org.eclipse.jetty.webapp.WebAppContext
+import org.mbari.raziel.api.*
 import org.mbari.raziel.domain.EndpointConfig
-import org.scalatra.servlet.ScalatraListener
+import org.mbari.raziel.etc.jdk.Logging.given
+import org.mbari.raziel.services.*
 import picocli.CommandLine
 import picocli.CommandLine.{Command, Option => Opt, Parameters}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 import scala.util.Try
+import sttp.tapir.server.vertx.VertxFutureServerInterpreter
+import sttp.tapir.server.vertx.VertxFutureServerInterpreter.*
+import io.vertx.ext.web.handler.CorsHandler
 
 @Command(
   description = Array("Start the server"),
@@ -39,52 +42,67 @@ import scala.util.Try
 )
 class MainRunner extends Callable[Int]:
 
-  @Opt(names = Array("-p", "--port"), description = Array("The port of the server. default: ${DEFAULT-VALUE}"))
+  @Opt(
+    names = Array("-p", "--port"),
+    description = Array("The port of the server. default: ${DEFAULT-VALUE}")
+  )
   private var port: Int = AppConfig.Http.Port
 
   override def call(): Int =
-    Main.run(port) match
-      case Left(_)  => -1
-      case Right(_) => 0
+    Main.run(port)
+    0
 
 object Main:
 
+  private val log = System.getLogger(getClass.getName)
+
   def main(args: Array[String]): Unit =
-    new CommandLine(new MainRunner()).execute(args: _*)
-
-  def run(port: Int): Either[Throwable, Unit] = Try {
-
     val s = """
       |  ______ _______ ______ _____ _______       
       | |_____/ |_____|  ____/   |   |______ |     
       | |    \_ |     | /_____ __|__ |______ |_____""".stripMargin
-
     println(s)
+    new CommandLine(new MainRunner()).execute(args: _*)
 
-    val server: Server = new Server(port)
-    server.setStopAtShutdown(true)
+  def run(port: Int): Unit =
+    log.atInfo.log(s"Starting up ${AppConfig.Name} v${AppConfig.Version} on port $port")
 
-    val context = new WebAppContext
-    context.setContextPath(AppConfig.Http.Context)
-    context.setResourceBase(AppConfig.Http.Webapp)
-    context.addEventListener(ScalatraListener())
+    given executionContext: ExecutionContextExecutor = ExecutionContext.global
 
-    val log = System.getLogger(getClass.getName)
-    // Setup proxies for all endpoints
-    val endpoints = EndpointConfig.defaults
-    for (e, i) <- endpoints.zipWithIndex do
-      var proxy = new ServletHolder(classOf[ProxyServlet.Transparent])
-      proxy.setInitParameter("proxyTo", e.internalUrl.toExternalForm)
-      proxy.setInitParameter("prefix", s"${e.proxyPath}")
-      context.addServlet(proxy, s"${e.proxyPath}/*")
-      log.log(Level.INFO, () => s"Proxying ${e.name} @ ${e.internalUrl.toExternalForm} as ${e.proxyPath}")
+    // -- Service providers
+    val annosaurus     = Annosaurus.default
+    val charybdis      = Charybdis.default
+    val panoptes       = Panoptes.default
+    val vampireSquid   = VampireSquid.default
+    val varsKbServer   = VarsKbServer.default
+    val varsUserServer = VarsUserServer.default
+    val healthServices =
+      Seq(annosaurus, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
 
+    // -- Tapir endpoints
+    val authEndpoints     = AuthEndpoints(AuthController(varsUserServer))
+    val healthEndpoints   = HealthEndpoints(HealthController(healthServices))
+    val endpointEndpoints = EndpointsEndpoints()
+    val swaggerEndpoints  = SwaggerEndpoints(authEndpoints, endpointEndpoints, healthEndpoints)
+    val allEndpointImpls  = authEndpoints.allImpl ++
+      healthEndpoints.allImpl ++
+      endpointEndpoints.allImpl ++
+      swaggerEndpoints.allImpl
 
-    server.setHandler(context)
-    server.start()
+    
 
-    log.log(Level.INFO, () => s"Started Raziel v${AppConfig.Version} on port $port")
+    // -- Vert.x server
+    val vertx  = Vertx.vertx()
+    val server = vertx.createHttpServer()
+    val router = Router.router(vertx)
 
+    // Add CORS
+    val corsHandler = CorsHandler.create("*")
+    router.route().handler(corsHandler)
 
-    server.join()
-  }.toEither
+    // Add Tapir endpoints
+    for endpoint <- allEndpointImpls do
+      val attach = VertxFutureServerInterpreter().route(endpoint)
+      attach(router)
+
+    Await.result(server.requestHandler(router).listen(port).asScala, Duration.Inf)
