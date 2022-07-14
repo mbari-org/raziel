@@ -36,7 +36,7 @@ object EndpointsController:
 
     authenticate(token)
 
-  private def authenticate(token: Option[String]): Boolean = 
+  private def authenticate(token: Option[String]): Boolean =
     val auth = token.toRight(Unauthorized("JWT token is missing"))
 
     val either = for

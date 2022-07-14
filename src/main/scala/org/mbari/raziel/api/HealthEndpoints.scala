@@ -73,18 +73,20 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
       .in("health" / "status")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listAllServices")
-      .description("Get a list of the services. Services that are down will not include health status")
+      .description(
+        "Get a list of the services. Services that are down will not include health status"
+      )
       .tag("health")
   val statusImpl: ServerEndpoint[Any, Future]                                 =
     statusEndpoint.serverLogic(Unit => Future(controller.currentServiceStatus()))
 
-  override def all: List[Endpoint[?, ?, ?, ?, ?]]  = List(
+  override def all: List[Endpoint[?, ?, ?, ?, ?]] = List(
     defaultEndpoint,
     expectedEndpoint,
     availableEndpoint,
     statusEndpoint
   )
-  val allImpl: List[ServerEndpoint[Any, Future]]     = List(
+  val allImpl: List[ServerEndpoint[Any, Future]]  = List(
     defaultImpl,
     expectedImpl,
     availableImpl,

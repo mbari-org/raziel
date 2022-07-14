@@ -89,8 +89,6 @@ object Main:
       endpointEndpoints.allImpl ++
       swaggerEndpoints.allImpl
 
-    
-
     // -- Vert.x server
     val vertx  = Vertx.vertx()
     val server = vertx.createHttpServer()

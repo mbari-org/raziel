@@ -28,7 +28,7 @@ import sttp.tapir.server.ServerEndpoint
 trait Endpoints:
   val log = System.getLogger(getClass.getName)
 
-  def all: List[Endpoint[?, ?, ?, ?, ?]] 
+  def all: List[Endpoint[?, ?, ?, ?, ?]]
   def allImpl: List[ServerEndpoint[Any, Future]]
 
   val baseEndpoint = endpoint.errorOut(

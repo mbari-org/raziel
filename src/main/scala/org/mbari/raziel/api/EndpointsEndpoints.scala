@@ -176,5 +176,5 @@ class EndpointsEndpoints(using ec: ExecutionContext) extends org.mbari.raziel.ap
       .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
       .serverLogic(tokenOpt => _ => Future(Right(EndpointsController.getEndpoints(tokenOpt))))
 
-  override val all: List[Endpoint[?, ?, ?, ?, ?]]       = List(endpoints)
+  override val all: List[Endpoint[?, ?, ?, ?, ?]]         = List(endpoints)
   override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)

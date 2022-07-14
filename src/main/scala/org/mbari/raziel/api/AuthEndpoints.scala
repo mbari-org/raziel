@@ -41,13 +41,15 @@ class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) 
       .name("authenticate")
       .description("Exchange an API key or user credentials for a JWT")
       .tag("auth")
-  val authEndpointImpl: ServerEndpoint[Any, Future] = 
+  val authEndpointImpl: ServerEndpoint[Any, Future]                                               =
     authEndpoint
-      .serverSecurityLogic(userPwdOpt => 
-        Future.successful(Right(userPwdOpt.map(up => BasicAuth(up.username, up.password.get)))))
-      .serverLogic( basicAuthOpt => xApiKeyOpt =>
-        log.atInfo.log(() => s"Found headers $xApiKeyOpt, $basicAuthOpt")
-        Future(authController.authenticate(xApiKeyOpt, basicAuthOpt))
+      .serverSecurityLogic(userPwdOpt =>
+        Future.successful(Right(userPwdOpt.map(up => BasicAuth(up.username, up.password.get))))
+      )
+      .serverLogic(basicAuthOpt =>
+        xApiKeyOpt =>
+          log.atInfo.log(() => s"Found headers $xApiKeyOpt, $basicAuthOpt")
+          Future(authController.authenticate(xApiKeyOpt, basicAuthOpt))
       )
 
   val verifyEndpoint: Endpoint[Option[String], Unit, ErrorMsg, Map[String, String], Any] =
@@ -62,9 +64,8 @@ class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) 
   val verifyEndpointImpl: ServerEndpoint[Any, Future]                                    =
     verifyEndpoint
       .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
-      .serverLogic(tokenOpt => _  => Future(authController.verify(tokenOpt)))
+      .serverLogic(tokenOpt => _ => Future(authController.verify(tokenOpt)))
 
-
-  override val all: List[Endpoint[?, ?, ?, ?, ?]]      = List(authEndpoint, verifyEndpoint)
+  override val all: List[Endpoint[?, ?, ?, ?, ?]]         = List(authEndpoint, verifyEndpoint)
   override val allImpl: List[ServerEndpoint[Any, Future]] =
     List(authEndpointImpl, verifyEndpointImpl)
