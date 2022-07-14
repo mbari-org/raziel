@@ -29,20 +29,25 @@ object EndpointsController:
   private val unsecuredEndpoints: List[EndpointConfig] =
     EndpointConfig.defaults.map(_.copy(secret = None))
 
-  private def authenticate(authHeader: Option[String]): Boolean =
-    val auth = authHeader
+  private def authenticateRaw(authHeader: Option[String]): Boolean =
+    val token = authHeader
       .flatMap(a => BearerAuth.parse(a))
-      .toRight(new IllegalArgumentException("Authorization header required"))
+      .map(_.accessToken)
+
+    authenticate(token)
+
+  private def authenticate(token: Option[String]): Boolean = 
+    val auth = token.toRight(Unauthorized("JWT token is missing"))
 
     val either = for
       a          <- auth
-      decodedJwt <- jwtHelper.verifyJwt(a.accessToken)
+      decodedJwt <- jwtHelper.verifyJwt(a)
     yield decodedJwt
 
     either.isRight
 
-  def getEndpoints(authHeader: Option[String]): List[EndpointConfig] =
-    if (authenticate(authHeader))
+  def getEndpoints(token: Option[String]): List[EndpointConfig] =
+    if (authenticate(token))
       securedEndpoints
     else
       unsecuredEndpoints

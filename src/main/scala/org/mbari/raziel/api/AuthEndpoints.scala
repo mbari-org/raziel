@@ -24,35 +24,47 @@ import sttp.tapir._
 import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe._
 import sttp.tapir.server.ServerEndpoint
+import org.mbari.raziel.etc.jdk.Logging.given
+import sttp.tapir.model.UsernamePassword
+import sttp.model.headers.WWWAuthenticateChallenge
+import org.mbari.raziel.domain.BasicAuth
 
 class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) extends Endpoints:
 
-  val authEndpoint: PublicEndpoint[(Option[String], Option[String]), ErrorMsg, BearerAuth, Any] =
+  val authEndpoint: Endpoint[Option[UsernamePassword], Option[String], ErrorMsg, BearerAuth, Any] =
     baseEndpoint
       .post
       .in("auth")
+      .securityIn(auth.basic[Option[UsernamePassword]](WWWAuthenticateChallenge.basic))
       .in(header[Option[String]]("X-Api-Key"))
-      .in(header[Option[String]]("Authorization"))
       .out(jsonBody[BearerAuth])
-      .description("Authenticate with API key")
-  val authEndpointImpl: ServerEndpoint[Any, Future]                                             =
+      .name("authenticate")
+      .description("Exchange an API key or user credentials for a JWT")
+      .tag("auth")
+  val authEndpointImpl: ServerEndpoint[Any, Future] = 
     authEndpoint
-      .serverLogic((xApiKeyOpt, authOpt) =>
-        Future(authController.authenticate(xApiKeyOpt, authOpt))
+      .serverSecurityLogic(userPwdOpt => 
+        Future.successful(Right(userPwdOpt.map(up => BasicAuth(up.username, up.password.get)))))
+      .serverLogic( basicAuthOpt => xApiKeyOpt =>
+        log.atInfo.log(() => s"Found headers $xApiKeyOpt, $basicAuthOpt")
+        Future(authController.authenticate(xApiKeyOpt, basicAuthOpt))
       )
 
-  val verifyEndpoint: PublicEndpoint[Option[String], ErrorMsg, Map[String, String], Any] =
+  val verifyEndpoint: Endpoint[Option[String], Unit, ErrorMsg, Map[String, String], Any] =
     baseEndpoint
       .post
       .in("auth" / "verify")
-      .in(header[Option[String]]("Authorization"))
+      .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[Map[String, String]])
+      .name("verifyAuthentication")
       .description("Verify the user's JWT token")
+      .tag("auth")
   val verifyEndpointImpl: ServerEndpoint[Any, Future]                                    =
     verifyEndpoint
-      .serverLogic(authOpt => Future(authController.verify(authOpt)))
+      .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
+      .serverLogic(tokenOpt => _  => Future(authController.verify(tokenOpt)))
 
 
-  override val all: List[PublicEndpoint[?, ?, ?, ?]]      = List(authEndpoint, verifyEndpoint)
+  override val all: List[Endpoint[?, ?, ?, ?, ?]]      = List(authEndpoint, verifyEndpoint)
   override val allImpl: List[ServerEndpoint[Any, Future]] =
     List(authEndpointImpl, verifyEndpointImpl)

@@ -37,10 +37,7 @@ class AuthController(varsUserServer: VarsUserServer):
   private val jwtHelper = JwtHelper.default
   private val runtime   = zio.Runtime.default
 
-  def authenticate(
-      xApiKey: Option[String] = None,
-      authorization: Option[String] = None
-  ): Either[ErrorMsg, BearerAuth] =
+  def authenticate(xApiKey: Option[String], auth: Option[BasicAuth]): Either[ErrorMsg, BearerAuth] = 
     xApiKey match
       case Some(key) =>
         if (key == AppConfig.MasterKey)
@@ -48,12 +45,9 @@ class AuthController(varsUserServer: VarsUserServer):
           Right(BearerAuth(token))
         else Left(Unauthorized("Invalid credentials"))
       case None      =>
-        val auth = authorization
-          .flatMap(a => BasicAuth.parse(a))
-          .toRight(Unauthorized("Authorization header required"))
 
         val app = for
-          a       <- IO.fromEither(auth)
+          a       <- IO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
           // _  <- Task.succeed(log.info(s"auth: $a"))
           u       <- varsUserServer.Users.findByName(a.username)
           // _  <- Task.succeed(log.info(s"user: $u"))
@@ -77,14 +71,16 @@ class AuthController(varsUserServer: VarsUserServer):
           case Failure(e)       =>
             Left(ServerError(e.getMessage))
 
-  def verify(authorization: Option[String]): Either[ErrorMsg, Map[String, String]] =
-    val auth = authorization
-      .flatMap(a => BearerAuth.parse(a))
-      .toRight(Unauthorized("Authorization header required"))
+  def authenticateRaw(
+      xApiKey: Option[String] = None,
+      authorization: Option[String] = None
+  ): Either[ErrorMsg, BearerAuth] =
+    authenticate(xApiKey, authorization.flatMap(BasicAuth.parse))
 
+  def verify(tokenOpt: Option[String]): Either[ErrorMsg, Map[String, String]] = 
     val either = for
-      a          <- auth
-      decodedJwt <- jwtHelper.verifyJwt(a.accessToken)
+      token          <- tokenOpt.toRight(Unauthorized("Missing or invalid token"))
+      decodedJwt <- jwtHelper.verifyJwt(token)
     yield decodedJwt
 
     either match
@@ -100,3 +96,12 @@ class AuthController(varsUserServer: VarsUserServer):
 
       case Left(e) =>
         Left(Unauthorized(s"Invalid credentials: ${e.getClass}"))
+
+
+  def verifyRaw(authorization: Option[String]): Either[ErrorMsg, Map[String, String]] =
+    
+    val tokenOpt = authorization
+      .flatMap(BearerAuth.parse)
+      .map(_.accessToken)
+
+    verify(tokenOpt)

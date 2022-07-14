@@ -27,6 +27,7 @@ import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 import java.net.URL
 import scala.util.Try
+import sttp.model.headers.WWWAuthenticateChallenge
 
 /**
  * Returns infomation about the proxied endpoints
@@ -159,17 +160,21 @@ class EndpointsEndpoints(using ec: ExecutionContext) extends org.mbari.raziel.ap
 
   given Schema[URL] = Schema.string
 
-  val endpoints: PublicEndpoint[Option[String], ErrorMsg, List[EndpointConfig], Any] =
+  val endpoints: Endpoint[Option[String], Unit, ErrorMsg, List[EndpointConfig], Any] =
     baseEndpoint
       .get
       .in("endpoints")
-      .in(header[Option[String]]("Authorization"))
+      .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[List[EndpointConfig]])
+      .name("listEndpoints")
       .description(
         "List available endpoints. Authorization header is optional. If defined it returns connection information for the endpoint."
       )
+      .tag("configuration")
   val endpointsImpl: ServerEndpoint[Any, Future]                                     =
-    endpoints.serverLogic(authOpt => Future(Right(EndpointsController.getEndpoints(authOpt))))
+    endpoints
+      .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
+      .serverLogic(tokenOpt => _ => Future(Right(EndpointsController.getEndpoints(tokenOpt))))
 
-  override val all: List[PublicEndpoint[?, ?, ?, ?]]      = List(endpoints)
+  override val all: List[Endpoint[?, ?, ?, ?, ?]]       = List(endpoints)
   override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)

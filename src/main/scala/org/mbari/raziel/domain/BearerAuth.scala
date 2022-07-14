@@ -30,6 +30,7 @@ case class BearerAuth(accessToken: String) extends Auth(BearerAuth.TokenType)
 
 object BearerAuth:
 
+
   val TokenType = "Bearer"
 
   /**

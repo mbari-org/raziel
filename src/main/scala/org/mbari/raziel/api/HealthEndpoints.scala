@@ -35,7 +35,9 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
       .get
       .in("health")
       .out(jsonBody[HealthStatus])
+      .name("razielHealth")
       .description("Get the health status of the server")
+      .tag("health")
   val defaultImpl: ServerEndpoint[Any, Future]                           =
     defaultEndpoint.serverLogic(Unit => Future(Right(controller.defaultHealthStatus)))
 
@@ -44,9 +46,11 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
       .get
       .in("health" / "expected")
       .out(jsonBody[Seq[ServiceStatus]])
+      .name("listExpectedServices")
       .description(
         "Get a list of the expected services. This returns services that are expected to be running, but might not be."
       )
+      .tag("health")
   val expectedImpl: ServerEndpoint[Any, Future]                                 =
     expectedEndpoint.serverLogic(Unit => Future(Right(controller.expectedServiceStatus)))
 
@@ -55,9 +59,11 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
       .get
       .in("health" / "available")
       .out(jsonBody[Seq[ServiceStatus]])
+      .name("listAvailableServices")
       .description(
         "Get a list of the available services. Services that are down will not be included"
       )
+      .tag("health")
   val availableImpl: ServerEndpoint[Any, Future]                                 =
     availableEndpoint.serverLogic(Unit => Future(controller.availableServiceStatus()))
 
@@ -66,11 +72,13 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
       .get
       .in("health" / "status")
       .out(jsonBody[Seq[ServiceStatus]])
-      .description("Get a list of the services. Services that are down will not be included")
+      .name("listAllServices")
+      .description("Get a list of the services. Services that are down will not include health status")
+      .tag("health")
   val statusImpl: ServerEndpoint[Any, Future]                                 =
     statusEndpoint.serverLogic(Unit => Future(controller.currentServiceStatus()))
 
-  override def all: List[PublicEndpoint[?, ?, ?, ?]] = List(
+  override def all: List[Endpoint[?, ?, ?, ?, ?]]  = List(
     defaultEndpoint,
     expectedEndpoint,
     availableEndpoint,
