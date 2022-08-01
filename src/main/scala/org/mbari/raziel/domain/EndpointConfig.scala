@@ -81,6 +81,7 @@ object EndpointConfig:
    */
   def defaults: List[EndpointConfig] =
     AppConfig.Annosaurus ::
+      AppConfig.Beholder ::
       AppConfig.Charybdis ::
       AppConfig.Panoptes ::
       AppConfig.VampireSquid ::
