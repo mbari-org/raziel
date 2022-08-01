@@ -63,6 +63,14 @@ object AppConfig:
     log.atDebug.log(s"Annosaurus URL: $url")
     EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno", internalUrl)
 
+  lazy val Beholder: EndpointConfig = 
+    val url = asUrl(config.getString("beholder.url"))
+    val timeout = config.getDuration("beholder.timeout")
+    val secret = config.getString("beholder.secret")
+    val internalUrl = asUrl(config.getString("beholder.internal.url"))
+    log.atDebug.log(s"Beholder URL: $url")
+    EndpointConfig("beholder", url, timeout, Some(secret), "/beholder", internalUrl)
+  
   lazy val Charybdis: EndpointConfig =
     val url         = asUrl(config.getString("charybdis.url"))
     val timeout     = config.getDuration("charybdis.timeout")

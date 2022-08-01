@@ -13,7 +13,8 @@ if [[ $ARCH == 'arm64' ]]; then
       --platform linux/amd64,linux/arm64 \
       -t mbari/raziel:${VCS_REF} \
       -t mbari/raziel:latest \
-      --push .
+      --push . \
+    && docker pull mbari/raziel:latest
 else
     sbt 'Docker / publish'
 fi

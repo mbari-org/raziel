@@ -71,13 +71,14 @@ object Main:
 
     // -- Service providers
     val annosaurus     = Annosaurus.default
+    val beholder       = Beholder.default
     val charybdis      = Charybdis.default
     val panoptes       = Panoptes.default
     val vampireSquid   = VampireSquid.default
     val varsKbServer   = VarsKbServer.default
     val varsUserServer = VarsUserServer.default
     val healthServices =
-      Seq(annosaurus, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
+      Seq(annosaurus, beholder, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
 
     // -- Tapir endpoints
     val authEndpoints     = AuthEndpoints(AuthController(varsUserServer))
