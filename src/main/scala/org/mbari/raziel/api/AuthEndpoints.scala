@@ -29,12 +29,12 @@ import sttp.tapir.model.UsernamePassword
 import sttp.model.headers.WWWAuthenticateChallenge
 import org.mbari.raziel.domain.BasicAuth
 
-class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) extends Endpoints:
+class AuthEndpoints(authController: AuthController, context: String = "config")(using ec: ExecutionContext) extends Endpoints:
 
   val authEndpoint: Endpoint[Option[UsernamePassword], Option[String], ErrorMsg, BearerAuth, Any] =
     baseEndpoint
       .post
-      .in("config" / "auth")
+      .in(context / "auth")
       .securityIn(auth.basic[Option[UsernamePassword]](WWWAuthenticateChallenge.basic))
       .in(header[Option[String]]("X-Api-Key"))
       .out(jsonBody[BearerAuth])
@@ -55,7 +55,7 @@ class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) 
   val verifyEndpoint: Endpoint[Option[String], Unit, ErrorMsg, Map[String, String], Any] =
     baseEndpoint
       .post
-      .in("config" / "auth" / "verify")
+      .in(context / "auth" / "verify")
       .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[Map[String, String]])
       .name("verifyAuthentication")

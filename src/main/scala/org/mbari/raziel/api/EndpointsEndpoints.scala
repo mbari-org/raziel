@@ -156,14 +156,14 @@ import sttp.model.headers.WWWAuthenticateChallenge
  *   Brian Schlining
  * @since 2021-12-23T11:00:00
  */
-class EndpointsEndpoints(using ec: ExecutionContext) extends org.mbari.raziel.api.Endpoints:
+class EndpointsEndpoints(context: String = "config")(using ec: ExecutionContext) extends org.mbari.raziel.api.Endpoints:
 
   given Schema[URL] = Schema.string
 
   val endpoints: Endpoint[Option[String], Unit, ErrorMsg, List[EndpointConfig], Any] =
     baseEndpoint
       .get
-      .in("config" / "endpoints")
+      .in(context / "endpoints")
       .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[List[EndpointConfig]])
       .name("listEndpoints")

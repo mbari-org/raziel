@@ -27,13 +27,13 @@ import org.mbari.raziel.domain.ErrorMsg
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.domain.ServiceStatus
 
-class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
+class HealthEndpoints(controller: HealthController, context: String = "config")(using ec: ExecutionContext)
     extends org.mbari.raziel.api.Endpoints:
 
   val defaultEndpoint: PublicEndpoint[Unit, ErrorMsg, HealthStatus, Any] =
     baseEndpoint
       .get
-      .in("config" / "health")
+      .in(context / "health")
       .out(jsonBody[HealthStatus])
       .name("razielHealth")
       .description("Get the health status of the server")
@@ -44,7 +44,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val expectedEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("config" / "health" / "expected")
+      .in(context / "health" / "expected")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listExpectedServices")
       .description(
@@ -57,7 +57,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val availableEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("config" / "health" / "available")
+      .in(context / "health" / "available")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listAvailableServices")
       .description(
@@ -70,7 +70,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val statusEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("config" / "health" / "status")
+      .in(context / "health" / "status")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listAllServices")
       .description(

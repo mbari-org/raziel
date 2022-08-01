@@ -81,9 +81,10 @@ object Main:
       Seq(annosaurus, beholder, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
 
     // -- Tapir endpoints
-    val authEndpoints     = AuthEndpoints(AuthController(varsUserServer))
-    val healthEndpoints   = HealthEndpoints(HealthController(healthServices))
-    val endpointEndpoints = EndpointsEndpoints()
+    val context = AppConfig.Http.Context
+    val authEndpoints     = AuthEndpoints(AuthController(varsUserServer), context)
+    val healthEndpoints   = HealthEndpoints(HealthController(healthServices), context)
+    val endpointEndpoints = EndpointsEndpoints(context)
     val swaggerEndpoints  = SwaggerEndpoints(authEndpoints, endpointEndpoints, healthEndpoints)
     val allEndpointImpls  = authEndpoints.allImpl ++
       healthEndpoints.allImpl ++
