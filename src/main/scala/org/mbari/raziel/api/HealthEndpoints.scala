@@ -33,7 +33,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val defaultEndpoint: PublicEndpoint[Unit, ErrorMsg, HealthStatus, Any] =
     baseEndpoint
       .get
-      .in("health")
+      .in("config" / "health")
       .out(jsonBody[HealthStatus])
       .name("razielHealth")
       .description("Get the health status of the server")
@@ -44,7 +44,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val expectedEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("health" / "expected")
+      .in("config" / "health" / "expected")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listExpectedServices")
       .description(
@@ -57,7 +57,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val availableEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("health" / "available")
+      .in("config" / "health" / "available")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listAvailableServices")
       .description(
@@ -70,7 +70,7 @@ class HealthEndpoints(controller: HealthController)(using ec: ExecutionContext)
   val statusEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
     baseEndpoint
       .get
-      .in("health" / "status")
+      .in("config" / "health" / "status")
       .out(jsonBody[Seq[ServiceStatus]])
       .name("listAllServices")
       .description(

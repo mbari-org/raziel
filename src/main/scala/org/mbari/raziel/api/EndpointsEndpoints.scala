@@ -163,7 +163,7 @@ class EndpointsEndpoints(using ec: ExecutionContext) extends org.mbari.raziel.ap
   val endpoints: Endpoint[Option[String], Unit, ErrorMsg, List[EndpointConfig], Any] =
     baseEndpoint
       .get
-      .in("endpoints")
+      .in("config" / "endpoints")
       .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[List[EndpointConfig]])
       .name("listEndpoints")

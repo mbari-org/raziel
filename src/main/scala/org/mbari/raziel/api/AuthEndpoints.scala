@@ -34,7 +34,7 @@ class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) 
   val authEndpoint: Endpoint[Option[UsernamePassword], Option[String], ErrorMsg, BearerAuth, Any] =
     baseEndpoint
       .post
-      .in("auth")
+      .in("config" / "auth")
       .securityIn(auth.basic[Option[UsernamePassword]](WWWAuthenticateChallenge.basic))
       .in(header[Option[String]]("X-Api-Key"))
       .out(jsonBody[BearerAuth])
@@ -55,7 +55,7 @@ class AuthEndpoints(authController: AuthController)(using ec: ExecutionContext) 
   val verifyEndpoint: Endpoint[Option[String], Unit, ErrorMsg, Map[String, String], Any] =
     baseEndpoint
       .post
-      .in("auth" / "verify")
+      .in("config" / "auth" / "verify")
       .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
       .out(jsonBody[Map[String, String]])
       .name("verifyAuthentication")
