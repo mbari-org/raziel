@@ -3,7 +3,7 @@ import Dependencies._
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
-Laika / sourceDirectories     := Seq(baseDirectory.value / "docs")
+// Laika / sourceDirectories     := Seq(baseDirectory.value / "src" / "docs")
 Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"
@@ -35,6 +35,14 @@ lazy val root = project
       else None
     },
     git.useGitDescribe := true,
+    laikaTheme := Helium.defaults
+      .site
+      .topNavigationBar(
+        navLinks = Seq(
+          IconLink.external("https://github.com/mbari-org/raziel", HeliumIcon.github),
+          IconLink.internal(ast.Path.Root / "api" / "index.html", HeliumIcon.api)
+        )
+      ).build, 
     laikaExtensions    := Seq(
       laika.markdown.github.GitHubFlavor,
       laika.parse.code.SyntaxHighlighting
