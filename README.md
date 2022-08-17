@@ -1,6 +1,6 @@
 # raziel
 
-![MBARI logo](docs/images/logo-mbari-3b.png)
+![MBARI logo](src/docs/images/logo-mbari-3b.png)
 
 Raziel is a configuration server, the keeper of secrets. It can be used to lookup the configuration of a M3/VARS installation.
 
