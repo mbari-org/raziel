@@ -14,14 +14,18 @@ sequenceDiagram
     participant R as Raziel
     participant A as Annosaurus
 
+    rect rgb(150, 114, 114)
     U->>+R: POST /config/auth<br/>Authorization: Basic <auth>
     R-->>-U: {"accessToken": <JWT 1> }
     U->>+R: GET /config/endpoints<br/>Authorization: Bearer <JWT 1>
     R-->>-U: JSON with secrets
+    end
+    rect rgb(114, 150, 114)
     U->>+A: POST /auth<br/>Authorization: APIKEY <secret>
     A-->>-U: {"access_token": <JWT 2> ... }
     U->>+A: POST/PUT/DELETE /some/method<br/>Authorization: Bearer <JWT 2>
     A-->>-U: 200 w/ content
+    end
 
 ```
 
