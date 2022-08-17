@@ -23,6 +23,8 @@ jobs:
           cache: "sbt"
       - name: Build site
         run: sbt laikaSite
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload site
         uses: actions/upload-pages-artifact@v1.0.1
         with:
