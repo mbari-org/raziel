@@ -1,5 +1,11 @@
 import Dependencies._
 
+import laika.ast
+import laika.helium.config.HeliumIcon
+import laika.helium.config.IconLink
+import laika.theme.config.Color
+import laika.helium.Helium
+
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
