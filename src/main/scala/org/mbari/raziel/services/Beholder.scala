@@ -37,7 +37,7 @@ class Beholder(
 
   override val name: String = "beholder"
 
-  def health(): Task[HealthStatus] = 
+  def health(): Task[HealthStatus] =
     val request = HttpRequest
       .newBuilder()
       .uri(URI.create(s"$rootUrl/health"))
@@ -47,10 +47,9 @@ class Beholder(
     httpClientSupport
       .requestObjectsZ[HealthStatus](request)
 
-
 object Beholder:
 
-  def default(using executor: Executor) = 
+  def default(using executor: Executor) =
     new Beholder(
       AppConfig.Beholder.internalUrl.toExternalForm(),
       AppConfig.Beholder.timeout,

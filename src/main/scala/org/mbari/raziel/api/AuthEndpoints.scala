@@ -29,7 +29,9 @@ import sttp.tapir.model.UsernamePassword
 import sttp.model.headers.WWWAuthenticateChallenge
 import org.mbari.raziel.domain.BasicAuth
 
-class AuthEndpoints(authController: AuthController, context: String = "config")(using ec: ExecutionContext) extends Endpoints:
+class AuthEndpoints(authController: AuthController, context: String = "config")(using
+    ec: ExecutionContext
+) extends Endpoints:
 
   val authEndpoint: Endpoint[Option[UsernamePassword], Option[String], ErrorMsg, BearerAuth, Any] =
     baseEndpoint

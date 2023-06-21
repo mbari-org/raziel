@@ -27,8 +27,9 @@ import org.mbari.raziel.domain.ErrorMsg
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.domain.ServiceStatus
 
-class HealthEndpoints(controller: HealthController, context: String = "config")(using ec: ExecutionContext)
-    extends org.mbari.raziel.api.Endpoints:
+class HealthEndpoints(controller: HealthController, context: String = "config")(using
+    ec: ExecutionContext
+) extends org.mbari.raziel.api.Endpoints:
 
   val defaultEndpoint: PublicEndpoint[Unit, ErrorMsg, HealthStatus, Any] =
     baseEndpoint
