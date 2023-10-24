@@ -61,10 +61,10 @@ class HttpClientSupport(
    */
   def requestObjectsZ[T](
       request: HttpRequest
-  )(implicit decoder: Decoder[T]): Task[T] = zio.Task.fromEither(requestObjects(request))
+  )(implicit decoder: Decoder[T]): Task[T] = zio.ZIO.fromEither(requestObjects(request))
 
   def requestStringZ(request: HttpRequest): Task[String] =
-    zio.Task.fromEither(requestString(request))
+    zio.ZIO.fromEither(requestString(request))
 
   def requestObjects[T: Decoder](request: HttpRequest): Either[Throwable, T] =
     for

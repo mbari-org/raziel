@@ -39,15 +39,24 @@ class Charybdis(
   val name = "charybdis"
 
   def health(): Task[HealthStatus] =
-    val request = HttpRequest
+
+    val request0 = HttpRequest
       .newBuilder()
       .uri(URI.create(s"$rootUrl/health"))
       .header("Accept", "application/json")
       .GET()
       .build()
 
+    val request1 = HttpRequest
+      .newBuilder()
+      .uri(URI.create(s"$rootUrl/observe/health"))
+      .header("Accept", "application/json")
+      .GET()
+      .build()
+
     for
-      body         <- httpClientSupport.requestStringZ(request)
+      // Try the new endpoint first, fall back to the old one
+      body         <- httpClientSupport.requestStringZ(request1).orElse(httpClientSupport.requestStringZ(request0))
       healthStatus <- ZIO.fromEither(
                         HealthStatusHelidon
                           .parseString(body)

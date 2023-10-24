@@ -22,11 +22,10 @@ import org.junit.Assert.*
 
 class HexUtilSuite extends munit.FunSuite:
 
-  test("HexUtil and HexFormat match") {
+  test("HexUtil and HexFormat match"):
     val s = "how much Woood would a woodchuck chuck if a woodchuck could chuck wood?"
     val a = HexUtil.toHex(s.getBytes)
     val b = HexFormat.of().formatHex(s.getBytes)
     assertEquals(a, b)
     
-  }
   

@@ -20,7 +20,7 @@ import cats.syntax.profunctor
 
 class HealthStatusHelidonSuite extends munit.FunSuite:
 
-  test("parseString") {
+  test("parseString"):
     val url = getClass.getResource("/charybdis_health.json")
     val s   = scala.io.Source.fromURL(url).getLines.mkString("\n")
     HealthStatusHelidon.parseString(s) match
@@ -30,4 +30,3 @@ class HealthStatusHelidonSuite extends munit.FunSuite:
         assertEquals(h.totalMemory, 112197632L)
       case None    => fail("Expected Some(HealthStatus), got None")
 
-  }

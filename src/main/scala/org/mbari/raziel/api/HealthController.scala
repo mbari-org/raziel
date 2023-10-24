@@ -25,10 +25,10 @@ import org.mbari.raziel.domain.ErrorMsg
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import org.mbari.raziel.etc.zio.ZioUtil
 
 class HealthController(services: Seq[HasHealth]):
 
-  private val runtime       = zio.Runtime.default
   private val healthService = HealthService(services)
 
   def defaultHealthStatus: HealthStatus = HealthStatus.default
@@ -42,7 +42,7 @@ class HealthController(services: Seq[HasHealth]):
         .filter(_.freeMemory > 0)
         .map(hs => ServiceStatus(hs.application, Some(hs)))
 
-    Try(runtime.unsafeRun(app)) match
+    Try(ZioUtil.unsafeRun(app)) match
       case Success(s) => Right(s)
       case Failure(e) =>
         Left(ServerError(e.getMessage))
@@ -56,7 +56,7 @@ class HealthController(services: Seq[HasHealth]):
           ServiceStatus(hs.application, ss)
         )
 
-    Try(runtime.unsafeRun(app)) match
+    Try(ZioUtil.unsafeRun(app)) match
       case Success(s) => Right(s)
       case Failure(e) =>
         Left(ServerError(e.getMessage))

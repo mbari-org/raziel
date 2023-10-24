@@ -31,11 +31,12 @@ import scala.util.Failure
 import zio.Task
 import scala.jdk.CollectionConverters.*
 import org.mbari.raziel.domain.JwtAuthPayload
+import zio.ZIO
+import org.mbari.raziel.etc.zio.ZioUtil
 
 class AuthController(varsUserServer: VarsUserServer):
 
   private val jwtHelper = JwtHelper.default
-  private val runtime   = zio.Runtime.default
 
   def authenticate(xApiKey: Option[String], auth: Option[BasicAuth]): Either[ErrorMsg, BearerAuth] =
     xApiKey match
@@ -46,12 +47,12 @@ class AuthController(varsUserServer: VarsUserServer):
         else Left(Unauthorized("Invalid credentials"))
       case None      =>
         val app = for
-          a       <- IO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
+          a       <- ZIO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
           // _  <- Task.succeed(log.info(s"auth: $a"))
           u       <- varsUserServer.Users.findByName(a.username)
           // _  <- Task.succeed(log.info(s"user: $u"))
-          ok      <- Task.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
-          payload <- Task.succeed(
+          ok      <- ZIO.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
+          payload <- ZIO.succeed(
                        if (ok)
                          Some(JwtAuthPayload.fromUser(u.get))
                        else
@@ -59,7 +60,7 @@ class AuthController(varsUserServer: VarsUserServer):
                      )
         yield payload
 
-        Try(runtime.unsafeRun(app)) match
+        Try(ZioUtil.unsafeRun(app)) match
           case Success(payload) =>
             payload match
               case Some(p) =>

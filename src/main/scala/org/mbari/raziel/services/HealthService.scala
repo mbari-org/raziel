@@ -26,7 +26,7 @@ class HealthService(services: Seq[HasHealth]):
   def fetchHealth(): Task[Seq[HealthStatus]] =
     for
       healthStati <-
-        Task.collectAll(
+        ZIO.collectAll(
           services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
         )
     yield (healthStati :+ HealthStatus.default)

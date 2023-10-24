@@ -21,6 +21,5 @@ import org.junit.Assert.*
 
 class SanitySuite extends munit.FunSuite:
 
-  test("munit is working") {
+  test("munit is working"):
     assertEquals(true, true)
-  }
