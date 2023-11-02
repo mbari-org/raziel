@@ -50,7 +50,7 @@ class AuthEndpoints(authController: AuthController, context: String = "config")(
       )
       .serverLogic(basicAuthOpt =>
         xApiKeyOpt =>
-          log.atInfo.log(() => s"Found headers $xApiKeyOpt, $basicAuthOpt")
+//          log.atInfo.log(() => s"Found headers $xApiKeyOpt, $basicAuthOpt")
           Future(authController.authenticate(xApiKeyOpt, basicAuthOpt))
       )
 
