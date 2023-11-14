@@ -2,7 +2,7 @@
 
 ![Unit Tests](https://github.com/mbari-org/raziel/actions/workflows/test.yml/badge.svg)
 
-![MBARI logo](src/docs/images/logo-mbari-3b.png)
+![MBARI logo](src/docs/_asssets/images/logo-mbari-3b.png)
 
 Raziel is a configuration server, the keeper of secrets. It can be used to lookup the configuration of a M3/VARS installation.
 

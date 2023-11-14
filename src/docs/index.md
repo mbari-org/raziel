@@ -4,4 +4,4 @@ Raziel is a configuration server for the Video Annotation and Reference System (
 
 ## Documentation
 
-Documentation is at <https://mbari-org.github.io/raziel/>
+Documentation is at <https://mbari-org.github.io/raziel/>. Source code is at <https://github.com/mbari-org/raziel>.

@@ -9,6 +9,12 @@ import laika.helium.Helium
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
+Compile / doc / scalacOptions ++= Seq(
+    "-groups",
+    "-project-footer", "Monterey Bay Aquarium Research Institute",
+    "-siteroot", "src/docs",
+    "-doc-root-content", "./src/docs/index.md"
+    )
 // Laika / sourceDirectories     := Seq(baseDirectory.value / "src" / "docs")
 Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
@@ -26,8 +32,7 @@ lazy val root = project
     DockerPlugin, 
     GitBranchPrompt, 
     GitVersioning, 
-    JavaAppPackaging, 
-    LaikaPlugin)
+    JavaAppPackaging)
   .settings(
     name               := "raziel",
     dockerBaseImage    := "openjdk:17",
@@ -41,19 +46,6 @@ lazy val root = project
       else None
     },
     git.useGitDescribe := true,
-    laikaTheme := Helium.defaults
-      .site
-      .topNavigationBar(
-        navLinks = Seq(
-          IconLink.external("https://github.com/mbari-org/raziel", HeliumIcon.github),
-          IconLink.internal(ast.Path.Root / "api" / "index.html", HeliumIcon.api)
-        )
-      ).build, 
-    laikaExtensions    := Seq(
-      laika.markdown.github.GitHubFlavor,
-      laika.parse.code.SyntaxHighlighting
-    ),
-    laikaIncludeAPI    := true,
     resolvers ++= Seq(
       Resolver.githubPackages("mbari-org", "maven")
     ),
