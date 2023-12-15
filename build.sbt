@@ -15,7 +15,6 @@ Compile / doc / scalacOptions ++= Seq(
     "-siteroot", "src/docs",
     "-doc-root-content", "./src/docs/index.md"
     )
-// Laika / sourceDirectories     := Seq(baseDirectory.value / "src" / "docs")
 Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"

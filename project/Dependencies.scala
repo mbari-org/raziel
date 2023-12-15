@@ -11,7 +11,7 @@ object Dependencies {
 
   lazy val jansi    = "org.fusesource.jansi"         % "jansi"           % "2.4.1"
   lazy val jasypt   = "org.jasypt"                   % "jasypt"          % "1.9.3"
-  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.4.11"
+  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.4.14"
   lazy val methanol = "com.github.mizosoft.methanol" % "methanol"        % "1.7.0"
   lazy val munit    = "org.scalameta"               %% "munit"           % "1.0.0-M10"
   lazy val picocli  = "info.picocli"                 % "picocli"         % "4.7.5"
@@ -20,7 +20,7 @@ object Dependencies {
   lazy val slf4jApi     = "org.slf4j" % "slf4j-api"    % slf4jVersion
   lazy val slf4jJul     = "org.slf4j" % "jul-to-slf4j" % slf4jVersion
 
-  private val tapirVersion  = "1.9.0"
+  private val tapirVersion  = "1.9.5"
   lazy val tapirStubServer  = "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server" % tapirVersion
   lazy val tapirSwagger     = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
   lazy val tapirCirce       = "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion
@@ -29,5 +29,5 @@ object Dependencies {
  
     
   lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.3"
-  lazy val zio            = "dev.zio"     %% "zio"    % "2.0.19"
+  lazy val zio            = "dev.zio"     %% "zio"    % "2.0.20"
 }
