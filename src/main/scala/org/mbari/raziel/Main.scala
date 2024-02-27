@@ -104,7 +104,7 @@ object Main:
     val interpreter = VertxFutureServerInterpreter()
     authEndpoints.allImpl.foreach(endpoint => interpreter.blockingRoute(endpoint).apply(router))
     healthEndpoints.allImpl.foreach(endpoint => interpreter.blockingRoute(endpoint).apply(router))
-    endpointEndpoints.allImpl.foreach(endpoint => interpreter.route(endpoint).apply(router))
+    endpointEndpoints.allImpl .foreach(endpoint => interpreter.route(endpoint).apply(router))
     swaggerEndpoints.allImpl.foreach(endpoint => interpreter.route(endpoint).apply(router))
 
 

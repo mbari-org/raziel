@@ -34,7 +34,7 @@ lazy val root = project
     JavaAppPackaging)
   .settings(
     name               := "raziel",
-    dockerBaseImage    := "eclipse-temurin:21-ubi9-minimal",
+    dockerBaseImage    := "eclipse-temurin:21",
     dockerExposedPorts := Seq(8080),
     dockerUpdateLatest := true,
     javacOptions ++= Seq("-target", "21", "-source", "21"),
