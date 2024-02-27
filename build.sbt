@@ -19,7 +19,7 @@ Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"
 ThisBuild / organizationName  := "MBARI"
-ThisBuild / scalaVersion      := "3.3.1"
+ThisBuild / scalaVersion      := "3.3.2"
 ThisBuild / startYear         := Some(2021)
 // ThisBuild / version           := "0.0.1"
 ThisBuild / versionScheme     := Some("semver-spec")
@@ -34,10 +34,10 @@ lazy val root = project
     JavaAppPackaging)
   .settings(
     name               := "raziel",
-    dockerBaseImage    := "openjdk:17",
+    dockerBaseImage    := "eclipse-temurin:21-ubi9-minimal",
     dockerExposedPorts := Seq(8080),
     dockerUpdateLatest := true,
-    javacOptions ++= Seq("-target", "17", "-source", "17"),
+    javacOptions ++= Seq("-target", "21", "-source", "21"),
     // Set version based on git tag. I use "0.0.0" format (no leading "v", which is the default)
     // Use `show gitCurrentTags` in sbt to update/see the tags
     git.gitTagToVersionNumber := { tag: String =>

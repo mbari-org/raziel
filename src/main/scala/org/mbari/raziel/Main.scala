@@ -101,8 +101,15 @@ object Main:
     router.route().handler(corsHandler)
 
     // Add Tapir endpoints
-    for endpoint <- allEndpointImpls do
-      val attach = VertxFutureServerInterpreter().route(endpoint)
-      attach(router)
+    val interpreter = VertxFutureServerInterpreter()
+    authEndpoints.allImpl.foreach(endpoint => interpreter.blockingRoute(endpoint).apply(router))
+    healthEndpoints.allImpl.foreach(endpoint => interpreter.blockingRoute(endpoint).apply(router))
+    endpointEndpoints.allImpl.foreach(endpoint => interpreter.route(endpoint).apply(router))
+    swaggerEndpoints.allImpl.foreach(endpoint => interpreter.route(endpoint).apply(router))
+
+
+//    for endpoint <- allEndpointImpls do
+//      val attach = VertxFutureServerInterpreter().route(endpoint)
+//      attach(router)
 
     Await.result(server.requestHandler(router).listen(port).asScala, Duration.Inf)
