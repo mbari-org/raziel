@@ -21,6 +21,7 @@ import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
 import scala.util.Try
 import org.mbari.raziel.etc.jdk.Logging.{given, *}
+import java.net.URI
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -36,8 +37,8 @@ object AppConfig:
   private val config = ConfigFactory.load()
 
   private def asUrl(path: String): URL =
-    if (!path.endsWith("/")) new URL(path)
-    else new URL(path.substring(0, path.length - 1))
+    if (!path.endsWith("/")) URI.create(path).toURL()
+    else URI.create(path.substring(0, path.length - 1)).toURL()
 
   val Name = "raziel"
 
@@ -98,6 +99,15 @@ object AppConfig:
           )
       secret
 
+  // TODO - all of these should return an Option[EndpointConfig] and log a warning if the URL is not set
+  lazy val Oni: EndpointConfig =
+    val url         = asUrl(config.getString("oni.url"))
+    val timeout     = config.getDuration("oni.timeout")
+    val secret      = config.getString("oni.secret")
+    val internalUrl = asUrl(config.getString("oni.internal.url"))
+    log.atDebug.log(s"Oni URL: $url")
+    EndpointConfig("oni", url, timeout, Some(secret), "/oni", internalUrl)
+
   lazy val Panoptes: EndpointConfig =
     val url         = asUrl(config.getString("panoptes.url"))
     val timeout     = config.getDuration("panoptes.timeout")
@@ -128,3 +138,4 @@ object AppConfig:
     val internalUrl = asUrl(config.getString("vars.user.server.internal.url"))
     log.atDebug.log(s"VARS User Server URL: $url")
     EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts", internalUrl)
+
