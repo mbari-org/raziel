@@ -179,7 +179,7 @@ object AppConfig:
     lazy val VarsKbServer: Option[EndpointConfig] =
         Oni match
             case Some(oni) =>
-                log.atInfo.log(s"Using $OniName instead of $VarsKbServerName")
+                log.atInfo.log(s"Using $OniName instead of $VarsKbServerName for the VARS knowledgebase")
                 Some(oni.copy(name = VarsKbServerName))
             case None      =>
                 try
@@ -199,7 +199,7 @@ object AppConfig:
     lazy val VarsUserServer: Option[EndpointConfig] =
         Oni match
             case Some(oni) =>
-                log.atInfo.log(s"Using $OniName instead of $VarsUserServerName")
+                log.atInfo.log(s"Using $OniName instead of $VarsUserServerName for VARS user services.")
                 Some(oni.copy(name = VarsUserServerName))
             case None      =>
                 try

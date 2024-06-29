@@ -19,4 +19,4 @@ else
     sbt 'Docker / publish'
 fi
 
-#       -t mbari/raziel:latest \
+# docker buildx build -t mbari/raziel:latest \
