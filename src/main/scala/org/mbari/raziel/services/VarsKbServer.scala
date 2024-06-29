@@ -28,14 +28,15 @@ import zio.Task
 
 object VarsKbServer:
 
-
     def default(using executor: Executor): Option[HealthService] =
-      AppConfig.VarsKbServer.map(config =>
-        val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-        new DefaultHealthService(
-          config.name,
-          uri,
-          config.timeout,
-          executor
-        )
-      )
+        AppConfig
+            .VarsKbServer
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

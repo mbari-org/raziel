@@ -28,13 +28,15 @@ import zio.Task
 
 object Panoptes:
 
-  def default(using executor: Executor): Option[HealthService] =
-    AppConfig.Panoptes.map(config =>
-      val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-      new DefaultHealthService(
-        config.name,
-        uri,
-        config.timeout,
-        executor
-      )
-    )
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .Panoptes
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

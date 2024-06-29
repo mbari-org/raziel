@@ -27,22 +27,20 @@ import java.time.Duration
 import java.util.concurrent.{Executor, Executors}
 
 class DefaultHealthService(
-                          val name: String,
-                            healthUri: URI,
-                            timeout: Duration,
-                            executor: Executor = Executors.newSingleThreadExecutor()
-                          ) extends HealthService:
+    val name: String,
+    healthUri: URI,
+    timeout: Duration,
+    executor: Executor = Executors.newSingleThreadExecutor()
+) extends HealthService:
 
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
+    private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(healthUri)
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
-
-
+    def health(): Task[HealthStatus] =
+        val request = HttpRequest
+            .newBuilder()
+            .uri(healthUri)
+            .header("Accept", "application/json")
+            .GET()
+            .build()
+        httpClientSupport
+            .requestObjectsZ[HealthStatus](request)

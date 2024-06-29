@@ -21,6 +21,6 @@ import zio.Task
 
 trait HealthService:
 
-  def name: String
+    def name: String
 
-  def health(): Task[HealthStatus]
+    def health(): Task[HealthStatus]

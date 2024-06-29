@@ -46,52 +46,54 @@ class VarsUserServer(
     executor: Executor = Executors.newSingleThreadExecutor()
 ) extends HealthService:
 
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
+    private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-  val name = "vars-user-server"
+    val name = "vars-user-server"
 
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
+    def health(): Task[HealthStatus] =
+        val request = HttpRequest
+            .newBuilder()
+            .uri(URI.create(s"$rootUrl/health"))
+            .header("Accept", "application/json")
+            .GET()
+            .build()
+        httpClientSupport
+            .requestObjectsZ[HealthStatus](request)
 
-  object Users:
+    object Users:
 
-    /**
-     * Find a user in the vars-user-server by thier username
-     * @param userName
-     *   The username of the user to find
-     * @return
-     *   A user if found, otherwise None
-     */
-    def findByName(userName: String): Task[Option[User]] =
-      val request = HttpRequest
-        .newBuilder()
-        .uri(URI.create(s"$rootUrl/users/$userName"))
-        .header("Accept", "application/json")
-        .GET()
-        .build()
-      httpClientSupport
-        .requestObjectsZ[User](request)
-        .map(u => Option(u))
+        /**
+         * Find a user in the vars-user-server by thier username
+         * @param userName
+         *   The username of the user to find
+         * @return
+         *   A user if found, otherwise None
+         */
+        def findByName(userName: String): Task[Option[User]] =
+            val request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(s"$rootUrl/users/$userName"))
+                .header("Accept", "application/json")
+                .GET()
+                .build()
+            httpClientSupport
+                .requestObjectsZ[User](request)
+                .map(u => Option(u))
 
 object VarsUserServer:
 
-  /**
-   * Builds a VarsUserServer from the application configuration and the provided executor
-   * @param executor
-   *   The executor to use for the HTTP requests
-   */
-  def default(using executor: Executor): Option[VarsUserServer] =
-     AppConfig.VarsUserServer.map(config =>
-        new VarsUserServer(
-          config.internalUrl.toExternalForm,
-          config.timeout,
-          executor
-        )
-      )
+    /**
+     * Builds a VarsUserServer from the application configuration and the provided executor
+     * @param executor
+     *   The executor to use for the HTTP requests
+     */
+    def default(using executor: Executor): Option[VarsUserServer] =
+        AppConfig
+            .VarsUserServer
+            .map(config =>
+                new VarsUserServer(
+                    config.internalUrl.toExternalForm,
+                    config.timeout,
+                    executor
+                )
+            )

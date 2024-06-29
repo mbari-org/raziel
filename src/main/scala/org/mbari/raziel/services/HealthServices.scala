@@ -25,25 +25,23 @@ import java.util.concurrent.Executor
 
 class HealthServices(services: Seq[HealthService]):
 
-  def fetchHealth(): Task[Seq[HealthStatus]] =
-    for
-      healthStati <-
-        ZIO.collectAll(
-          services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
-        )
-    yield (healthStati :+ HealthStatus.default)
-      .sortBy(_.application)
-
+    def fetchHealth(): Task[Seq[HealthStatus]] =
+        for healthStati <-
+                ZIO.collectAll(
+                    services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
+                )
+        yield (healthStati :+ HealthStatus.default)
+            .sortBy(_.application)
 
 object HealthServices:
 
-  def init(using executor: Executor): Seq[HealthService] = List(
-    Annosaurus.default,
-    Beholder.default,
-    Charybdis.default,
-    Oni.default,
-    Panoptes.default,
-    VampireSquid.default,
-    VarsKbServer.default,
-    VarsUserServer.default
-  ).flatten
+    def init(using executor: Executor): Seq[HealthService] = List(
+        Annosaurus.default,
+        Beholder.default,
+        Charybdis.default,
+        Oni.default,
+        Panoptes.default,
+        VampireSquid.default,
+        VarsKbServer.default,
+        VarsUserServer.default
+    ).flatten

@@ -39,45 +39,45 @@ class HttpClientSupport(
     executor: Executor = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 ):
 
-  val client: Methanol = Methanol
-    .newBuilder()
-    .autoAcceptEncoding(true)
-    .connectTimeout(timeout)
-    .executor(executor)
-    .interceptor(LoggingInterceptor)
-    .readTimeout(timeout)
-    .requestTimeout(timeout)
-    .userAgent(AppConfig.Name)
-    .build()
+    val client: Methanol = Methanol
+        .newBuilder()
+        .autoAcceptEncoding(true)
+        .connectTimeout(timeout)
+        .executor(executor)
+        .interceptor(LoggingInterceptor)
+        .readTimeout(timeout)
+        .requestTimeout(timeout)
+        .userAgent(AppConfig.Name)
+        .build()
 
-  /**
-   * Convert a [[HttpRequest]] to a [[Task]]. Used to compose IO.
-   * @param request
-   *   The request to convert to a zio Task
-   * @tparam T
-   *   The type of the response body. Requires an implicit circe [[Decoder]] is in scope.
-   * @return
-   *   A [[Task]] that will resolve to the response body
-   */
-  def requestObjectsZ[T](
-      request: HttpRequest
-  )(implicit decoder: Decoder[T]): Task[T] = zio.ZIO.fromEither(requestObjects(request))
+    /**
+     * Convert a [[HttpRequest]] to a [[Task]]. Used to compose IO.
+     * @param request
+     *   The request to convert to a zio Task
+     * @tparam T
+     *   The type of the response body. Requires an implicit circe [[Decoder]] is in scope.
+     * @return
+     *   A [[Task]] that will resolve to the response body
+     */
+    def requestObjectsZ[T](
+        request: HttpRequest
+    )(implicit decoder: Decoder[T]): Task[T] = zio.ZIO.fromEither(requestObjects(request))
 
-  def requestStringZ(request: HttpRequest): Task[String] =
-    zio.ZIO.fromEither(requestString(request))
+    def requestStringZ(request: HttpRequest): Task[String] =
+        zio.ZIO.fromEither(requestString(request))
 
-  def requestObjects[T: Decoder](request: HttpRequest): Either[Throwable, T] =
-    for
-      body <- requestString(request)
-      obj  <- decode[T](body)
-    yield obj
+    def requestObjects[T: Decoder](request: HttpRequest): Either[Throwable, T] =
+        for
+            body <- requestString(request)
+            obj  <- decode[T](body)
+        yield obj
 
-  def requestString(request: HttpRequest): Either[Throwable, String] =
-    for
-      response <- Try(client.send(request, BodyHandlers.ofString())).toEither
-      body     <- if (response.statusCode() == 200) Right(response.body)
-                  else
-                    Left(
-                      new RuntimeException(s"Unexpected response from ${request.uri}: ${response.body}")
-                    )
-    yield body
+    def requestString(request: HttpRequest): Either[Throwable, String] =
+        for
+            response <- Try(client.send(request, BodyHandlers.ofString())).toEither
+            body     <- if response.statusCode() == 200 then Right(response.body)
+                        else
+                            Left(
+                                new RuntimeException(s"Unexpected response from ${request.uri}: ${response.body}")
+                            )
+        yield body

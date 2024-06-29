@@ -29,12 +29,14 @@ import zio.Task
 object Oni:
 
     def default(using executor: Executor): Option[HealthService] =
-        AppConfig.Oni.map(config =>
-            val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-            new DefaultHealthService(
-                config.name,
-                uri,
-                config.timeout,
-                executor
+        AppConfig
+            .Oni
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
             )
-        )

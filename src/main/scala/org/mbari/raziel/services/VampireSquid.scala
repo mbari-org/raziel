@@ -27,14 +27,16 @@ import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
 object VampireSquid:
-  
-  def default(using executor: Executor): Option[HealthService] =
-    AppConfig.VampireSquid.map(config =>
-      val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-      new DefaultHealthService(
-        config.name,
-        uri,
-        config.timeout,
-        executor
-      )
-    )
+
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .VampireSquid
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

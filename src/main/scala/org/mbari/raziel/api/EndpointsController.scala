@@ -23,31 +23,29 @@ import org.mbari.raziel.domain.{BearerAuth, ErrorMsg, Unauthorized}
 
 object EndpointsController:
 
-  private val jwtHelper = JwtHelper.default
+    private val jwtHelper = JwtHelper.default
 
-  private val securedEndpoints: List[EndpointConfig]   = EndpointConfig.defaults
-  private val unsecuredEndpoints: List[EndpointConfig] =
-    EndpointConfig.defaults.map(_.copy(secret = None))
+    private val securedEndpoints: List[EndpointConfig]   = EndpointConfig.defaults
+    private val unsecuredEndpoints: List[EndpointConfig] =
+        EndpointConfig.defaults.map(_.copy(secret = None))
 
-  private def authenticateRaw(authHeader: Option[String]): Boolean =
-    val token = authHeader
-      .flatMap(a => BearerAuth.parse(a))
-      .map(_.accessToken)
+    private def authenticateRaw(authHeader: Option[String]): Boolean =
+        val token = authHeader
+            .flatMap(a => BearerAuth.parse(a))
+            .map(_.accessToken)
 
-    authenticate(token)
+        authenticate(token)
 
-  private def authenticate(token: Option[String]): Boolean =
-    val auth = token.toRight(Unauthorized("JWT token is missing"))
+    private def authenticate(token: Option[String]): Boolean =
+        val auth = token.toRight(Unauthorized("JWT token is missing"))
 
-    val either = for
-      a          <- auth
-      decodedJwt <- jwtHelper.verifyJwt(a)
-    yield decodedJwt
+        val either = for
+            a          <- auth
+            decodedJwt <- jwtHelper.verifyJwt(a)
+        yield decodedJwt
 
-    either.isRight
+        either.isRight
 
-  def getEndpoints(token: Option[String]): List[EndpointConfig] =
-    if (authenticate(token))
-      securedEndpoints
-    else
-      unsecuredEndpoints
+    def getEndpoints(token: Option[String]): List[EndpointConfig] =
+        if authenticate(token) then securedEndpoints
+        else unsecuredEndpoints

@@ -27,16 +27,17 @@ import java.net.URI
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.AppConfig
 
-
 object Beholder:
 
-  def default(using executor: Executor): Option[HealthService] =
-    AppConfig.Beholder.map(config =>
-      val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-      new DefaultHealthService(
-        config.name,
-        uri,
-        config.timeout,
-        executor
-      )
-    )
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .Beholder
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

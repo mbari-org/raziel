@@ -34,45 +34,46 @@ class Charybdis(
     executor: Executor = Executors.newSingleThreadExecutor()
 ) extends HealthService:
 
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
+    private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-  val name = "charybdis"
+    val name = "charybdis"
 
-  def health(): Task[HealthStatus] =
+    def health(): Task[HealthStatus] =
 
-    val request0 = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
+        val request0 = HttpRequest
+            .newBuilder()
+            .uri(URI.create(s"$rootUrl/health"))
+            .header("Accept", "application/json")
+            .GET()
+            .build()
 
-    val request1 = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/observe/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
+        val request1 = HttpRequest
+            .newBuilder()
+            .uri(URI.create(s"$rootUrl/observe/health"))
+            .header("Accept", "application/json")
+            .GET()
+            .build()
 
-    for
-      // Try the new endpoint first, fall back to the old one
-      body         <- httpClientSupport.requestStringZ(request1).orElse(httpClientSupport.requestStringZ(request0))
-      healthStatus <- ZIO.fromEither(
-                        HealthStatusHelidon
-                          .parseString(body)
-                          .map(Right(_))
-                          .getOrElse(Left(new Exception(s"Could not parse $body")))
-                      )
-    yield healthStatus.copy(application = name, description = "Publication Dataset Server")
+        for
+            // Try the new endpoint first, fall back to the old one
+            body         <- httpClientSupport.requestStringZ(request1).orElse(httpClientSupport.requestStringZ(request0))
+            healthStatus <- ZIO.fromEither(
+                                HealthStatusHelidon
+                                    .parseString(body)
+                                    .map(Right(_))
+                                    .getOrElse(Left(new Exception(s"Could not parse $body")))
+                            )
+        yield healthStatus.copy(application = name, description = "Publication Dataset Server")
 
 object Charybdis:
 
-  def default(using executor: Executor): Option[HealthService] =
-    AppConfig.Charybdis.map(config =>
-      new Charybdis(
-        config.internalUrl.toExternalForm,
-        config.timeout,
-        executor
-      )
-    )
-
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .Charybdis
+            .map(config =>
+                new Charybdis(
+                    config.internalUrl.toExternalForm,
+                    config.timeout,
+                    executor
+                )
+            )

@@ -36,71 +36,69 @@ import org.mbari.raziel.etc.zio.ZioUtil
 
 class AuthController(varsUserServer: VarsUserServer):
 
-  private val jwtHelper = JwtHelper.default
+    private val jwtHelper = JwtHelper.default
 
-  def authenticate(xApiKey: Option[String], auth: Option[BasicAuth]): Either[ErrorMsg, BearerAuth] =
-    xApiKey match
-      case Some(key) =>
-        if (key == AppConfig.MasterKey)
-          val token = jwtHelper.createJwt(Map("username" -> "master"))
-          Right(BearerAuth(token))
-        else Left(Unauthorized("Invalid credentials"))
-      case None      =>
-        val app = for
-          a       <- ZIO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
-          // _  <- Task.succeed(log.info(s"auth: $a"))
-          u       <- varsUserServer.Users.findByName(a.username)
-          // _  <- Task.succeed(log.info(s"user: $u"))
-          ok      <- ZIO.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
-          payload <- ZIO.succeed(
-                       if (ok)
-                         Some(JwtAuthPayload.fromUser(u.get))
-                       else
-                         None
-                     )
-        yield payload
+    def authenticate(xApiKey: Option[String], auth: Option[BasicAuth]): Either[ErrorMsg, BearerAuth] =
+        xApiKey match
+            case Some(key) =>
+                if key == AppConfig.MasterKey then
+                    val token = jwtHelper.createJwt(Map("username" -> "master"))
+                    Right(BearerAuth(token))
+                else Left(Unauthorized("Invalid credentials"))
+            case None      =>
+                val app = for
+                    a       <- ZIO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
+                    // _  <- Task.succeed(log.info(s"auth: $a"))
+                    u       <- varsUserServer.Users.findByName(a.username)
+                    // _  <- Task.succeed(log.info(s"user: $u"))
+                    ok      <- ZIO.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
+                    payload <- ZIO.succeed(
+                                   if ok then Some(JwtAuthPayload.fromUser(u.get))
+                                   else None
+                               )
+                yield payload
 
-        Try(ZioUtil.unsafeRun(app)) match
-          case Success(payload) =>
-            payload match
-              case Some(p) =>
-                val token = jwtHelper.createJwt(p.asMap())
-                Right(BearerAuth(token))
-              case None    =>
-                Left(Unauthorized("Invalid credentials"))
-          case Failure(e)       =>
-            Left(ServerError(e.getMessage))
+                Try(ZioUtil.unsafeRun(app)) match
+                    case Success(payload) =>
+                        payload match
+                            case Some(p) =>
+                                val token = jwtHelper.createJwt(p.asMap())
+                                Right(BearerAuth(token))
+                            case None    =>
+                                Left(Unauthorized("Invalid credentials"))
+                    case Failure(e)       =>
+                        Left(ServerError(e.getMessage))
 
-  def authenticateRaw(
-      xApiKey: Option[String] = None,
-      authorization: Option[String] = None
-  ): Either[ErrorMsg, BearerAuth] =
-    authenticate(xApiKey, authorization.flatMap(BasicAuth.parse))
+    def authenticateRaw(
+        xApiKey: Option[String] = None,
+        authorization: Option[String] = None
+    ): Either[ErrorMsg, BearerAuth] =
+        authenticate(xApiKey, authorization.flatMap(BasicAuth.parse))
 
-  def verify(tokenOpt: Option[String]): Either[ErrorMsg, Map[String, String]] =
-    val either = for
-      token      <- tokenOpt.toRight(Unauthorized("Missing or invalid token"))
-      decodedJwt <- jwtHelper.verifyJwt(token)
-    yield decodedJwt
+    def verify(tokenOpt: Option[String]): Either[ErrorMsg, Map[String, String]] =
+        val either = for
+            token      <- tokenOpt.toRight(Unauthorized("Missing or invalid token"))
+            decodedJwt <- jwtHelper.verifyJwt(token)
+        yield decodedJwt
 
-    either match
-      case Right(jwt) =>
-        val claims = jwt
-          .getClaims
-          .asScala
-          .toMap
-          .filter((key, claim) => claim.asString != null && claim.asString.nonEmpty)
-          .map((key, claim) => (key, claim.asString()))
+        either match
+            case Right(jwt) =>
+                val claims = jwt
+                    .getClaims
+                    .asScala
+                    .toMap
+                    .filter((key, claim) => claim.asString != null && claim.asString.nonEmpty)
+                    .map((key, claim) => (key, claim.asString()))
 
-        Right(claims)
+                Right(claims)
 
-      case Left(e) =>
-        Left(Unauthorized(s"Invalid credentials: ${e.getClass}"))
+            case Left(e) =>
+                Left(Unauthorized(s"Invalid credentials: ${e.getClass}"))
 
-  def verifyRaw(authorization: Option[String]): Either[ErrorMsg, Map[String, String]] =
+    def verifyRaw(authorization: Option[String]): Either[ErrorMsg, Map[String, String]] =
 
-    val tokenOpt = authorization
-      .flatMap(BearerAuth.parse)
-      .map(_.accessToken)
+        val tokenOpt = authorization
+            .flatMap(BearerAuth.parse)
+            .map(_.accessToken)
 
-    verify(tokenOpt)
+        verify(tokenOpt)
