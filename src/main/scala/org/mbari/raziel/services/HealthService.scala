@@ -16,18 +16,11 @@
 
 package org.mbari.raziel.services
 
-import org.mbari.raziel.domain.ServiceStatus
-import zio.Task
 import org.mbari.raziel.domain.HealthStatus
-import zio.ZIO
+import zio.Task
 
-class HealthService(services: Seq[HasHealth]):
+trait HealthService:
 
-  def fetchHealth(): Task[Seq[HealthStatus]] =
-    for
-      healthStati <-
-        ZIO.collectAll(
-          services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
-        )
-    yield (healthStati :+ HealthStatus.default)
-      .sortBy(_.application)
+  def name: String
+
+  def health(): Task[HealthStatus]

@@ -39,7 +39,7 @@ class HttpClientSupport(
     executor: Executor = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 ):
 
-  val client = Methanol
+  val client: Methanol = Methanol
     .newBuilder()
     .autoAcceptEncoding(true)
     .connectTimeout(timeout)

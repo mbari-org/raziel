@@ -45,7 +45,7 @@ object CirceCodecs:
 
   given Decoder[URL] = Decoder
     .decodeString
-    .emapTry(str => Try(new URL(str)))
+    .emapTry(str => Try(URI.create(str).toURL))
   given Encoder[URL] = Encoder
     .encodeString
     .contramap(_.toString)

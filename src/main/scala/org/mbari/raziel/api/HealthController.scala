@@ -19,7 +19,7 @@ package org.mbari.raziel.api
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.domain.ServiceStatus
 import org.mbari.raziel.services.HealthService
-import org.mbari.raziel.services.HasHealth
+import org.mbari.raziel.services.HealthServices
 import org.mbari.raziel.domain.ServerError
 import org.mbari.raziel.domain.ErrorMsg
 import scala.util.Try
@@ -27,9 +27,9 @@ import scala.util.Success
 import scala.util.Failure
 import org.mbari.raziel.etc.zio.ZioUtil
 
-class HealthController(services: Seq[HasHealth]):
+class HealthController(services: Seq[HealthService]):
 
-  private val healthService = HealthService(services)
+  private val healthService = HealthServices(services)
 
   def defaultHealthStatus: HealthStatus = HealthStatus.default
 

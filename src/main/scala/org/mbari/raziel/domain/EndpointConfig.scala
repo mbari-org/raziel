@@ -80,11 +80,12 @@ object EndpointConfig:
    *   A list of M3 microservice [[EndpointConfig]]s as defined in application.conf
    */
   def defaults: List[EndpointConfig] =
-    AppConfig.Annosaurus ::
+    (AppConfig.Annosaurus ::
       AppConfig.Beholder ::
       AppConfig.Charybdis ::
+      AppConfig.Oni ::
       AppConfig.Panoptes ::
       AppConfig.VampireSquid ::
       AppConfig.VarsKbServer ::
       AppConfig.VarsUserServer ::
-      Nil
+      Nil).flatten

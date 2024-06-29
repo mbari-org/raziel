@@ -32,7 +32,7 @@ class Charybdis(
     rootUrl: String,
     timeout: Duration,
     executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
+) extends HealthService:
 
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
@@ -67,9 +67,12 @@ class Charybdis(
 
 object Charybdis:
 
-  def default(using executor: Executor) =
-    new Charybdis(
-      AppConfig.Charybdis.internalUrl.toExternalForm,
-      AppConfig.Charybdis.timeout,
-      executor
+  def default(using executor: Executor): Option[HealthService] =
+    AppConfig.Charybdis.map(config =>
+      new Charybdis(
+        config.internalUrl.toExternalForm,
+        config.timeout,
+        executor
+      )
     )
+

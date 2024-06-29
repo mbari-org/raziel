@@ -16,11 +16,25 @@
 
 package org.mbari.raziel.services
 
+import java.net.http.HttpRequest
+import java.net.URI
+import java.time.Duration
+import java.util.concurrent.{Executor, Executors}
+import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
+import org.mbari.raziel.etc.circe.CirceCodecs.given
+import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
-trait HasHealth:
+object Oni:
 
-  def name: String
-
-  def health(): Task[HealthStatus]
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig.Oni.map(config =>
+            val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+            new DefaultHealthService(
+                config.name,
+                uri,
+                config.timeout,
+                executor
+            )
+        )

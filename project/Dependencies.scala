@@ -29,5 +29,5 @@ object Dependencies {
  
     
   lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.3"
-  lazy val zio            = "dev.zio"     %% "zio"    % "2.1.4"
+  lazy val zio            = "dev.zio"     %% "zio"    % "2.1.5"
 }

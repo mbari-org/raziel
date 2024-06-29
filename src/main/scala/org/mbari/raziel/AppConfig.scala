@@ -17,11 +17,15 @@
 package org.mbari.raziel
 
 import com.typesafe.config.ConfigFactory
+
 import java.net.URL
 import org.mbari.raziel.domain.EndpointConfig
+
 import scala.util.Try
-import org.mbari.raziel.etc.jdk.Logging.{given, *}
+import org.mbari.raziel.etc.jdk.Logging.{*, given}
+
 import java.net.URI
+import scala.util.control.NonFatal
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -40,13 +44,13 @@ object AppConfig:
     if (!path.endsWith("/")) URI.create(path).toURL()
     else URI.create(path.substring(0, path.length - 1)).toURL()
 
-  val Name = "raziel"
+  val Name: String = "raziel"
 
-  val Version = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
+  val Version: String = Try(getClass.getPackage.getImplementationVersion).getOrElse("0.0.0")
 
   val Description = "Configuration/Key Store"
 
-  lazy val MasterKey =
+  lazy val MasterKey: String =
     val key = config.getString("raziel.master.key")
     if (key.trim.isEmpty || key.toUpperCase == Default)
       log
@@ -56,28 +60,46 @@ object AppConfig:
         )
     key
 
-  lazy val Annosaurus: EndpointConfig =
-    val url         = asUrl(config.getString("annosaurus.url"))
-    val timeout     = config.getDuration("annosaurus.timeout")
-    val secret      = config.getString("annosaurus.secret")
-    val internalUrl = asUrl(config.getString("annosaurus.internal.url"))
-    log.atDebug.log(s"Annosaurus URL: $url")
-    EndpointConfig("annosaurus", url, timeout, Some(secret), "/anno", internalUrl)
+  val AnnosaurusName: String = "annosaurus"
+  lazy val Annosaurus: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("annosaurus.url"))
+      val timeout = config.getDuration("annosaurus.timeout")
+      val secret = config.getString("annosaurus.secret")
+      val internalUrl = asUrl(config.getString("annosaurus.internal.url"))
+      log.atDebug.log(s"Annosaurus URL: $url")
+      Some(EndpointConfig(AnnosaurusName, url, timeout, Some(secret), "/anno", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atWarn.withCause(e).log("Annosaurus is not configured. Raziel will not be able to access the annotation service.")
+        None
 
-  lazy val Beholder: EndpointConfig =
-    val url         = asUrl(config.getString("beholder.url"))
-    val timeout     = config.getDuration("beholder.timeout")
-    val secret      = config.getString("beholder.secret")
-    val internalUrl = asUrl(config.getString("beholder.internal.url"))
-    log.atDebug.log(s"Beholder URL: $url")
-    EndpointConfig("beholder", url, timeout, Some(secret), "/beholder", internalUrl)
+  val BeholderName: String = "beholder"
+  lazy val Beholder: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("beholder.url"))
+      val timeout = config.getDuration("beholder.timeout")
+      val secret = config.getString("beholder.secret")
+      val internalUrl = asUrl(config.getString("beholder.internal.url"))
+      log.atDebug.log(s"Beholder URL: $url")
+      Some(EndpointConfig(BeholderName, url, timeout, Some(secret), "/beholder", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atWarn.withCause(e).log("Beholder is not configured. Raziel will not be able to access the image capture service.")
+        None
 
-  lazy val Charybdis: EndpointConfig =
-    val url         = asUrl(config.getString("charybdis.url"))
-    val timeout     = config.getDuration("charybdis.timeout")
-    val internalUrl = asUrl(config.getString("charybdis.internal.url"))
-    log.atDebug.log(s"Charybdis URL: $url")
-    EndpointConfig("charybdis", url, timeout, None, "/references", internalUrl)
+  lazy val CharybdisName: String = "charybdis"
+  lazy val Charybdis: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("charybdis.url"))
+      val timeout = config.getDuration("charybdis.timeout")
+      val internalUrl = asUrl(config.getString("charybdis.internal.url"))
+      log.atDebug.log(s"Charybdis URL: $url")
+      Some(EndpointConfig(CharybdisName, url, timeout, None, "/references", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atWarn.withCause(e).log("Charybdis is not configured. Raziel will not be able to access the reference service.")
+        None
 
   object Http:
     val Context     = config.getString("raziel.http.context")
@@ -99,43 +121,85 @@ object AppConfig:
           )
       secret
 
-  // TODO - all of these should return an Option[EndpointConfig] and log a warning if the URL is not set
-  lazy val Oni: EndpointConfig =
-    val url         = asUrl(config.getString("oni.url"))
-    val timeout     = config.getDuration("oni.timeout")
-    val secret      = config.getString("oni.secret")
-    val internalUrl = asUrl(config.getString("oni.internal.url"))
-    log.atDebug.log(s"Oni URL: $url")
-    EndpointConfig("oni", url, timeout, Some(secret), "/oni", internalUrl)
 
-  lazy val Panoptes: EndpointConfig =
-    val url         = asUrl(config.getString("panoptes.url"))
-    val timeout     = config.getDuration("panoptes.timeout")
-    val secret      = config.getString("panoptes.secret")
-    val internalUrl = asUrl(config.getString("panoptes.internal.url"))
-    log.atDebug.log(s"Panoptes URL: $url")
-    EndpointConfig("panoptes", url, timeout, Some(secret), "/panoptes", internalUrl)
+  lazy val OniName: String = "oni"
+  lazy val Oni: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("oni.url"))
+      val timeout = config.getDuration("oni.timeout")
+      val secret = config.getString("oni.secret")
+      val internalUrl = asUrl(config.getString("oni.internal.url"))
+      log.atDebug.log(s"Oni URL: $url")
+      Some(EndpointConfig(OniName, url, timeout, Some(secret), "/oni", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atInfo.withCause(e).log("Oni is not configured. Writing to the VARS KB will not be possible.")
+        None
 
-  lazy val VampireSquid: EndpointConfig =
-    val url         = asUrl(config.getString("vampire.squid.url"))
-    val timeout     = config.getDuration("vampire.squid.timeout")
-    val secret      = config.getString("vampire.squid.secret")
-    val internalUrl = asUrl(config.getString("vampire.squid.internal.url"))
-    log.atDebug.log(s"Vampire-squid URL: $url")
-    EndpointConfig("vampire-squid", url, timeout, Some(secret), "/vam", internalUrl)
 
-  lazy val VarsKbServer: EndpointConfig =
-    val url         = asUrl(config.getString("vars.kb.server.url"))
-    val timeout     = config.getDuration("vars.kb.server.timeout")
-    val internalUrl = asUrl(config.getString("vars.kb.server.internal.url"))
-    log.atDebug.log(s"VARS KB Server URL: $url")
-    EndpointConfig("vars-kb-server", url, timeout, None, "/kb", internalUrl)
+  lazy val PanoptesName: String = "panoptes"
+  lazy val Panoptes: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("panoptes.url"))
+      val timeout = config.getDuration("panoptes.timeout")
+      val secret = config.getString("panoptes.secret")
+      val internalUrl = asUrl(config.getString("panoptes.internal.url"))
+      log.atDebug.log(s"Panoptes URL: $url")
+      Some(EndpointConfig(PanoptesName, url, timeout, Some(secret), "/panoptes", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atWarn.withCause(e).log("Panoptes is not configured. Raziel will not be able to access the image archiving service.")
+        None
 
-  lazy val VarsUserServer: EndpointConfig =
-    val url         = asUrl(config.getString("vars.user.server.url"))
-    val timeout     = config.getDuration("vars.user.server.timeout")
-    val secret      = config.getString("vars.user.server.secret")
-    val internalUrl = asUrl(config.getString("vars.user.server.internal.url"))
-    log.atDebug.log(s"VARS User Server URL: $url")
-    EndpointConfig("vars-user-server", url, timeout, Some(secret), "/accounts", internalUrl)
+
+  lazy val VampireSquidName: String = "vampire-squid"
+  lazy val VampireSquid: Option[EndpointConfig] =
+    try
+      val url = asUrl(config.getString("vampire.squid.url"))
+      val timeout = config.getDuration("vampire.squid.timeout")
+      val secret = config.getString("vampire.squid.secret")
+      val internalUrl = asUrl(config.getString("vampire.squid.internal.url"))
+      log.atDebug.log(s"Vampire-squid URL: $url")
+      Some(EndpointConfig(VampireSquidName, url, timeout, Some(secret), "/vam", internalUrl))
+    catch
+      case NonFatal(e) =>
+        log.atWarn.withCause(e).log("Vampire-squid is not configured. Raziel will not be able to access the video asset manager service.")
+        None
+
+  lazy val VarsKbServerName: String = "vars-kb-server"
+  lazy val VarsKbServer: Option[EndpointConfig] =
+    Oni match
+      case Some(oni) =>
+        log.atInfo.log(s"Using $OniName instead of $VarsKbServerName")
+        Some(oni.copy(name = VarsKbServerName))
+      case None =>
+        try
+          val url = asUrl(config.getString("vars.kb.server.url"))
+          val timeout = config.getDuration("vars.kb.server.timeout")
+          val internalUrl = asUrl(config.getString("vars.kb.server.internal.url"))
+          log.atDebug.log(s"VARS KB Server URL: $url")
+          Some(EndpointConfig(VarsKbServerName, url, timeout, None, "/kb", internalUrl))
+        catch
+          case NonFatal(e) =>
+            log.atInfo.withCause(e).log(s"$VarsKbServerName is not configured. Access to the VARS KB will not be possible.")
+            None
+
+  lazy val VarsUserServerName: String = "vars-user-server"
+  lazy val VarsUserServer: Option[EndpointConfig] =
+    Oni match
+      case Some(oni) =>
+        log.atInfo.log(s"Using $OniName instead of $VarsUserServerName")
+        Some(oni.copy(name = VarsUserServerName))
+      case None =>
+        try
+          val url = asUrl(config.getString("vars.user.server.url"))
+          val timeout = config.getDuration("vars.user.server.timeout")
+          val secret = config.getString("vars.user.server.secret")
+          val internalUrl = asUrl(config.getString("vars.user.server.internal.url"))
+          log.atDebug.log(s"VARS User Server URL: $url")
+          Some(EndpointConfig(VarsUserServerName, url, timeout, Some(secret), "/accounts", internalUrl))
+        catch
+          case NonFatal(e) =>
+            log.atInfo.withCause(e).log(s"$VarsUserServerName is not configured. Raziel will not function correctly with a user service configured.")
+            None
 

@@ -27,31 +27,16 @@ import java.net.URI
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.AppConfig
 
-class Beholder(
-    rootUrl: String,
-    timeout: Duration,
-    executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
-
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
-
-  override val name: String = "beholder"
-
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
 
 object Beholder:
 
-  def default(using executor: Executor) =
-    new Beholder(
-      AppConfig.Beholder.internalUrl.toExternalForm(),
-      AppConfig.Beholder.timeout,
-      executor
+  def default(using executor: Executor): Option[HealthService] =
+    AppConfig.Beholder.map(config =>
+      val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+      new DefaultHealthService(
+        config.name,
+        uri,
+        config.timeout,
+        executor
+      )
     )

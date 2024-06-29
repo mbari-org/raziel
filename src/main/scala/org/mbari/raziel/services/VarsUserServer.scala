@@ -44,7 +44,7 @@ class VarsUserServer(
     rootUrl: String,
     timeout: Duration,
     executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
+) extends HealthService:
 
   private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
@@ -87,9 +87,11 @@ object VarsUserServer:
    * @param executor
    *   The executor to use for the HTTP requests
    */
-  def default(using executor: Executor) =
-    new VarsUserServer(
-      AppConfig.VarsUserServer.internalUrl.toExternalForm,
-      AppConfig.VarsUserServer.timeout,
-      executor
-    )
+  def default(using executor: Executor): Option[VarsUserServer] =
+     AppConfig.VarsUserServer.map(config =>
+        new VarsUserServer(
+          config.internalUrl.toExternalForm,
+          config.timeout,
+          executor
+        )
+      )

@@ -70,15 +70,10 @@ object Main:
     given executionContext: ExecutionContextExecutor = ExecutionContext.global
 
     // -- Service providers
-    val annosaurus     = Annosaurus.default
-    val beholder       = Beholder.default
-    val charybdis      = Charybdis.default
-    val panoptes       = Panoptes.default
-    val vampireSquid   = VampireSquid.default
-    val varsKbServer   = VarsKbServer.default
-    val varsUserServer = VarsUserServer.default
-    val healthServices =
-      Seq(annosaurus, beholder, charybdis, panoptes, vampireSquid, varsKbServer, varsUserServer)
+    val healthServices = HealthServices.init
+    val varsUserServer: VarsUserServer = healthServices.find(_.name == AppConfig.VarsUserServerName)
+      .getOrElse(throw RuntimeException(s"Could not find service ${AppConfig.VarsUserServerName} or ${AppConfig.OniName}. This is required for Raziel to run. Exiting ..."))
+      .asInstanceOf[VarsUserServer]
 
     // -- Tapir endpoints
     val context           = AppConfig.Http.Context
@@ -106,10 +101,5 @@ object Main:
     healthEndpoints.allImpl.foreach(endpoint => interpreter.blockingRoute(endpoint).apply(router))
     endpointEndpoints.allImpl .foreach(endpoint => interpreter.route(endpoint).apply(router))
     swaggerEndpoints.allImpl.foreach(endpoint => interpreter.route(endpoint).apply(router))
-
-
-//    for endpoint <- allEndpointImpls do
-//      val attach = VertxFutureServerInterpreter().route(endpoint)
-//      attach(router)
 
     Await.result(server.requestHandler(router).listen(port).asScala, Duration.Inf)

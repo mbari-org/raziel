@@ -26,31 +26,16 @@ import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
-class VarsKbServer(
-    rootUrl: String,
-    timeout: Duration,
-    executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
-
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
-
-  val name = "vars-kb-server"
-
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
-
 object VarsKbServer:
 
-  def default(using executor: Executor) =
-    new VarsKbServer(
-      AppConfig.VarsKbServer.internalUrl.toExternalForm,
-      AppConfig.VarsKbServer.timeout,
-      executor
-    )
+
+    def default(using executor: Executor): Option[HealthService] =
+      AppConfig.VarsKbServer.map(config =>
+        val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+        new DefaultHealthService(
+          config.name,
+          uri,
+          config.timeout,
+          executor
+        )
+      )

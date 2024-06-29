@@ -31,7 +31,7 @@ trait Endpoints:
   def all: List[Endpoint[?, ?, ?, ?, ?]]
   def allImpl: List[ServerEndpoint[Any, Future]]
 
-  val baseEndpoint = endpoint.errorOut(
+  val baseEndpoint: Endpoint[Unit, Unit, ErrorMsg, Unit, Any] = endpoint.errorOut(
     oneOf[ErrorMsg](
       oneOfVariant(statusCode(StatusCode.NotFound).and(jsonBody[NotFound])),
       oneOfVariant(statusCode(StatusCode.InternalServerError).and(jsonBody[ServerError])),
