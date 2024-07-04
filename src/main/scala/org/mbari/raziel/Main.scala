@@ -33,6 +33,7 @@ import scala.util.Try
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter.*
 import io.vertx.ext.web.handler.CorsHandler
+import org.mbari.raziel.etc.circe.CirceCodecs.{given, *}
 
 @Command(
     description = Array("Start the server"),
@@ -71,6 +72,8 @@ object Main:
 
         // -- Service providers
         val healthServices                 = HealthServices.init
+
+        healthServices.foreach(service => log.atInfo.log(s"Found service: ${service.name} with health check at ${service.healthUri}"))
         val varsUserServer: VarsUserServer = healthServices
             .find(_.name == AppConfig.VarsUserServerName)
             .getOrElse(

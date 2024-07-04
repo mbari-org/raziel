@@ -19,8 +19,12 @@ package org.mbari.raziel.services
 import org.mbari.raziel.domain.HealthStatus
 import zio.Task
 
+import java.net.URI
+
 trait HealthService:
 
     def name: String
+
+    def healthUri: URI
 
     def health(): Task[HealthStatus]

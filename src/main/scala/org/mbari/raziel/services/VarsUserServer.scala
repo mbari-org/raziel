@@ -50,10 +50,12 @@ class VarsUserServer(
 
     val name = "vars-user-server"
 
+    val healthUri: URI = URI.create(s"$rootUrl/health")
+
     def health(): Task[HealthStatus] =
         val request = HttpRequest
             .newBuilder()
-            .uri(URI.create(s"$rootUrl/health"))
+            .uri(healthUri)
             .header("Accept", "application/json")
             .GET()
             .build()

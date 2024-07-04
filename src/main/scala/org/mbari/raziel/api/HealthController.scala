@@ -39,8 +39,7 @@ class HealthController(services: Seq[HealthService]):
         val app =
             for healthStatuses <- healthService.fetchHealth()
             yield healthStatuses
-                .filter(_.freeMemory > 0)
-                .map(hs => ServiceStatus(hs.application, Some(hs)))
+                .filter(_.available)
 
         Try(ZioUtil.unsafeRun(app)) match
             case Success(s) => Right(s)
@@ -51,9 +50,9 @@ class HealthController(services: Seq[HealthService]):
         val app =
             for healthStatuses <- healthService.fetchHealth()
             yield healthStatuses
-                .map(hs =>
-                    val ss = if hs.freeMemory <= 0 then None else Some(hs)
-                    ServiceStatus(hs.application, ss)
+                .map(serverStatus =>
+                    val hs = if serverStatus.available then serverStatus.healthStatus else None
+                    ServiceStatus(serverStatus.name, hs)
                 )
 
         Try(ZioUtil.unsafeRun(app)) match

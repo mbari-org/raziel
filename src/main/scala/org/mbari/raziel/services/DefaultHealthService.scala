@@ -28,7 +28,7 @@ import java.util.concurrent.{Executor, Executors}
 
 class DefaultHealthService(
     val name: String,
-    healthUri: URI,
+    val healthUri: URI,
     timeout: Duration,
     executor: Executor = Executors.newSingleThreadExecutor()
 ) extends HealthService:

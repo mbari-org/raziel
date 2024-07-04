@@ -38,11 +38,13 @@ class Charybdis(
 
     val name = "charybdis"
 
+    val healthUri: URI = URI.create(s"$rootUrl/health")
+
     def health(): Task[HealthStatus] =
 
         val request0 = HttpRequest
             .newBuilder()
-            .uri(URI.create(s"$rootUrl/health"))
+            .uri(healthUri)
             .header("Accept", "application/json")
             .GET()
             .build()

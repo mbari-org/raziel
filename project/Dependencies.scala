@@ -4,7 +4,7 @@ object Dependencies {
 
   lazy val auth0 = "com.auth0" % "java-jwt" % "4.4.0"
 
-  private val circeVersion = "0.14.8"
+  private val circeVersion = "0.14.9"
   lazy val circeCore       = "io.circe" %% "circe-core"    % circeVersion
   lazy val circeGeneric    = "io.circe" %% "circe-generic" % circeVersion
   lazy val circeParser     = "io.circe" %% "circe-parser"  % circeVersion
@@ -20,7 +20,7 @@ object Dependencies {
   lazy val slf4jApi     = "org.slf4j" % "slf4j-api"    % slf4jVersion
   lazy val slf4jJul     = "org.slf4j" % "jul-to-slf4j" % slf4jVersion
 
-  private val tapirVersion  = "1.10.10"
+  private val tapirVersion  = "1.10.12"
   lazy val tapirStubServer  = "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server" % tapirVersion
   lazy val tapirSwagger     = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
   lazy val tapirCirce       = "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion

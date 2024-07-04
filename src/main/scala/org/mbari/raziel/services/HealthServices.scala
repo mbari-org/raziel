@@ -16,6 +16,7 @@
 
 package org.mbari.raziel.services
 
+import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.ServiceStatus
 import zio.Task
 import org.mbari.raziel.domain.HealthStatus
@@ -25,13 +26,15 @@ import java.util.concurrent.Executor
 
 class HealthServices(services: Seq[HealthService]):
 
-    def fetchHealth(): Task[Seq[HealthStatus]] =
+    def fetchHealth(): Task[Seq[ServiceStatus]] =
         for healthStati <-
                 ZIO.collectAll(
-                    services.map(s => s.health().orElse(ZIO.succeed(HealthStatus.empty(s.name))))
+                    services.map(s => s.health()
+                        .map(hs => ServiceStatus(s.name, Some(hs))) // Rename the application to the service name
+                        .orElse(ZIO.succeed(ServiceStatus(s.name, Some(HealthStatus.empty(s.name))))))
                 )
-        yield (healthStati :+ HealthStatus.default)
-            .sortBy(_.application)
+        yield (healthStati :+ ServiceStatus(AppConfig.Name, Some(HealthStatus.default)))
+            .sortBy(_.name)
 
 object HealthServices:
 
