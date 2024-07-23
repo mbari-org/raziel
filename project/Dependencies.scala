@@ -20,7 +20,7 @@ object Dependencies {
   lazy val slf4jApi     = "org.slf4j" % "slf4j-api"    % slf4jVersion
   lazy val slf4jJul     = "org.slf4j" % "jul-to-slf4j" % slf4jVersion
 
-  private val tapirVersion  = "1.10.12"
+  private val tapirVersion  = "1.10.15"
   lazy val tapirStubServer  = "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server" % tapirVersion
   lazy val tapirSwagger     = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
   lazy val tapirCirce       = "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion
@@ -29,5 +29,5 @@ object Dependencies {
  
     
   lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.3"
-  lazy val zio            = "dev.zio"     %% "zio"    % "2.1.5"
+  lazy val zio            = "dev.zio"     %% "zio"    % "2.1.6"
 }
