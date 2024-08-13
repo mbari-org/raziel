@@ -30,20 +30,18 @@ case class BearerAuth(accessToken: String) extends Auth(BearerAuth.TokenType)
 
 object BearerAuth:
 
-  val TokenType = "Bearer"
+    val TokenType = "Bearer"
 
-  /**
-   * Parse the value portion of an Authorization header into an Authorization object
-   * @param authorization
-   *   The value portion of an Authorization header
-   * @return
-   *   An Authorization object, None if it's not parseable
-   */
-  def parse(authorization: String): Option[BearerAuth] =
-    val parts = authorization.split("\\s+")
-    if (parts.length == 2 && parts(0).toLowerCase == TokenType.toLowerCase)
-      Some(BearerAuth(parts(1)))
-    else
-      None
+    /**
+     * Parse the value portion of an Authorization header into an Authorization object
+     * @param authorization
+     *   The value portion of an Authorization header
+     * @return
+     *   An Authorization object, None if it's not parseable
+     */
+    def parse(authorization: String): Option[BearerAuth] =
+        val parts = authorization.split("\\s+")
+        if parts.length == 2 && parts(0).toLowerCase == TokenType.toLowerCase then Some(BearerAuth(parts(1)))
+        else None
 
-  val Invalid: BearerAuth = BearerAuth("")
+    val Invalid: BearerAuth = BearerAuth("")

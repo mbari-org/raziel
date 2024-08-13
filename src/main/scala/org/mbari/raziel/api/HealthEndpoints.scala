@@ -31,65 +31,65 @@ class HealthEndpoints(controller: HealthController, context: String = "config")(
     ec: ExecutionContext
 ) extends org.mbari.raziel.api.Endpoints:
 
-  val defaultEndpoint: PublicEndpoint[Unit, ErrorMsg, HealthStatus, Any] =
-    baseEndpoint
-      .get
-      .in(context / "health")
-      .out(jsonBody[HealthStatus])
-      .name("razielHealth")
-      .description("Get the health status of the server")
-      .tag("health")
-  val defaultImpl: ServerEndpoint[Any, Future]                           =
-    defaultEndpoint.serverLogic(Unit => Future(Right(controller.defaultHealthStatus)))
+    val defaultEndpoint: PublicEndpoint[Unit, ErrorMsg, HealthStatus, Any] =
+        baseEndpoint
+            .get
+            .in(context / "health")
+            .out(jsonBody[HealthStatus])
+            .name("razielHealth")
+            .description("Get the health status of the server")
+            .tag("health")
+    val defaultImpl: ServerEndpoint[Any, Future]                           =
+        defaultEndpoint.serverLogic(Unit => Future(Right(controller.defaultHealthStatus)))
 
-  val expectedEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
-    baseEndpoint
-      .get
-      .in(context / "health" / "expected")
-      .out(jsonBody[Seq[ServiceStatus]])
-      .name("listExpectedServices")
-      .description(
-        "Get a list of the expected services. This returns services that are expected to be running, but might not be."
-      )
-      .tag("health")
-  val expectedImpl: ServerEndpoint[Any, Future]                                 =
-    expectedEndpoint.serverLogic(Unit => Future(Right(controller.expectedServiceStatus)))
+    val expectedEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
+        baseEndpoint
+            .get
+            .in(context / "health" / "expected")
+            .out(jsonBody[Seq[ServiceStatus]])
+            .name("listExpectedServices")
+            .description(
+                "Get a list of the expected services. This returns services that are expected to be running, but might not be."
+            )
+            .tag("health")
+    val expectedImpl: ServerEndpoint[Any, Future]                                 =
+        expectedEndpoint.serverLogic(Unit => Future(Right(controller.expectedServiceStatus)))
 
-  val availableEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
-    baseEndpoint
-      .get
-      .in(context / "health" / "available")
-      .out(jsonBody[Seq[ServiceStatus]])
-      .name("listAvailableServices")
-      .description(
-        "Get a list of the available services. Services that are down will not be included"
-      )
-      .tag("health")
-  val availableImpl: ServerEndpoint[Any, Future]                                 =
-    availableEndpoint.serverLogic(Unit => Future(controller.availableServiceStatus()))
+    val availableEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
+        baseEndpoint
+            .get
+            .in(context / "health" / "available")
+            .out(jsonBody[Seq[ServiceStatus]])
+            .name("listAvailableServices")
+            .description(
+                "Get a list of the available services. Services that are down will not be included"
+            )
+            .tag("health")
+    val availableImpl: ServerEndpoint[Any, Future]                                 =
+        availableEndpoint.serverLogic(Unit => Future(controller.availableServiceStatus()))
 
-  val statusEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
-    baseEndpoint
-      .get
-      .in(context / "health" / "status")
-      .out(jsonBody[Seq[ServiceStatus]])
-      .name("listAllServices")
-      .description(
-        "Get a list of the services. Services that are down will not include health status"
-      )
-      .tag("health")
-  val statusImpl: ServerEndpoint[Any, Future]                                 =
-    statusEndpoint.serverLogic(Unit => Future(controller.currentServiceStatus()))
+    val statusEndpoint: PublicEndpoint[Unit, ErrorMsg, Seq[ServiceStatus], Any] =
+        baseEndpoint
+            .get
+            .in(context / "health" / "status")
+            .out(jsonBody[Seq[ServiceStatus]])
+            .name("listAllServices")
+            .description(
+                "Get a list of the services. Services that are down will not include health status"
+            )
+            .tag("health")
+    val statusImpl: ServerEndpoint[Any, Future]                                 =
+        statusEndpoint.serverLogic(Unit => Future(controller.currentServiceStatus()))
 
-  override def all: List[Endpoint[?, ?, ?, ?, ?]] = List(
-    defaultEndpoint,
-    expectedEndpoint,
-    availableEndpoint,
-    statusEndpoint
-  )
-  val allImpl: List[ServerEndpoint[Any, Future]]  = List(
-    defaultImpl,
-    expectedImpl,
-    availableImpl,
-    statusImpl
-  )
+    override def all: List[Endpoint[?, ?, ?, ?, ?]] = List(
+        defaultEndpoint,
+        expectedEndpoint,
+        availableEndpoint,
+        statusEndpoint
+    )
+    val allImpl: List[ServerEndpoint[Any, Future]]  = List(
+        defaultImpl,
+        expectedImpl,
+        availableImpl,
+        statusImpl
+    )

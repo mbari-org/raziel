@@ -27,43 +27,43 @@ import scala.util.Try
 
 class JwtHelper(issuer: String, signingSecret: String, expiration: Duration):
 
-  private val algorithm = Algorithm.HMAC512(signingSecret)
+    private val algorithm = Algorithm.HMAC512(signingSecret)
 
-  val verifier = JWT
-    .require(algorithm)
-    .withIssuer(issuer)
-    .build()
+    val verifier = JWT
+        .require(algorithm)
+        .withIssuer(issuer)
+        .build()
 
-  /**
-   * @param payload
-   *   A map of stuff to be encoded in the JWT
-   * @return
-   *   A valid JWT
-   */
-  def createJwt(payload: Map[String, Any]): String =
-    val now     = Instant.now()
-    val expires = now.plus(expiration)
-    JWT
-      .create()
-      .withPayload(payload.asJava)
-      .withIssuer(issuer)
-      .withIssuedAt(Date.from(now))
-      .withExpiresAt(Date.from(expires))
-      .sign(algorithm)
+    /**
+     * @param payload
+     *   A map of stuff to be encoded in the JWT
+     * @return
+     *   A valid JWT
+     */
+    def createJwt(payload: Map[String, Any]): String =
+        val now     = Instant.now()
+        val expires = now.plus(expiration)
+        JWT
+            .create()
+            .withPayload(payload.asJava)
+            .withIssuer(issuer)
+            .withIssuedAt(Date.from(now))
+            .withExpiresAt(Date.from(expires))
+            .sign(algorithm)
 
-  /**
-   * @param token
-   *   A JWT
-   * @return
-   *   Either a decoded JWT or an exception from verifying the JWT
-   */
-  def verifyJwt(token: String): Either[Throwable, DecodedJWT] =
-    Try(verifier.verify(token)).toEither
+    /**
+     * @param token
+     *   A JWT
+     * @return
+     *   Either a decoded JWT or an exception from verifying the JWT
+     */
+    def verifyJwt(token: String): Either[Throwable, DecodedJWT] =
+        Try(verifier.verify(token)).toEither
 
 object JwtHelper:
 
-  /**
-   * The default JWT helper created from parameters in the application.conf
-   */
-  lazy val default =
-    JwtHelper(AppConfig.Jwt.Issuer, AppConfig.Jwt.SigningSecret, AppConfig.Jwt.Expiration)
+    /**
+     * The default JWT helper created from parameters in the application.conf
+     */
+    lazy val default =
+        JwtHelper(AppConfig.Jwt.Issuer, AppConfig.Jwt.SigningSecret, AppConfig.Jwt.Expiration)

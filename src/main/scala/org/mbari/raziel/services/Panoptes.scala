@@ -26,31 +26,17 @@ import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
-class Panoptes(
-    rootUrl: String,
-    timeout: Duration,
-    executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
-
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
-
-  val name = "panoptes"
-
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
-
 object Panoptes:
 
-  def default(using executor: Executor) =
-    new Panoptes(
-      AppConfig.Panoptes.internalUrl.toExternalForm,
-      AppConfig.Panoptes.timeout,
-      executor
-    )
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .Panoptes
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

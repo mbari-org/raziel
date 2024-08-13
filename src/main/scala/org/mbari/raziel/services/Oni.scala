@@ -26,11 +26,11 @@ import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
-object VarsKbServer:
+object Oni:
 
     def default(using executor: Executor): Option[HealthService] =
         AppConfig
-            .VarsKbServer
+            .Oni
             .map(config =>
                 val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
                 new DefaultHealthService(

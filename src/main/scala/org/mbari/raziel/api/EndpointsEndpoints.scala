@@ -16,7 +16,7 @@
 
 package org.mbari.raziel.api
 
-import io.circe.generic.auto._
+import io.circe.generic.auto.*
 import org.mbari.raziel.domain.{BearerAuth, ErrorMsg}
 import org.mbari.raziel.domain.EndpointConfig
 import org.mbari.raziel.etc.circe.CirceCodecs.given
@@ -157,28 +157,25 @@ import org.mbari.raziel.domain.SerializedEndpointConfig
  *   Brian Schlining
  * @since 2021-12-23T11:00:00
  */
-class EndpointsEndpoints(context: String = "config")(using ec: ExecutionContext)
-    extends org.mbari.raziel.api.Endpoints:
+class EndpointsEndpoints(context: String = "config")(using ec: ExecutionContext) extends org.mbari.raziel.api.Endpoints:
 
-  given Schema[URL] = Schema.string
+    given Schema[URL] = Schema.string
 
-  val endpoints: Endpoint[Option[String], Unit, ErrorMsg, List[SerializedEndpointConfig], Any] =
-    baseEndpoint
-      .get
-      .in(context / "endpoints")
-      .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
-      .out(jsonBody[List[SerializedEndpointConfig]])
-      .name("listEndpoints")
-      .description(
-        "List available endpoints. Authorization header is optional. If defined it returns connection information for the endpoint."
-      )
-      .tag("configuration")
-  val endpointsImpl: ServerEndpoint[Any, Future]                                               =
-    endpoints
-      .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
-      .serverLogic(tokenOpt =>
-        _ => Future(Right(EndpointsController.getEndpoints(tokenOpt).map(_.external)))
-      )
+    val endpoints: Endpoint[Option[String], Unit, ErrorMsg, List[SerializedEndpointConfig], Any] =
+        baseEndpoint
+            .get
+            .in(context / "endpoints")
+            .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
+            .out(jsonBody[List[SerializedEndpointConfig]])
+            .name("listEndpoints")
+            .description(
+                "List available endpoints. Authorization header is optional. If defined it returns connection information for the endpoint."
+            )
+            .tag("configuration")
+    val endpointsImpl: ServerEndpoint[Any, Future]                                               =
+        endpoints
+            .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
+            .serverLogic(tokenOpt => _ => Future(Right(EndpointsController.getEndpoints(tokenOpt).map(_.external))))
 
-  override val all: List[Endpoint[?, ?, ?, ?, ?]]         = List(endpoints)
-  override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)
+    override val all: List[Endpoint[?, ?, ?, ?, ?]]         = List(endpoints)
+    override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)

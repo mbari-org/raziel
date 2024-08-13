@@ -26,31 +26,17 @@ import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
 
-class VampireSquid(
-    rootUrl: String,
-    timeout: Duration,
-    executor: Executor = Executors.newSingleThreadExecutor()
-) extends HasHealth:
-
-  private val httpClientSupport = new HttpClientSupport(timeout, executor)
-
-  val name = "vampire-squid"
-
-  def health(): Task[HealthStatus] =
-    val request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(s"$rootUrl/health"))
-      .header("Accept", "application/json")
-      .GET()
-      .build()
-    httpClientSupport
-      .requestObjectsZ[HealthStatus](request)
-
 object VampireSquid:
 
-  def default(using executor: Executor) =
-    new VampireSquid(
-      AppConfig.VampireSquid.internalUrl.toExternalForm,
-      AppConfig.VampireSquid.timeout,
-      executor
-    )
+    def default(using executor: Executor): Option[HealthService] =
+        AppConfig
+            .VampireSquid
+            .map(config =>
+                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
+                new DefaultHealthService(
+                    config.name,
+                    uri,
+                    config.timeout,
+                    executor
+                )
+            )

@@ -16,27 +16,31 @@
 
 package org.mbari.raziel.services
 
-import java.net.http.HttpRequest
-import java.net.URI
-import java.time.Duration
-import java.util.concurrent.{Executor, Executors}
-import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
-import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import zio.Task
+import org.mbari.raziel.etc.circe.CirceCodecs.given
 
-object VarsKbServer:
+import java.net.URI
+import java.net.http.HttpRequest
+import java.time.Duration
+import java.util.concurrent.{Executor, Executors}
 
-    def default(using executor: Executor): Option[HealthService] =
-        AppConfig
-            .VarsKbServer
-            .map(config =>
-                val uri = URI.create(s"${config.internalUrl.toExternalForm}/health")
-                new DefaultHealthService(
-                    config.name,
-                    uri,
-                    config.timeout,
-                    executor
-                )
-            )
+class DefaultHealthService(
+    val name: String,
+    val healthUri: URI,
+    timeout: Duration,
+    executor: Executor = Executors.newSingleThreadExecutor()
+) extends HealthService:
+
+    private val httpClientSupport = new HttpClientSupport(timeout, executor)
+
+    def health(): Task[HealthStatus] =
+        val request = HttpRequest
+            .newBuilder()
+            .uri(healthUri)
+            .header("Accept", "application/json")
+            .GET()
+            .build()
+        httpClientSupport
+            .requestObjectsZ[HealthStatus](request)

@@ -27,10 +27,10 @@ case class SwaggerEndpoints(
     healthEndpoints: HealthEndpoints
 ):
 
-  val allImpl: List[ServerEndpoint[Any, Future]] =
-    SwaggerInterpreter()
-      .fromEndpoints[Future](
-        authEndpoints.all ++ endpointsEndpoints.all ++ healthEndpoints.all,
-        AppConfig.Name,
-        AppConfig.Version
-      )
+    val allImpl: List[ServerEndpoint[Any, Future]] =
+        SwaggerInterpreter()
+            .fromEndpoints[Future](
+                authEndpoints.all ++ endpointsEndpoints.all ++ healthEndpoints.all,
+                AppConfig.Name,
+                AppConfig.Version
+            )

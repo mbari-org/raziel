@@ -31,10 +31,10 @@ case class User(
     email: Option[String]
 ):
 
-  /**
-   * @param unencryptedPassword
-   *   A users password, received via basic authentication It's checked to see if it's valid for the
-   *   encrypted data from the database
-   */
-  def authenticate(unencryptedPassword: String): Boolean =
-    BasicPasswordEncryptor().checkPassword(unencryptedPassword, password)
+    /**
+     * @param unencryptedPassword
+     *   A users password, received via basic authentication It's checked to see if it's valid for the encrypted data
+     *   from the database
+     */
+    def authenticate(unencryptedPassword: String): Boolean =
+        BasicPasswordEncryptor().checkPassword(unencryptedPassword, password)

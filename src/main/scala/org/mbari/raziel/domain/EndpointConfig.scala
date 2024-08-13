@@ -45,16 +45,15 @@ case class EndpointConfig(
     internalUrl: URL
 ):
 
-  /**
-   * @return
-   *   Endpoint info suitable for JSON serializtion
-   */
-  lazy val external: SerializedEndpointConfig =
-    SerializedEndpointConfig(name, url, timeout.toMillis, secret, proxyPath)
+    /**
+     * @return
+     *   Endpoint info suitable for JSON serializtion
+     */
+    lazy val external: SerializedEndpointConfig =
+        SerializedEndpointConfig(name, url, timeout.toMillis, secret, proxyPath)
 
 /**
- * Serialized version of EndpointConfig. Maps Duration to milliseconds, which is better for
- * serialization.
+ * Serialized version of EndpointConfig. Maps Duration to milliseconds, which is better for serialization.
  * @param name
  */
 case class SerializedEndpointConfig(
@@ -64,27 +63,28 @@ case class SerializedEndpointConfig(
     secret: Option[String],
     proxyPath: String
 ):
-  lazy val internal: EndpointConfig = EndpointConfig(
-    name,
-    url,
-    Duration.ofMillis(timeoutMillis),
-    secret,
-    proxyPath,
-    url
-  ) // HACK, verify that this is OKs
+    lazy val internal: EndpointConfig = EndpointConfig(
+        name,
+        url,
+        Duration.ofMillis(timeoutMillis),
+        secret,
+        proxyPath,
+        url
+    ) // HACK, verify that this is OKs
 
 object EndpointConfig:
 
-  /**
-   * @return
-   *   A list of M3 microservice [[EndpointConfig]]s as defined in application.conf
-   */
-  def defaults: List[EndpointConfig] =
-    AppConfig.Annosaurus ::
-      AppConfig.Beholder ::
-      AppConfig.Charybdis ::
-      AppConfig.Panoptes ::
-      AppConfig.VampireSquid ::
-      AppConfig.VarsKbServer ::
-      AppConfig.VarsUserServer ::
-      Nil
+    /**
+     * @return
+     *   A list of M3 microservice [[EndpointConfig]]s as defined in application.conf
+     */
+    def defaults: List[EndpointConfig] =
+        (AppConfig.Annosaurus ::
+            AppConfig.Beholder ::
+            AppConfig.Charybdis ::
+            AppConfig.Oni ::
+            AppConfig.Panoptes ::
+            AppConfig.VampireSquid ::
+            AppConfig.VarsKbServer ::
+            AppConfig.VarsUserServer ::
+            Nil).flatten

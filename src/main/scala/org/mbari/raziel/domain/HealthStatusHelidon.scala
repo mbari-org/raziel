@@ -22,28 +22,28 @@ import org.slf4j.LoggerFactory
 
 object HealthStatusHelidon:
 
-  private val log = LoggerFactory.getLogger(getClass)
+    private val log = LoggerFactory.getLogger(getClass)
 
-  def parseString(json: String): Option[HealthStatus] =
-    val either = for
-      j <- parse(json)
-      h <- parseJson(j)
-    yield h
-    either.toOption
+    def parseString(json: String): Option[HealthStatus] =
+        val either = for
+            j <- parse(json)
+            h <- parseJson(j)
+        yield h
+        either.toOption
 
-  def parseJson(json: Json): Either[Throwable, HealthStatus] =
-    val cursor  = json.hcursor
-    val memJson = cursor
-      .downField("checks")
-      .values
-      .map(_.toSeq)
-      .getOrElse(Seq.empty)
-      .lastOption
+    def parseJson(json: Json): Either[Throwable, HealthStatus] =
+        val cursor  = json.hcursor
+        val memJson = cursor
+            .downField("checks")
+            .values
+            .map(_.toSeq)
+            .getOrElse(Seq.empty)
+            .lastOption
 
-    for
-      doc         <- memJson.toRight(new Exception("No memory check found"))
-      c            = doc.hcursor
-      freeMemory  <- c.downField("data").downField("freeBytes").as[Long]
-      maxMemory   <- c.downField("data").downField("maxBytes").as[Long]
-      totalMemory <- c.downField("data").downField("totalBytes").as[Long]
-    yield HealthStatus("unknown", -1, freeMemory, maxMemory, totalMemory, "unknown")
+        for
+            doc         <- memJson.toRight(new Exception("No memory check found"))
+            c            = doc.hcursor
+            freeMemory  <- c.downField("data").downField("freeBytes").as[Long]
+            maxMemory   <- c.downField("data").downField("maxBytes").as[Long]
+            totalMemory <- c.downField("data").downField("totalBytes").as[Long]
+        yield HealthStatus("unknown", -1, freeMemory, maxMemory, totalMemory, "unknown")

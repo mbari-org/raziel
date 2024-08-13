@@ -19,7 +19,7 @@ package org.mbari.raziel.api
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.domain.ServiceStatus
 import org.mbari.raziel.services.HealthService
-import org.mbari.raziel.services.HasHealth
+import org.mbari.raziel.services.HealthServices
 import org.mbari.raziel.domain.ServerError
 import org.mbari.raziel.domain.ErrorMsg
 import scala.util.Try
@@ -27,36 +27,35 @@ import scala.util.Success
 import scala.util.Failure
 import org.mbari.raziel.etc.zio.ZioUtil
 
-class HealthController(services: Seq[HasHealth]):
+class HealthController(services: Seq[HealthService]):
 
-  private val healthService = HealthService(services)
+    private val healthService = HealthServices(services)
 
-  def defaultHealthStatus: HealthStatus = HealthStatus.default
+    def defaultHealthStatus: HealthStatus = HealthStatus.default
 
-  def expectedServiceStatus: Seq[ServiceStatus] = services.map(s => ServiceStatus(s.name))
+    def expectedServiceStatus: Seq[ServiceStatus] = services.map(s => ServiceStatus(s.name))
 
-  def availableServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
-    val app =
-      for healthStatuses <- healthService.fetchHealth()
-      yield healthStatuses
-        .filter(_.freeMemory > 0)
-        .map(hs => ServiceStatus(hs.application, Some(hs)))
+    def availableServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
+        val app =
+            for healthStatuses <- healthService.fetchHealth()
+            yield healthStatuses
+                .filter(_.available)
 
-    Try(ZioUtil.unsafeRun(app)) match
-      case Success(s) => Right(s)
-      case Failure(e) =>
-        Left(ServerError(e.getMessage))
+        Try(ZioUtil.unsafeRun(app)) match
+            case Success(s) => Right(s)
+            case Failure(e) =>
+                Left(ServerError(e.getMessage))
 
-  def currentServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
-    val app =
-      for healthStatuses <- healthService.fetchHealth()
-      yield healthStatuses
-        .map(hs =>
-          val ss = if (hs.freeMemory <= 0) None else Some(hs)
-          ServiceStatus(hs.application, ss)
-        )
+    def currentServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
+        val app =
+            for healthStatuses <- healthService.fetchHealth()
+            yield healthStatuses
+                .map(serverStatus =>
+                    val hs = if serverStatus.available then serverStatus.healthStatus else None
+                    ServiceStatus(serverStatus.name, hs)
+                )
 
-    Try(ZioUtil.unsafeRun(app)) match
-      case Success(s) => Right(s)
-      case Failure(e) =>
-        Left(ServerError(e.getMessage))
+        Try(ZioUtil.unsafeRun(app)) match
+            case Success(s) => Right(s)
+            case Failure(e) =>
+                Left(ServerError(e.getMessage))
