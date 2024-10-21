@@ -100,8 +100,8 @@ object Main:
         val router = Router.router(vertx)
 
         // Add CORS
-        val corsHandler = CorsHandler.create("*")
-        router.route().handler(corsHandler)
+        // val corsHandler = CorsHandler.create("*")
+        // router.route().handler(corsHandler)
 
         // Add Tapir endpoints
         val interpreter = VertxFutureServerInterpreter()
