@@ -18,11 +18,13 @@ package org.mbari.raziel
 
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.CorsHandler
 import java.lang.System.Logger.Level
 import java.util.concurrent.Callable
 import java.util.logging.Handler
 import org.mbari.raziel.api.*
 import org.mbari.raziel.domain.EndpointConfig
+import org.mbari.raziel.etc.circe.CirceCodecs.{*, given}
 import org.mbari.raziel.etc.jdk.Logging.given
 import org.mbari.raziel.services.*
 import picocli.CommandLine
@@ -32,8 +34,6 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 import scala.util.Try
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter.*
-import io.vertx.ext.web.handler.CorsHandler
-import org.mbari.raziel.etc.circe.CirceCodecs.{given, *}
 
 @Command(
     description = Array("Start the server"),
@@ -59,8 +59,8 @@ object Main:
 
     def main(args: Array[String]): Unit =
         val s = """
-      |  ______ _______ ______ _____ _______       
-      | |_____/ |_____|  ____/   |   |______ |     
+      |  ______ _______ ______ _____ _______
+      | |_____/ |_____|  ____/   |   |______ |
       | |    \_ |     | /_____ __|__ |______ |_____""".stripMargin
         println(s)
         new CommandLine(new MainRunner()).execute(args*)
@@ -71,9 +71,11 @@ object Main:
         given executionContext: ExecutionContextExecutor = ExecutionContext.global
 
         // -- Service providers
-        val healthServices                 = HealthServices.init
+        val healthServices = HealthServices.init
 
-        healthServices.foreach(service => log.atInfo.log(s"Found service: ${service.name} with health check at ${service.healthUri}"))
+        healthServices.foreach(service =>
+            log.atInfo.log(s"Found service: ${service.name} with health check at ${service.healthUri}")
+        )
         val varsUserServer: VarsUserServer = healthServices
             .find(_.name == AppConfig.VarsUserServerName)
             .getOrElse(
