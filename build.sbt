@@ -19,7 +19,7 @@ Test / fork                   := true
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"
 ThisBuild / organizationName  := "MBARI"
-ThisBuild / scalaVersion      := "3.5.2"
+ThisBuild / scalaVersion      := "3.6.3"
 ThisBuild / startYear         := Some(2021)
 // ThisBuild / version           := "0.0.1"
 ThisBuild / versionScheme     := Some("semver-spec")
@@ -27,10 +27,10 @@ ThisBuild / versionScheme     := Some("semver-spec")
 lazy val root = project
   .in(file("."))
   .enablePlugins(
-    AutomateHeaderPlugin, 
-    DockerPlugin, 
-    GitBranchPrompt, 
-    GitVersioning, 
+    AutomateHeaderPlugin,
+    DockerPlugin,
+    GitBranchPrompt,
+    GitVersioning,
     JavaAppPackaging)
   .settings(
     name               := "raziel",

@@ -34,6 +34,7 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 import scala.util.Try
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter
 import sttp.tapir.server.vertx.VertxFutureServerInterpreter.*
+import io.vertx.core.http.HttpServerOptions
 
 @Command(
     description = Array("Start the server"),
@@ -98,7 +99,9 @@ object Main:
 
         // -- Vert.x server
         val vertx  = Vertx.vertx()
-        val server = vertx.createHttpServer()
+        val httpServerOptions = new HttpServerOptions()
+            .setCompressionSupported(true)
+        val server = vertx.createHttpServer(httpServerOptions)
         val router = Router.router(vertx)
 
         // Add CORS
