@@ -18,7 +18,6 @@ package org.mbari.raziel.services
 
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.methanol.HttpClientSupport
-import zio.Task
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 
 import java.net.URI
@@ -35,7 +34,7 @@ class DefaultHealthService(
 
     private val httpClientSupport = new HttpClientSupport(timeout, executor)
 
-    def health(): Task[HealthStatus] =
+    def health(): Either[Throwable, HealthStatus] =
         val request = HttpRequest
             .newBuilder()
             .uri(healthUri)
@@ -43,4 +42,4 @@ class DefaultHealthService(
             .GET()
             .build()
         httpClientSupport
-            .requestObjectsZ[HealthStatus](request)
+            .requestObjects[HealthStatus](request)

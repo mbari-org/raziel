@@ -24,9 +24,7 @@ import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
-import zio.Task
 import org.mbari.raziel.domain.HealthStatusHelidon
-import zio.ZIO
 
 class Charybdis(
     rootUrl: String,
@@ -40,7 +38,7 @@ class Charybdis(
 
     val healthUri: URI = URI.create(s"$rootUrl/health")
 
-    def health(): Task[HealthStatus] =
+    def health(): Either[Throwable, HealthStatus] =
 
         val request0 = HttpRequest
             .newBuilder()
@@ -58,13 +56,11 @@ class Charybdis(
 
         for
             // Try the new endpoint first, fall back to the old one
-            body         <- httpClientSupport.requestStringZ(request1).orElse(httpClientSupport.requestStringZ(request0))
-            healthStatus <- ZIO.fromEither(
-                                HealthStatusHelidon
-                                    .parseString(body)
-                                    .map(Right(_))
-                                    .getOrElse(Left(new Exception(s"Could not parse $body")))
-                            )
+            body         <- httpClientSupport.requestString(request1).orElse(httpClientSupport.requestString(request0))
+            healthStatus <- HealthStatusHelidon
+                                .parseString(body)
+                                .map(Right(_))
+                                .getOrElse(Left(new Exception(s"Could not parse $body")))
         yield healthStatus.copy(application = name, description = "Publication Dataset Server")
 
 object Charybdis:

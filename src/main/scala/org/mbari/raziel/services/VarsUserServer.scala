@@ -26,7 +26,6 @@ import org.mbari.raziel.domain.User
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
 import org.mbari.raziel.ext.methanol.LoggingInterceptor
-import zio.{IO, Task}
 import org.mbari.raziel.domain.HealthStatus
 
 /**
@@ -52,7 +51,7 @@ class VarsUserServer(
 
     val healthUri: URI = URI.create(s"$rootUrl/health")
 
-    def health(): Task[HealthStatus] =
+    def health(): Either[Throwable, HealthStatus] =
         val request = HttpRequest
             .newBuilder()
             .uri(healthUri)
@@ -60,7 +59,7 @@ class VarsUserServer(
             .GET()
             .build()
         httpClientSupport
-            .requestObjectsZ[HealthStatus](request)
+            .requestObjects[HealthStatus](request)
 
     object Users:
 
@@ -71,7 +70,7 @@ class VarsUserServer(
          * @return
          *   A user if found, otherwise None
          */
-        def findByName(userName: String): Task[Option[User]] =
+        def findByName(userName: String): Either[Throwable, Option[User]] =
             val request = HttpRequest
                 .newBuilder()
                 .uri(URI.create(s"$rootUrl/users/$userName"))
@@ -79,7 +78,7 @@ class VarsUserServer(
                 .GET()
                 .build()
             httpClientSupport
-                .requestObjectsZ[User](request)
+                .requestObjects[User](request)
                 .map(u => Option(u))
 
 object VarsUserServer:

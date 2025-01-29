@@ -24,7 +24,6 @@ import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
-import zio.Task
 
 object VampireSquid:
 

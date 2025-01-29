@@ -18,22 +18,26 @@ package org.mbari.raziel.services
 
 import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.ServiceStatus
-import zio.Task
 import org.mbari.raziel.domain.HealthStatus
-import zio.ZIO
 
 import java.util.concurrent.Executor
+import org.mbari.raziel.etc.sdk.Eithers
+import scala.util.Try
+import java.security.Provider.Service
+import scala.util.{Failure, Success}
 
 class HealthServices(services: Seq[HealthService]):
 
-    def fetchHealth(): Task[Seq[ServiceStatus]] =
-        for healthStati <-
-                ZIO.collectAll(
-                    services.map(s => s.health()
-                        .map(hs => ServiceStatus(s.name, Some(hs))) // Rename the application to the service name
-                        .orElse(ZIO.succeed(ServiceStatus(s.name, Some(HealthStatus.empty(s.name))))))
-                )
-        yield (healthStati :+ ServiceStatus(AppConfig.Name, Some(HealthStatus.default)))
+    def fetchHealth(): Seq[ServiceStatus] =
+
+        val healthStati =
+            for service <- services
+            yield service.health() match
+                case Right(healthStatus) => ServiceStatus(service.name, Some(healthStatus))
+                case Left(_)             =>
+                    ServiceStatus(service.name, Some(HealthStatus.empty(service.name)))
+
+        (healthStati :+ ServiceStatus(AppConfig.Name, Some(HealthStatus.default)))
             .sortBy(_.name)
 
 object HealthServices:

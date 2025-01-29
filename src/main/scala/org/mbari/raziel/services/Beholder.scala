@@ -20,7 +20,6 @@ import java.time.Duration
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import org.mbari.raziel.etc.methanol.HttpClientSupport
-import zio.Task
 import java.net.http.HttpRequest
 import org.mbari.raziel.domain.HealthStatus
 import java.net.URI

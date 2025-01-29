@@ -17,7 +17,6 @@
 package org.mbari.raziel.services
 
 import org.mbari.raziel.domain.HealthStatus
-import zio.Task
 
 import java.net.URI
 
@@ -27,4 +26,4 @@ trait HealthService:
 
     def healthUri: URI
 
-    def health(): Task[HealthStatus]
+    def health(): Either[Throwable, HealthStatus]

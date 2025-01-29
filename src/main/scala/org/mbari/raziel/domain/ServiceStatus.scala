@@ -18,8 +18,5 @@ package org.mbari.raziel.domain
 
 case class ServiceStatus(name: String, healthStatus: Option[HealthStatus] = None):
     val status: String = if healthStatus.isDefined then "UP" else "DOWN"
-    
-    val available: Boolean = healthStatus.isDefined && healthStatus.get.freeMemory > 0
 
-    
-    
+    val available: Boolean = healthStatus.isDefined && healthStatus.get.freeMemory > 0

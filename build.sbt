@@ -72,8 +72,7 @@ lazy val root = project
       tapirCirce,
       tapirCirceClient % Test,
       tapirVertx,
-      typesafeConfig,
-      zio
+      typesafeConfig
     ),
     maintainer         := "brian@mbari.org",
     scalacOptions ++= Seq(

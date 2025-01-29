@@ -98,11 +98,11 @@ object Main:
             swaggerEndpoints.allImpl
 
         // -- Vert.x server
-        val vertx  = Vertx.vertx()
+        val vertx             = Vertx.vertx()
         val httpServerOptions = new HttpServerOptions()
             .setCompressionSupported(true)
-        val server = vertx.createHttpServer(httpServerOptions)
-        val router = Router.router(vertx)
+        val server            = vertx.createHttpServer(httpServerOptions)
+        val router            = Router.router(vertx)
 
         // Add CORS
         // val corsHandler = CorsHandler.create("*")

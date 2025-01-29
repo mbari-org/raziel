@@ -25,7 +25,6 @@ import org.mbari.raziel.domain.ErrorMsg
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
-import org.mbari.raziel.etc.zio.ZioUtil
 
 class HealthController(services: Seq[HealthService]):
 
@@ -36,26 +35,45 @@ class HealthController(services: Seq[HealthService]):
     def expectedServiceStatus: Seq[ServiceStatus] = services.map(s => ServiceStatus(s.name))
 
     def availableServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
-        val app =
-            for healthStatuses <- healthService.fetchHealth()
-            yield healthStatuses
-                .filter(_.available)
 
-        Try(ZioUtil.unsafeRun(app)) match
-            case Success(s) => Right(s)
-            case Failure(e) =>
-                Left(ServerError(e.getMessage))
+    Try(healthService.fetchHealth().filter(_.available)) match
+        case Success(s) => Right(s)
+        case Failure(e) =>
+            Left(ServerError(e.getMessage))
+
+    // val app =
+    //     for healthStatuses <- healthService.fetchHealth()
+    //     yield healthStatuses
+    //         .filter(_.available)
+
+    // Try(ZioUtil.unsafeRun(app)) match
+    //     case Success(s) => Right(s)
+    //     case Failure(e) =>
+    //         Left(ServerError(e.getMessage))
 
     def currentServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
-        val app =
-            for healthStatuses <- healthService.fetchHealth()
-            yield healthStatuses
-                .map(serverStatus =>
+
+    Try(healthService.fetchHealth()) match
+        case Success(xs) =>
+            val ys =
+                for serverStatus <- xs
+                yield
                     val hs = if serverStatus.available then serverStatus.healthStatus else None
                     ServiceStatus(serverStatus.name, hs)
-                )
+            Right(ys)
 
-        Try(ZioUtil.unsafeRun(app)) match
-            case Success(s) => Right(s)
-            case Failure(e) =>
-                Left(ServerError(e.getMessage))
+        case Failure(e) =>
+            Left(ServerError(e.getMessage))
+
+    // val app =
+    //     for healthStatuses <- healthService.fetchHealth()
+    //     yield healthStatuses
+    //         .map(serverStatus =>
+    //             val hs = if serverStatus.available then serverStatus.healthStatus else None
+    //             ServiceStatus(serverStatus.name, hs)
+    //         )
+
+    // Try(ZioUtil.unsafeRun(app)) match
+    //     case Success(s) => Right(s)
+    //     case Failure(e) =>
+    //         Left(ServerError(e.getMessage))
