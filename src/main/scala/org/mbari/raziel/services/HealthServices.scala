@@ -48,6 +48,7 @@ object HealthServices:
         Charybdis.default,
         Oni.default,
         Panoptes.default,
+        Skimmer.default,
         VampireSquid.default,
         VarsKbServer.default,
         VarsUserServer.default
