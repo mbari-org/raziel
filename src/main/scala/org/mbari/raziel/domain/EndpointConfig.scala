@@ -84,6 +84,7 @@ object EndpointConfig:
             AppConfig.Charybdis ::
             AppConfig.Oni ::
             AppConfig.Panoptes ::
+            AppConfig.Skimmer ::
             AppConfig.VampireSquid ::
             AppConfig.VarsKbServer ::
             AppConfig.VarsUserServer ::
