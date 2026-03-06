@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  lazy val auth0 = "com.auth0" % "java-jwt" % "4.5.0"
+  lazy val auth0 = "com.auth0" % "java-jwt" % "4.5.1"
 
   private val circeVersion = "0.14.15"
   lazy val circeCore       = "io.circe" %% "circe-core"    % circeVersion
@@ -11,22 +11,22 @@ object Dependencies {
 
   lazy val jansi    = "org.fusesource.jansi"         % "jansi"           % "2.4.2"
   lazy val jasypt   = "org.jasypt"                   % "jasypt"          % "1.9.3"
-  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.5.19"
-  lazy val methanol = "com.github.mizosoft.methanol" % "methanol"        % "1.8.4"
-  lazy val munit    = "org.scalameta"               %% "munit"           % "1.2.1"
+  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.5.32"
+  lazy val methanol = "com.github.mizosoft.methanol" % "methanol"        % "1.9.0"
+  lazy val munit    = "org.scalameta"               %% "munit"           % "1.2.4"
   lazy val picocli  = "info.picocli"                 % "picocli"         % "4.7.7"
 
   lazy val slf4jVersion = "2.0.17"
   lazy val slf4jApi     = "org.slf4j" % "slf4j-api"    % slf4jVersion
   lazy val slf4jJul     = "org.slf4j" % "jul-to-slf4j" % slf4jVersion
 
-  private val tapirVersion  = "1.11.49"
+  private val tapirVersion  = "1.13.10"
   lazy val tapirStubServer  = "com.softwaremill.sttp.tapir"   %% "tapir-sttp-stub-server" % tapirVersion
   lazy val tapirSwagger     = "com.softwaremill.sttp.tapir"   %% "tapir-swagger-ui-bundle" % tapirVersion
   lazy val tapirCirce       = "com.softwaremill.sttp.tapir"   %% "tapir-json-circe" % tapirVersion
   lazy val tapirCirceClient = "com.softwaremill.sttp.client3" %% "circe" % "3.11.0"
   lazy val tapirVertx       = "com.softwaremill.sttp.tapir"   %% "tapir-vertx-server" % tapirVersion
 
-  lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.5"
+  lazy val typesafeConfig = "com.typesafe" % "config" % "1.4.6"
 
 }

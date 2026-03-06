@@ -52,6 +52,9 @@ case class EndpointConfig(
     lazy val external: SerializedEndpointConfig =
         SerializedEndpointConfig(name, url, timeout.toMillis, secret, proxyPath)
 
+    lazy val internal: SerializedEndpointConfig =
+        SerializedEndpointConfig(name, internalUrl, timeout.toMillis, secret, proxyPath)
+
 /**
  * Serialized version of EndpointConfig. Maps Duration to milliseconds, which is better for serialization.
  * @param name

@@ -16,10 +16,14 @@ Compile / doc / scalacOptions ++= Seq(
     "-doc-root-content", "./src/docs/index.md"
     )
 Test / fork                   := true
+ThisBuild / Test / testOptions ++= Seq(
+    Tests.Argument(TestFrameworks.MUnit, "-b"),
+    Tests.Argument(TestFrameworks.MUnit, "--log=debug")
+)
 ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
 ThisBuild / organization      := "org.mbari"
 ThisBuild / organizationName  := "MBARI"
-ThisBuild / scalaVersion      := "3.7.0"
+ThisBuild / scalaVersion      := "3.8.2"
 ThisBuild / startYear         := Some(2021)
 // ThisBuild / version           := "0.0.1"
 ThisBuild / versionScheme     := Some("semver-spec")
@@ -34,10 +38,10 @@ lazy val root = project
     JavaAppPackaging)
   .settings(
     name               := "raziel",
-    dockerBaseImage    := "eclipse-temurin:21",
+    dockerBaseImage    := "eclipse-temurin:25",
     dockerExposedPorts := Seq(8080),
     dockerUpdateLatest := true,
-    javacOptions ++= Seq("-target", "21", "-source", "21"),
+    javacOptions ++= Seq("-target", "25", "-source", "25"),
     // Set version based on git tag. I use "0.0.0" format (no leading "v", which is the default)
     // Use `show gitCurrentTags` in sbt to update/see the tags
     git.gitTagToVersionNumber := { tag: String =>
@@ -45,9 +49,6 @@ lazy val root = project
       else None
     },
     git.useGitDescribe := true,
-    resolvers ++= Seq(
-      Resolver.githubPackages("mbari-org", "maven")
-    ),
     libraryDependencies ++= Seq(
       auth0,
       circeCore,
