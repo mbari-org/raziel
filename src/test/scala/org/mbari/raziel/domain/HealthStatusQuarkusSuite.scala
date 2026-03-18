@@ -18,15 +18,16 @@ package org.mbari.raziel.domain
 
 import cats.syntax.profunctor
 
-class HealthStatusHelidonSuite extends munit.FunSuite:
+class HealthStatusQuarkusSuite extends munit.FunSuite:
 
   test("parseString"):
     val url = getClass.getResource("/charybdis_health.json")
     val s   = scala.io.Source.fromURL(url).getLines.mkString("\n")
-    HealthStatusHelidon.parseString(s) match
+    HealthStatusQuarkus.parseString(s) match
       case Some(h) =>
-        assertEquals(h.freeMemory, 64136504L)
-        assertEquals(h.maxMemory, 989855744L)
-        assertEquals(h.totalMemory, 112197632L)
+        assertEquals(h.application, "charybdis")
+        assertEquals(h.freeMemory, 167628888L)
+        assertEquals(h.maxMemory, 11891376128L)
+        assertEquals(h.totalMemory, 221773824L)
       case None    => fail("Expected Some(HealthStatus), got None")
 

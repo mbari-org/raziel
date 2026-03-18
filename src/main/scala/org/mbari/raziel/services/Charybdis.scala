@@ -24,7 +24,7 @@ import org.mbari.raziel.AppConfig
 import org.mbari.raziel.domain.HealthStatus
 import org.mbari.raziel.etc.circe.CirceCodecs.given
 import org.mbari.raziel.etc.methanol.HttpClientSupport
-import org.mbari.raziel.domain.HealthStatusHelidon
+import org.mbari.raziel.domain.HealthStatusQuarkus
 
 class Charybdis(
     rootUrl: String,
@@ -36,7 +36,7 @@ class Charybdis(
 
     val name = "charybdis"
 
-    val healthUri: URI = URI.create(s"$rootUrl/health")
+    val healthUri: URI = URI.create(s"$rootUrl/q/health")
 
     def health(): Either[Throwable, HealthStatus] =
 
@@ -57,7 +57,7 @@ class Charybdis(
         for
             // Try the new endpoint first, fall back to the old one
             body         <- httpClientSupport.requestString(request1).orElse(httpClientSupport.requestString(request0))
-            healthStatus <- HealthStatusHelidon
+            healthStatus <- HealthStatusQuarkus
                                 .parseString(body)
                                 .map(Right(_))
                                 .getOrElse(Left(new Exception(s"Could not parse $body")))

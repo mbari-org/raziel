@@ -1,37 +1,20 @@
 {
-  "outcome": "UP",
-  "status": "UP",
-  "checks": [
-    {
-      "name": "deadlock",
-      "state": "UP",
-      "status": "UP"
-    },
-    {
-      "name": "diskSpace",
-      "state": "UP",
-      "status": "UP",
-      "data": {
-        "free": "40.51 GB",
-        "freeBytes": 43501199360,
-        "percentFree": "57.40%",
-        "total": "70.58 GB",
-        "totalBytes": 75787603968
-      }
-    },
-    {
-      "name": "heapMemory",
-      "state": "UP",
-      "status": "UP",
-      "data": {
-        "free": "61.17 MB",
-        "freeBytes": 64136504,
-        "max": "944.00 MB",
-        "maxBytes": 989855744,
-        "percentFree": "95.14%",
-        "total": "107.00 MB",
-        "totalBytes": 112197632
-      }
-    }
-  ]
+    "status": "UP",
+    "checks": [
+        {
+            "name": "Server status",
+            "status": "UP",
+            "data": {
+                "jdkVersion": "21.0.2+13-LTS",
+                "availableProcessors": 2,
+                "freeMemory": 167628888,
+                "maxMemory": 11891376128,
+                "totalMemory": 221773824,
+                "application": "charybdis",
+                "version": "1.0.8",
+                "description": "Annotation and Media Services for MBARI",
+                "hostname": "227a8cc61c3e"
+            }
+        }
+    ]
 }
