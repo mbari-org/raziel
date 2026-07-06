@@ -88,7 +88,8 @@ class AuthEndpoints(authController: AuthController, context: String = "config", 
     val encodeEndpointImpl: ServerEndpoint[Any, Future] =
         encodeEndpoint
             .serverSecurityLogic(userPwdOpt =>
-                Future.successful(Right(userPwdOpt.map(up => BasicAuth(up.username, up.password.get))))
+                val basicAuthOpt = userPwdOpt.flatMap(up => up.password.map(p => BasicAuth(up.username, p)))
+                Future.successful(Right(basicAuthOpt))
             )
             .serverLogic(basicAuthOpt =>
                 req =>
