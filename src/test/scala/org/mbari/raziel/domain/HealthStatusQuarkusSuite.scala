@@ -22,7 +22,7 @@ class HealthStatusQuarkusSuite extends munit.FunSuite:
 
   test("parseString"):
     val url = getClass.getResource("/charybdis_health.json")
-    val s   = scala.io.Source.fromURL(url).getLines.mkString("\n")
+    val s   = scala.io.Source.fromURL(url).getLines().mkString("\n")
     HealthStatusQuarkus.parseString(s) match
       case Some(h) =>
         assertEquals(h.application, "charybdis")

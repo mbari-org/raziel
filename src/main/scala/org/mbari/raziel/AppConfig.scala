@@ -60,10 +60,10 @@ object AppConfig:
     ): Option[EndpointConfig] =
         try
             val endpointConfig = config.getConfig(nodePrefix)
-            val url         = asUrl(endpointConfig.getString("url"))
-            val timeout     = endpointConfig.getDuration("timeout")
-            val secret      = if hasSecret then Option(endpointConfig.getString("secret")) else None
-            val internalUrl = asUrl(endpointConfig.getString("internal.url"))
+            val url            = asUrl(endpointConfig.getString("url"))
+            val timeout        = endpointConfig.getDuration("timeout")
+            val secret         = if hasSecret then Option(endpointConfig.getString("secret")) else None
+            val internalUrl    = asUrl(endpointConfig.getString("internal.url"))
             log.atDebug.log(s"Endpoint URL: $url")
             Some(EndpointConfig(name, url, timeout, secret, proxyPath, internalUrl))
         catch
@@ -103,7 +103,6 @@ object AppConfig:
         proxyPath = "/anno"
     )
 
-
     val BeholderName: String                  = "beholder"
     lazy val Beholder: Option[EndpointConfig] = buildEndpointConfig(
         BeholderName,
@@ -112,7 +111,6 @@ object AppConfig:
         proxyPath = "/beholder"
     )
 
-
     lazy val CharybdisName: String             = "charybdis"
     lazy val Charybdis: Option[EndpointConfig] = buildEndpointConfig(
         CharybdisName,
@@ -120,7 +118,6 @@ object AppConfig:
         hasSecret = false,
         proxyPath = "/references"
     )
-
 
     object Http:
         val Context     = config.getString("raziel.http.context")
@@ -158,7 +155,6 @@ object AppConfig:
         proxyPath = "/panoptes"
     )
 
-
     lazy val SkimmerName: String             = "skimmer"
     lazy val Skimmer: Option[EndpointConfig] = buildEndpointConfig(
         SkimmerName,
@@ -175,20 +171,19 @@ object AppConfig:
         proxyPath = "/vam"
     )
 
-
     lazy val VarsKbServerName: String             = "vars-kb-server"
     lazy val VarsKbServer: Option[EndpointConfig] =
         Oni match
             case Some(oni) =>
                 log.atInfo.log(s"Using $OniName instead of $VarsKbServerName for the VARS knowledgebase")
                 Some(oni.copy(name = VarsKbServerName))
-            case None      => buildEndpointConfig(
-                VarsKbServerName,
-                "vars.kb.server",
-                hasSecret = false,
-                proxyPath = "/kb"
-            )
-
+            case None      =>
+                buildEndpointConfig(
+                    VarsKbServerName,
+                    "vars.kb.server",
+                    hasSecret = false,
+                    proxyPath = "/kb"
+                )
 
     lazy val VarsUserServerName: String             = "vars-user-server"
     lazy val VarsUserServer: Option[EndpointConfig] =

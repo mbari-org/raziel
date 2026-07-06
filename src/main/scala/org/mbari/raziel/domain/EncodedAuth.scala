@@ -20,19 +20,18 @@ import org.mbari.raziel.util.crypto.AES
 
 final case class EncodedAuth(encodedUsername: String, encodedPassword: String):
 
-    def asBasicAuth(aesKey: String): Either[ErrorMsg, BasicAuth] = 
+    def asBasicAuth(aesKey: String): Either[ErrorMsg, BasicAuth] =
         val aes = new AES(aesKey)
         for
-            username <- aes.decrypt(encodedUsername).left.map(e => Unauthorized(e.getMessage))
-            password <- aes.decrypt(encodedPassword).left.map(e => Unauthorized(e.getMessage))
+            username <- aes.decrypt(encodedUsername).left.map(e => Unauthorized("Invalid encoded credentials"))
+            password <- aes.decrypt(encodedPassword).left.map(e => Unauthorized("Invalid encoded credentials"))
         yield BasicAuth(username, password)
-
 
 object EncodedAuth:
 
-    def fromBasicAuth(auth: BasicAuth, aesKey: String): Either[ErrorMsg, EncodedAuth] = 
+    def fromBasicAuth(auth: BasicAuth, aesKey: String): Either[ErrorMsg, EncodedAuth] =
         val aes = new AES(aesKey)
         for
-            encodedUsername <- aes.encrypt(auth.username).left.map(e => Unauthorized(e.getMessage))
-            encodedPassword <- aes.encrypt(auth.password).left.map(e => Unauthorized(e.getMessage))
+            encodedUsername <- aes.encrypt(auth.username).left.map(e => ServerError("Unable to encode credentials"))
+            encodedPassword <- aes.encrypt(auth.password).left.map(e => ServerError("Unable to encode credentials"))
         yield EncodedAuth(encodedUsername, encodedPassword)

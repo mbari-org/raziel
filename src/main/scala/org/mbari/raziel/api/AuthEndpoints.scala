@@ -72,7 +72,6 @@ class AuthEndpoints(authController: AuthController, context: String = "config", 
             .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
             .serverLogic(tokenOpt => _ => Future(authController.verify(tokenOpt)))
 
-
     val encodeEndpoint: Endpoint[Option[UsernamePassword], EncodeRequest, ErrorMsg, String, Any] =
         baseEndpoint
             .post
@@ -81,7 +80,9 @@ class AuthEndpoints(authController: AuthController, context: String = "config", 
             .in(jsonBody[EncodeRequest])
             .out(stringBody)
             .name("encodeBasicAuth")
-            .description("Authenticate with BasicAuth and return a login file (url, AES-encoded username, AES-encoded password)")
+            .description(
+                "Authenticate with BasicAuth and return a login file (url, AES-encoded username, AES-encoded password)"
+            )
             .tag("auth")
 
     val encodeEndpointImpl: ServerEndpoint[Any, Future] =
@@ -98,7 +99,6 @@ class AuthEndpoints(authController: AuthController, context: String = "config", 
                     )
             )
 
-
     val loginEndpoint: Endpoint[Unit, String, ErrorMsg, BearerAuth, Any] =
         baseEndpoint
             .post
@@ -106,7 +106,9 @@ class AuthEndpoints(authController: AuthController, context: String = "config", 
             .in(stringBody)
             .out(jsonBody[BearerAuth])
             .name("authenticateEncoded")
-            .description("Authenticate using AES-encoded credentials (3-line text body: url, encoded username, encoded password)")
+            .description(
+                "Authenticate using AES-encoded credentials (3-line text body: url, encoded username, encoded password)"
+            )
             .tag("auth")
 
     val loginEndpointImpl: ServerEndpoint[Any, Future] =
