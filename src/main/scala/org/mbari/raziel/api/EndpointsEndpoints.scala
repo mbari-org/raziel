@@ -165,7 +165,13 @@ class EndpointsEndpoints(context: String = "config")(using ec: ExecutionContext)
         baseEndpoint
             .get
             .in(context / "endpoints")
-            .in(query[Option[Boolean]]("internal").description("If true, returns internal URLs (for docker environment) instead of external (web) URLs").default(Some(false)))
+            .in(
+                query[Option[Boolean]]("internal")
+                    .description(
+                        "If true, returns internal URLs (for docker environment) instead of external (web) URLs"
+                    )
+                    .default(Some(false))
+            )
             .securityIn(auth.bearer[Option[String]](WWWAuthenticateChallenge.bearer))
             .out(jsonBody[List[SerializedEndpointConfig]])
             .name("listEndpoints")
@@ -174,10 +180,19 @@ class EndpointsEndpoints(context: String = "config")(using ec: ExecutionContext)
             )
             .tag("configuration")
 
-    val endpointsImpl: ServerEndpoint[Any, Future]                                               =
+    val endpointsImpl: ServerEndpoint[Any, Future] =
         endpoints
             .serverSecurityLogic(tokenOpt => Future.successful(Right(tokenOpt)))
-            .serverLogic(tokenOpt => isInternal => Future(Right(EndpointsController.getEndpoints(tokenOpt).map(e => if isInternal.getOrElse(false) then e.internal else e.external))))
+            .serverLogic(tokenOpt =>
+                isInternal =>
+                    Future(
+                        Right(
+                            EndpointsController
+                                .getEndpoints(tokenOpt)
+                                .map(e => if isInternal.getOrElse(false) then e.internal else e.external)
+                        )
+                    )
+            )
 
     override val all: List[Endpoint[?, ?, ?, ?, ?]]         = List(endpoints)
     override val allImpl: List[ServerEndpoint[Any, Future]] = List(endpointsImpl)

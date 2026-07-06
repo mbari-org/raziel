@@ -35,11 +35,10 @@ class HealthController(services: Seq[HealthService]):
     def expectedServiceStatus: Seq[ServiceStatus] = services.map(s => ServiceStatus(s.name))
 
     def availableServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
-
-    Try(healthService.fetchHealth().filter(_.available)) match
-        case Success(s) => Right(s)
-        case Failure(e) =>
-            Left(ServerError(e.getMessage))
+        Try(healthService.fetchHealth().filter(_.available)) match
+            case Success(s) => Right(s)
+            case Failure(e) =>
+                Left(ServerError(e.getMessage))
 
     // val app =
     //     for healthStatuses <- healthService.fetchHealth()
@@ -52,18 +51,17 @@ class HealthController(services: Seq[HealthService]):
     //         Left(ServerError(e.getMessage))
 
     def currentServiceStatus(): Either[ErrorMsg, Seq[ServiceStatus]] =
+        Try(healthService.fetchHealth()) match
+            case Success(xs) =>
+                val ys =
+                    for serverStatus <- xs
+                    yield
+                        val hs = if serverStatus.available then serverStatus.healthStatus else None
+                        ServiceStatus(serverStatus.name, hs)
+                Right(ys)
 
-    Try(healthService.fetchHealth()) match
-        case Success(xs) =>
-            val ys =
-                for serverStatus <- xs
-                yield
-                    val hs = if serverStatus.available then serverStatus.healthStatus else None
-                    ServiceStatus(serverStatus.name, hs)
-            Right(ys)
-
-        case Failure(e) =>
-            Left(ServerError(e.getMessage))
+            case Failure(e) =>
+                Left(ServerError(e.getMessage))
 
     // val app =
     //     for healthStatuses <- healthService.fetchHealth()
