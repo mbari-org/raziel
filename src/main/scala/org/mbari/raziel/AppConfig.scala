@@ -27,6 +27,7 @@ import org.mbari.raziel.etc.jdk.Logging.{*, given}
 import java.net.URI
 import scala.util.control.NonFatal
 import com.typesafe.config.Config
+import org.mbari.raziel.util.crypto.AES
 
 /**
  * A typesafe wrapper around the application.conf file.
@@ -81,6 +82,18 @@ object AppConfig:
                     "Using default master key. This is not recommended for production. Set the RAZIEL_MASTER_KEY environment variable to set a master key."
                 )
         key
+
+    lazy val AesKey: String =
+        val key = config.getString("raziel.aes.key")
+        if key.trim.isEmpty || key.toUpperCase == Default then
+            log
+                .atWarn
+                .log(
+                    "Using default AES key. This is not recommended for production. Set the RAZIEL_AES_KEY environment variable to set an AES key."
+                )
+        key
+
+    lazy val Aes: AES = AES(AesKey)
 
     val AnnosaurusName: String                  = "annosaurus"
     lazy val Annosaurus: Option[EndpointConfig] = buildEndpointConfig(

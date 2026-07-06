@@ -31,8 +31,9 @@ import scala.util.Failure
 
 import scala.jdk.CollectionConverters.*
 import org.mbari.raziel.domain.JwtAuthPayload
+import org.mbari.raziel.domain.EncodedAuth
 
-class AuthController(varsUserServer: VarsUserServer):
+class AuthController(varsUserServer: VarsUserServer, aesKey: String = AppConfig.AesKey):
 
     private val jwtHelper = JwtHelper.default
 
@@ -114,3 +115,21 @@ class AuthController(varsUserServer: VarsUserServer):
             .map(_.accessToken)
 
         verify(tokenOpt)
+
+    def encode(auth: BasicAuth): Either[ErrorMsg, EncodedAuth] =
+        authenticate(None, Some(auth)).flatMap(_ => EncodedAuth.fromBasicAuth(auth, aesKey))
+
+    def encodeToString(auth: BasicAuth, url: String): Either[ErrorMsg, String] =
+        authenticate(None, Some(auth)).flatMap { _ =>
+            EncodedAuth.fromBasicAuth(auth, aesKey).map { encoded =>
+                s"$url\n${encoded.encodedUsername}\n${encoded.encodedPassword}"
+            }
+        }
+
+    def authenticateEncoded(body: String): Either[ErrorMsg, BearerAuth] =
+        val lines = body.linesIterator.toList
+        if lines.length < 3 then Left(Unauthorized("Invalid request body: expected 3 lines (url, username, password)"))
+        else
+            EncodedAuth(lines(1).trim, lines(2).trim)
+                .asBasicAuth(aesKey)
+                .flatMap(auth => authenticate(None, Some(auth)))
