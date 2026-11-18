@@ -9,6 +9,8 @@ import laika.helium.Helium
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
+// Mitigation for CVE-2026-114938 (Java4Shell): disable the vulnerable Base64 intrinsic
+Universal / javaOptions += "-J-XX:-UseBASE64Intrinsics"
 Compile / doc / scalacOptions ++= Seq(
     "-groups",
     "-project-footer", "Monterey Bay Aquarium Research Institute",
