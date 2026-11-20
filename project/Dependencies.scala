@@ -10,7 +10,6 @@ object Dependencies {
   lazy val circeParser     = "io.circe" %% "circe-parser"  % circeVersion
 
   lazy val jansi    = "org.fusesource.jansi"         % "jansi"           % "2.4.3"
-  lazy val jasypt   = "org.jasypt"                   % "jasypt"          % "1.9.3"
   lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.6.7"
   lazy val methanol = "com.github.mizosoft.methanol" % "methanol"        % "1.9.0"
   lazy val munit    = "org.scalameta"               %% "munit"           % "1.3.6"

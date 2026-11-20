@@ -53,7 +53,6 @@ lazy val root = project
       circeCore,
       circeGeneric,
       circeParser,
-      jasypt,
       jansi   % Runtime,
       logback % Runtime,
       methanol,

@@ -16,8 +16,6 @@
 
 package org.mbari.raziel.domain
 
-import org.jasypt.util.password.BasicPasswordEncryptor
-
 /**
  * Maps the users from the vars-users-server to a case class
  */
@@ -29,12 +27,4 @@ case class User(
     firstName: Option[String],
     lastName: Option[String],
     email: Option[String]
-):
-
-    /**
-     * @param unencryptedPassword
-     *   A users password, received via basic authentication It's checked to see if it's valid for the encrypted data
-     *   from the database
-     */
-    def authenticate(unencryptedPassword: String): Boolean =
-        password.exists(p => BasicPasswordEncryptor().checkPassword(unencryptedPassword, p))
+)
