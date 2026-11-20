@@ -1,16 +1,10 @@
 import Dependencies._
 
-import laika.ast
-import laika.helium.config.HeliumIcon
-import laika.helium.config.IconLink
-import laika.theme.config.Color
-import laika.helium.Helium
 
 Docker / maintainer           := "Brian Schlining <brian@mbari.org>"
 Docker / packageName          := "mbari/raziel"
-Global / onChangedBuildSource := ReloadOnSourceChanges
-// Mitigation for CVE-2026-114938 (Java4Shell): disable the vulnerable Base64 intrinsic
-Universal / javaOptions += "-J-XX:-UseBASE64Intrinsics"
+onChangedBuildSource := ReloadOnSourceChanges
+
 Compile / doc / scalacOptions ++= Seq(
     "-groups",
     "-project-footer", "Monterey Bay Aquarium Research Institute",
@@ -18,17 +12,17 @@ Compile / doc / scalacOptions ++= Seq(
     "-doc-root-content", "./src/docs/index.md"
     )
 Test / fork                   := true
-ThisBuild / Test / testOptions ++= Seq(
+Test / testOptions ++= Seq(
     Tests.Argument(TestFrameworks.MUnit, "-b"),
     Tests.Argument(TestFrameworks.MUnit, "--log=debug")
 )
-ThisBuild / licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
-ThisBuild / organization      := "org.mbari"
-ThisBuild / organizationName  := "MBARI"
-ThisBuild / scalaVersion      := "3.10.1"
-ThisBuild / startYear         := Some(2021)
+licenses          := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
+organization      := "org.mbari"
+organizationName  := "MBARI"
+scalaVersion      := "3.10.1"
+startYear         := Some(2021)
 // ThisBuild / version           := "0.0.1"
-ThisBuild / versionScheme     := Some("semver-spec")
+versionScheme     := Some("semver-spec")
 
 lazy val root = project
   .in(file("."))
@@ -46,10 +40,10 @@ lazy val root = project
     javacOptions ++= Seq("-target", "27", "-source", "27"),
     // Set version based on git tag. I use "0.0.0" format (no leading "v", which is the default)
     // Use `show gitCurrentTags` in sbt to update/see the tags
-    git.gitTagToVersionNumber := { tag: String =>
-      if(tag matches "[0-9]+\\..*") Some(tag)
-      else None
-    },
+    git.gitTagToVersionNumber := { (gitTag: String) =>
+          if (gitTag.matches("[0-9]+\\..*")) Some(gitTag)
+          else None
+      },
     git.useGitDescribe := true,
     // sbt 2.x moves `target` under target/out/jvm/scala-<ver>/<project>. Pin the staging
     // directory to its sbt 1.x location so the Dockerfile's COPY target/universal/stage still works.
@@ -61,17 +55,10 @@ lazy val root = project
       circeParser,
       jasypt,
       jansi   % Runtime,
-      // jettyClient,
-      // jettyProxy,
-      // jettyServer,
-      // jettyServlets,
-      // jettyUtil,
-      // jettyWebapp,
       logback % Runtime,
       methanol,
       munit   % Test,
       picocli,
-      // scalatra,
       slf4jApi,
       tapirStubServer % Test,
       tapirSwagger,

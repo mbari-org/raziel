@@ -23,7 +23,7 @@ import org.jasypt.util.password.BasicPasswordEncryptor
  */
 case class User(
     username: String,
-    password: String,
+    password: Option[String],
     role: Option[String],
     affiliation: Option[String],
     firstName: Option[String],
@@ -37,4 +37,4 @@ case class User(
      *   from the database
      */
     def authenticate(unencryptedPassword: String): Boolean =
-        BasicPasswordEncryptor().checkPassword(unencryptedPassword, password)
+        password.exists(p => BasicPasswordEncryptor().checkPassword(unencryptedPassword, p))

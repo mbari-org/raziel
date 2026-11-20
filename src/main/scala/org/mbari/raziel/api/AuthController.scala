@@ -58,29 +58,6 @@ class AuthController(varsUserServer: VarsUserServer, aesKey: String = AppConfig.
                     token   <- Right(jwtHelper.createJwt(payload.asMap()))
                 yield BearerAuth(token)
 
-            // val app = for
-            //     a       <- ZIO.fromEither(auth.toRight(Unauthorized("Missing or invalid basic credentials")))
-            //     // _  <- Task.succeed(log.info(s"auth: $a"))
-            //     u       <- varsUserServer.Users.findByName(a.username)
-            //     _       <- if (a.username == u.user) ZIO.succeed(()) else ZIO.fail(new Exception("User not found"))
-            //     // _  <- Task.succeed(log.info(s"user: $u"))
-            //     ok      <- ZIO.succeed(u.map(v => v.authenticate(a.password)).getOrElse(false))
-            //     payload <- ZIO.succeed(
-            //                    if ok then Some(JwtAuthPayload.fromUser(u.get))
-            //                    else None
-            //                )
-            // yield payload
-
-            // Try(ZioUtil.unsafeRun(app)) match
-            //     case Success(payload) =>
-            //         payload match
-            //             case Some(p) =>
-            //                 val token = jwtHelper.createJwt(p.asMap())
-            //                 Right(BearerAuth(token))
-            //             case None    =>
-            //                 Left(Unauthorized("Invalid credentials"))
-            //     case Failure(e)       =>
-            //         Left(ServerError(e.getMessage))
 
     def authenticateRaw(
         xApiKey: Option[String] = None,
