@@ -17,8 +17,14 @@
 package org.mbari.raziel.services
 
 import com.github.mizosoft.methanol.Methanol
+import io.circe.parser.parse
 import java.net.http.HttpRequest
+import java.net.http.HttpResponse.BodyHandlers
 import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.util.Base64
+import scala.util.Try
+import org.mbari.raziel.domain.BasicAuth
 import java.time.Duration
 import java.util.concurrent.{Executor, Executors}
 import org.mbari.raziel.AppConfig
@@ -80,6 +86,53 @@ class VarsUserServer(
             httpClientSupport
                 .requestObjects[User](request)
                 .map(u => Option(u))
+
+    object Authentication:
+
+        /**
+         * Authenticate a user by calling Oni's `/auth/login` endpoint (rootUrl is expected to end with `/v1`) using
+         * Basic Auth. If Oni responds with a JWT, the user is authenticated. (Oni no longer returns passwords, so we
+         * can't check them ourselves.)
+         *
+         * @param auth
+         *   The user's credentials
+         * @return
+         *   Right(true) if Oni issued a JWT, Right(false) if the credentials were rejected (401/403), or Left if the
+         *   request failed or the response was unexpected (any other status, including 404, or a 200 without an
+         *   access_token), so misconfiguration is visible rather than reported as bad credentials.
+         */
+        def authenticate(auth: BasicAuth): Either[Throwable, Boolean] =
+            val credentials = Base64
+                .getEncoder
+                .encodeToString(s"${auth.username}:${auth.password}".getBytes(StandardCharsets.UTF_8))
+            val request     = HttpRequest
+                .newBuilder()
+                .uri(URI.create(s"$rootUrl/auth/login"))
+                .header("Accept", "application/json")
+                .header("Authorization", s"Basic $credentials")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build()
+
+            Try(httpClientSupport.client.send(request, BodyHandlers.ofString())).toEither.flatMap(response =>
+                response.statusCode() match
+                    case 200       =>
+                        extractToken(response.body()).filter(_.nonEmpty) match
+                            case Some(_) => Right(true)
+                            case None    =>
+                                Left(
+                                    new RuntimeException(
+                                        s"Response from ${request.uri} was 200 but contained no access_token"
+                                    )
+                                )
+                    case 401 | 403 => Right(false)
+                    case code      =>
+                        Left(new RuntimeException(s"Unexpected response ($code) from ${request.uri}"))
+            )
+
+        private def extractToken(body: String): Option[String] =
+            parse(body)
+                .toOption
+                .flatMap(_.hcursor.get[String]("access_token").toOption)
 
 object VarsUserServer:
 

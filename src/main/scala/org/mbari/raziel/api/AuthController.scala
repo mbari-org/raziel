@@ -53,7 +53,10 @@ class AuthController(varsUserServer: VarsUserServer, aesKey: String = AppConfig.
                     u       <- opt.toRight(Unauthorized("User not found"))
                     _       <- if a.username == u.username then Right(())
                                else Left(Unauthorized("Username has incorrect case"))
-                    ok      <- if u.authenticate(a.password) then Right(()) else Left(Unauthorized("Invalid credentials"))
+                    ok      <- varsUserServer.Authentication.authenticate(a) match
+                                   case Left(e)      => Left(ServerError(e.getMessage))
+                                   case Right(true)  => Right(())
+                                   case Right(false) => Left(Unauthorized("Invalid credentials"))
                     payload <- Right(JwtAuthPayload.fromUser(u))
                     token   <- Right(jwtHelper.createJwt(payload.asMap()))
                 yield BearerAuth(token)
