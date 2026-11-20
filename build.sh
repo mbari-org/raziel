@@ -17,7 +17,7 @@ if [[ $ARCH == 'arm64' ]]; then
     fi
 
     cd $STAGE_DIR
-    VCS_REF=$(git -C "$SCRIPT_DIR" tag | sort -V | tail -1)
+    VCS_REF=$(git -C "$SCRIPT_DIR" tag | sort -V | grep -E '^\d' | tail -1)
     # https://betterprogramming.pub/how-to-actually-deploy-docker-images-built-on-a-m1-macs-with-apple-silicon-a35e39318e97
     docker buildx build \
       --platform linux/amd64,linux/arm64 \
