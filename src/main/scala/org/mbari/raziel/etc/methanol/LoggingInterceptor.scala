@@ -67,11 +67,22 @@ object LoggingInterceptor extends Methanol.Interceptor:
         )
         // format: on
 
+    /** Headers whose values must never be logged (compared case-insensitively). */
+    private val SensitiveHeaders: Set[String] =
+        Set("authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key")
+
+    private val Redacted = "[REDACTED]"
+
     private def headersToString(headers: HttpHeaders): String =
         headers
             .map()
             .entrySet()
             .stream()
-            .map(e => s"${e.getKey()}: ${String.join(", ", e.getValue())}")
+            .map(e =>
+                val value =
+                    if SensitiveHeaders.contains(e.getKey().toLowerCase) then Redacted
+                    else String.join(", ", e.getValue())
+                s"${e.getKey()}: $value"
+            )
             .collect(Collectors.joining(System.lineSeparator()))
             .trim()

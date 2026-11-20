@@ -98,7 +98,8 @@ class VarsUserServer(
          *   The user's credentials
          * @return
          *   Right(true) if Oni issued a JWT, Right(false) if the credentials were rejected (401/403), or Left if the
-         *   request failed or the response was unexpected.
+         *   request failed or the response was unexpected (any other status, including 404, or a 200 without an
+         *   access_token), so misconfiguration is visible rather than reported as bad credentials.
          */
         def authenticate(auth: BasicAuth): Either[Throwable, Boolean] =
             val credentials = Base64
@@ -114,9 +115,17 @@ class VarsUserServer(
 
             Try(httpClientSupport.client.send(request, BodyHandlers.ofString())).toEither.flatMap(response =>
                 response.statusCode() match
-                    case 200                => Right(extractToken(response.body()).exists(_.nonEmpty))
-                    case 401 | 403 | 404    => Right(false)
-                    case code               =>
+                    case 200       =>
+                        extractToken(response.body()).filter(_.nonEmpty) match
+                            case Some(_) => Right(true)
+                            case None    =>
+                                Left(
+                                    new RuntimeException(
+                                        s"Response from ${request.uri} was 200 but contained no access_token"
+                                    )
+                                )
+                    case 401 | 403 => Right(false)
+                    case code      =>
                         Left(new RuntimeException(s"Unexpected response ($code) from ${request.uri}"))
             )
 
