@@ -10,12 +10,12 @@ object Dependencies {
   lazy val circeParser     = "io.circe" %% "circe-parser"  % circeVersion
 
   lazy val jansi    = "org.fusesource.jansi"         % "jansi"           % "2.4.3"
-  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.6.7"
+  lazy val logback  = "ch.qos.logback"               % "logback-classic" % "1.6.8"
   lazy val methanol = "com.github.mizosoft.methanol" % "methanol"        % "1.9.0"
   lazy val munit    = "org.scalameta"               %% "munit"           % "1.3.6"
   lazy val picocli  = "info.picocli"                 % "picocli"         % "4.7.7"
 
-  lazy val slf4jVersion = "2.0.18"
+  lazy val slf4jVersion = "2.0.20"
   lazy val slf4jApi     = "org.slf4j" % "slf4j-api"    % slf4jVersion
   lazy val slf4jJul     = "org.slf4j" % "jul-to-slf4j" % slf4jVersion
 
